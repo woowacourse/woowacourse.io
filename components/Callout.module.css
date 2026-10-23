@@ -1,0 +1,51 @@
+/* 콜아웃 — Folio .fl-callout (노션 콜아웃): 옅은 색 바탕 + 왼쪽 이모지. 다크 값은 토큰이 맡는다 */
+.callout {
+  display: flex;
+  gap: var(--fl-space-5);
+  padding: 14px var(--fl-space-6);
+  border-radius: var(--fl-radius);
+  margin: var(--fl-space-6) 0;
+  line-height: var(--fl-leading-normal);
+  font-size: var(--fl-text-md);
+  color: var(--fl-text);
+}
+
+.emoji {
+  font-size: 1.25em;
+  flex-shrink: 0;
+  line-height: 1.4;
+  user-select: none;
+}
+
+.content {
+  flex: 1;
+  min-width: 0;
+}
+
+.content p {
+  margin: 0;
+}
+
+.content p + p {
+  margin-top: var(--fl-space-3);
+}
+
+.info {
+  background-color: var(--fl-tint-blue-bg);
+}
+
+.warning {
+  background-color: var(--fl-tint-yellow-bg);
+}
+
+.tip {
+  background-color: var(--fl-tint-green-bg);
+}
+
+.danger {
+  background-color: var(--fl-tint-red-bg);
+}
+
+.note {
+  background-color: var(--fl-tint-gray-bg);
+}

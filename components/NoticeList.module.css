@@ -1,0 +1,149 @@
+/* 공지 목록 — Folio 데이터베이스(.fl-db / .fl-table) 표 보기 */
+.board {
+  margin: var(--fl-space-8) 0 var(--fl-space-9);
+}
+
+/* 보기 탭 — 노션 데이터베이스 상단의 보기 전환 */
+.views {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--fl-space-1);
+  padding-bottom: var(--fl-space-3);
+  border-bottom: 1px solid var(--fl-border);
+}
+
+.view {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--fl-space-3);
+  height: 28px;
+  padding: 0 var(--fl-space-4);
+  border: none;
+  border-radius: var(--fl-radius-sm);
+  background: transparent;
+  color: var(--fl-text-tertiary);
+  font: inherit;
+  font-size: var(--fl-text-sm);
+  font-weight: var(--fl-weight-medium);
+  cursor: pointer;
+  transition: background var(--fl-duration-fast), color var(--fl-duration-fast);
+}
+
+.view:hover {
+  background: var(--fl-hover);
+  color: var(--fl-text);
+}
+
+.view[aria-selected='true'] {
+  color: var(--fl-text);
+  background: var(--fl-hover-strong);
+}
+
+.viewCount {
+  color: var(--fl-text-quaternary);
+  font-size: var(--fl-text-xs);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 표 — 제목 · 분류 · 게시일 3칸 */
+.head,
+.row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 7rem 6.5rem;
+  align-items: center;
+  column-gap: var(--fl-space-6);
+}
+
+.head {
+  height: 34px;
+  padding: 0 var(--fl-space-4);
+  border-bottom: 1px solid var(--fl-border);
+  color: var(--fl-text-tertiary);
+  font-size: var(--fl-text-xs);
+}
+
+.headDate {
+  text-align: right;
+}
+
+.rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.rows li {
+  margin: 0;
+}
+
+.row {
+  min-height: 44px;
+  padding: var(--fl-space-3) var(--fl-space-4);
+  border-bottom: 1px solid var(--fl-border-subtle);
+  color: var(--fl-text);
+  text-decoration: none !important;
+  transition: background var(--fl-duration-fast);
+}
+
+.row:hover {
+  background: var(--fl-hover);
+}
+
+.title {
+  display: flex;
+  align-items: baseline;
+  gap: var(--fl-space-4);
+  min-width: 0;
+  font-size: var(--fl-text-md);
+  font-weight: var(--fl-weight-medium);
+  line-height: var(--fl-leading-snug);
+  word-break: keep-all;
+}
+
+.pageIcon {
+  flex: none;
+  font-size: 0.95em;
+  opacity: 0.75;
+}
+
+.date {
+  color: var(--fl-text-tertiary);
+  font-size: var(--fl-text-sm);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.empty {
+  padding: var(--fl-space-8) var(--fl-space-4);
+  color: var(--fl-text-tertiary);
+}
+
+/* 모바일: 머리줄을 숨기고 제목 아래에 분류·게시일을 한 줄로 */
+@media (max-width: 640px) {
+  .head {
+    display: none;
+  }
+
+  .row {
+    grid-template-columns: auto 1fr;
+    grid-template-areas:
+      'title title'
+      'category date';
+    row-gap: var(--fl-space-3);
+    padding: var(--fl-space-5) var(--fl-space-2);
+  }
+
+  .title {
+    grid-area: title;
+  }
+
+  .category {
+    grid-area: category;
+  }
+
+  .date {
+    grid-area: date;
+    text-align: left;
+  }
+}

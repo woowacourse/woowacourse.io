@@ -1,0 +1,89 @@
+.box {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--fl-border);
+  border-radius: 0.6rem;
+  margin: 1rem 0;
+  background: var(--fl-surface-2);
+}
+
+/* 마감 — 지난·비활성 모집임을 회색으로 명시 */
+.box[data-status='마감'] {
+  background: var(--fl-surface-3);
+  border-color: var(--fl-border);
+}
+.box[data-status='마감'] .label {
+  color: var(--fl-text-tertiary);
+}
+
+/* 모집중 — 활성, 초록 톤 */
+.box[data-status='모집중'] {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+}
+
+/* 모집예정 — 예정, 노랑 톤 */
+.box[data-status='모집예정'] {
+  background: #fefce8;
+  border-color: #fde68a;
+}
+
+.badge {
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  background: var(--fl-border);
+  color: var(--fl-text-secondary);
+}
+.box[data-status='모집중'] .badge {
+  background: #dcfce7;
+  color: #166534;
+}
+.box[data-status='모집예정'] .badge {
+  background: #fef9c3;
+  color: #854d0e;
+}
+.label {
+  font-weight: 600;
+}
+.cta {
+  margin-left: auto;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* Dark mode */
+:global(.dark) .box {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+:global(.dark) .box[data-status='마감'] {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.09);
+}
+:global(.dark) .box[data-status='마감'] .label {
+  color: rgba(255, 255, 255, 0.5);
+}
+:global(.dark) .box[data-status='모집중'] {
+  background: rgba(34, 197, 94, 0.12);
+  border-color: rgba(34, 197, 94, 0.28);
+}
+:global(.dark) .box[data-status='모집예정'] {
+  background: rgba(234, 179, 8, 0.12);
+  border-color: rgba(234, 179, 8, 0.28);
+}
+:global(.dark) .badge {
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.7);
+}
+:global(.dark) .box[data-status='모집중'] .badge {
+  background: rgba(34, 197, 94, 0.25);
+  color: #86efac;
+}
+:global(.dark) .box[data-status='모집예정'] .badge {
+  background: rgba(234, 179, 8, 0.25);
+  color: #fde047;
+}

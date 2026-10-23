@@ -1,0 +1,12 @@
+/* 노션 페이지 커버 — 화면 가로를 꽉 채우는 사진.
+   배치(전체 폭 펼치기·본문 밀어내기)는 globals.css 의 .page-cover 규칙이 맡는다. */
+.cover {
+  background: var(--fl-surface-3);
+}
+
+.cover img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

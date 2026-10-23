@@ -1,0 +1,157 @@
+/* CrewVoices — "크루의 목소리" : CrewJourney(결과) 다음에 오는 의미. 같은 색 토큰을 쓴다 */
+.section {
+  max-width: 52rem;
+  margin: 0 auto;
+  padding: 0 1rem 1rem;
+  text-align: center;
+}
+
+.heading {
+  font-size: clamp(1.45rem, 3.4vw, 2rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: rgb(55, 53, 47);
+  margin: 0 0 0.6rem;
+  word-break: keep-all;
+}
+
+:global(.dark) .heading {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.lede {
+  font-size: 1.02rem;
+  line-height: 1.7;
+  color: rgba(55, 53, 47, 0.82);
+  max-width: 34rem;
+  margin: 0 auto 1.9rem;
+  word-break: keep-all;
+  text-wrap: pretty;
+}
+
+:global(.dark) .lede {
+  color: rgba(255, 255, 255, 0.74);
+}
+
+/* 인용 카드들 — 화면 폭에 따라 1~3열로 흐른다 */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 1rem;
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+  text-align: left;
+}
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: 1.15rem 1.25rem;
+  border: 1px solid rgba(55, 53, 47, 0.14);
+  border-radius: 12px;
+  background: rgba(55, 53, 47, 0.015);
+}
+
+:global(.dark) .card {
+  border-color: rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* '예시' 배지 — 실제 추천사로 오인되지 않게 명시. 실문장 오면 데이터에서 제거 */
+.badge {
+  position: absolute;
+  top: 0.7rem;
+  right: 0.7rem;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--fl-text-tertiary);
+  background: rgba(55, 53, 47, 0.07);
+  border: 1px solid rgba(55, 53, 47, 0.14);
+  border-radius: 999px;
+  padding: 0.12rem 0.5rem;
+}
+
+:global(.dark) .badge {
+  color: var(--fl-text-tertiary);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.quote {
+  margin: 0;
+  font-size: 1.0rem;
+  line-height: 1.65;
+  color: rgb(55, 53, 47);
+  word-break: keep-all;
+  text-wrap: pretty;
+}
+
+.quote::before {
+  content: '“';
+  margin-right: 0.05em;
+  color: rgba(55, 53, 47, 0.35);
+  font-weight: 700;
+}
+
+.quote::after {
+  content: '”';
+  margin-left: 0.05em;
+  color: rgba(55, 53, 47, 0.35);
+  font-weight: 700;
+}
+
+:global(.dark) .quote {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+:global(.dark) .quote::before,
+:global(.dark) .quote::after {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-top: auto;
+}
+
+.author {
+  font-size: 0.9rem;
+  font-weight: 700;
+  font-style: normal;
+  color: rgb(55, 53, 47);
+}
+
+:global(.dark) .author {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.recommends {
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--fl-text-tertiary);
+  word-break: keep-all;
+}
+
+:global(.dark) .recommends {
+  color: var(--fl-text-tertiary);
+}
+
+.more {
+  margin: 1.5rem 0 0;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .quote {
+    font-size: 0.95rem;
+  }
+}

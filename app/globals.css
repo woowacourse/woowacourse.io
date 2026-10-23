@@ -1,0 +1,753 @@
+/* ===== Folio(노션 디자인 시스템) 기반 전역 스타일 =====
+   색·간격·라운딩은 app/folio-tokens.css 의 --fl-* 를 쓴다. 브랜드 강조(주황)만 아래 --accent-* 로 따로 둔다. */
+
+/* 페이지 내 앵커 이동(랜딩 CTA→#teco-way, 본문 TOC)을 부드럽게.
+   모션 최소화 사용자는 브라우저 기본(즉시 점프)을 그대로 쓴다. */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+:root {
+  --font-sans: var(--fl-font-sans);
+  --nextra-primary-hue: 0deg;
+  --nextra-primary-saturation: 0%;
+  --nextra-primary-lightness: 20%;
+
+  /* ===== 액센트 토큰 (단일 진실 원천) =====
+     문서 컴포넌트의 액센트를 랜딩의 따뜻한 팔레트로 통일한다. 컴포넌트는 이 토큰만
+     참조하고 색을 직접 박지 않는다 — 새 컴포넌트에서 색이 다시 어긋나는 걸 막는다.
+     역할 분리가 핵심: 채움(fill) 위에 글자가 올라가는 것과 페이지 위에 떠 있는
+     글자/마크는 명도 방향이 반대다(특히 다크 모드). */
+  --accent: #d66830;               /* 비텍스트 마크: 점·보더·아이콘·구분선 */
+  --accent-text: #b93c0b;          /* 글자·링크 — 흰 배경 5.6:1, 옅은 주황 바탕(아이브로우) 4.9:1 (AA ✓) */
+  --accent-soft: #f0a570;          /* 보조 강조·은은한 하이라이트 */
+  --accent-subtle: rgba(214, 104, 48, 0.12); /* 배경 틴트·hover·활성 표시 */
+  --accent-fill: #c2410c;          /* 채움 표면(버튼·활성 칩) 배경 */
+  --accent-on: #ffffff;            /* 채움 위 글자 — 5:1 (AA ✓) */
+
+  /* ===== 보조 텍스트·링크 토큰 =====
+     기존 컴포넌트가 쓰던 이름을 Folio 토큰에 연결한다(다크 값은 Folio .dark 가 맡는다).
+     secondary=본문성 설명, tertiary=메타·id 같은 보조 정보. */
+  --text-secondary: var(--fl-text-secondary);
+  --text-tertiary: var(--fl-text-tertiary);
+  --link: var(--fl-text-link);
+  --link-hover: var(--fl-accent-600);
+
+  /* ===== 명도 대비 보정 (WCAG 2.1 AA, 글자 4.5:1) =====
+     Folio 원본의 보조 글자색(#787774 4.47:1, #9b9a97 2.81:1)과 태그 글자색(2.5~4.2:1)이
+     흰 배경과 태그 바탕에서 기준에 못 미쳐, 이 사이트에서만 한 단계 진하게 덮어쓴다.
+     괄호 안은 흰 배경(태그는 자기 바탕) 대비. folio-tokens.css 는 생성물이라 손대지 않는다 */
+  --fl-text-tertiary: #63625f;     /* 6.1:1 */
+  --fl-text-quaternary: #6b6a67;   /* 5.4:1, 회색 바탕 #ededec 에서도 4.6:1 */
+  --fl-text-link: #2a69bc;         /* 5.5:1, 파란 콜아웃 바탕에서 4.8:1 */
+  --fl-tint-gray: #6c6b68;         /* 4.7:1 */
+  --fl-tint-brown: #8b6251;        /* 4.6:1 */
+  --fl-tint-orange: #9b5b21;       /* 4.6:1 */
+  --fl-tint-yellow: #926521;       /* 4.6:1 */
+  --fl-tint-green: #4e755d;        /* 4.6:1 */
+  --fl-tint-blue: #427099;         /* 4.7:1 */
+  --fl-tint-purple: #80609f;       /* 4.7:1 */
+  --fl-tint-pink: #a75080;         /* 4.6:1 */
+  --fl-tint-red: #ac4d45;          /* 4.7:1 */
+
+  /* 랜딩 종이 그레인 — 알파를 SVG에 구워 라이트/다크 한 자산으로 */
+  --paper-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='0 0.05'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.dark {
+  --nextra-primary-hue: 0deg;
+  --nextra-primary-saturation: 0%;
+  --nextra-primary-lightness: 90%;
+
+  /* 다크 — 글자·마크는 밝은 앰버로 띄우고, 채움은 '선명'(밝은 앰버 + 어두운 글자). */
+  --accent: #f0a570;               /* 점·보더·아이콘은 밝게 */
+  --accent-text: #f0a570;          /* 링크·글자 — 어두운 배경 위 ~8:1 (AA ✓) */
+  --accent-soft: #d66830;
+  --accent-subtle: rgba(240, 165, 112, 0.16);
+  --accent-fill: #f0a570;          /* 선명: 밝은 앰버 채움 */
+  --accent-on: #1a1014;            /* 채움 위 어두운 글자 — ~9:1 (AA ✓) */
+
+  /* 명도 대비 보정(다크). 괄호 안은 #1a1918 배경(태그는 자기 바탕) 대비 */
+  --fl-text-tertiary: #aaa69e;     /* 7.2:1 */
+  --fl-text-quaternary: #9a9791;   /* 6.0:1, 표면 #2f2e2c 에서도 4.7:1 */
+  /* 위 :root 보정이 Folio .dark 보다 뒤에 와서 다크 값까지 덮으므로, 다크 원래 값을 다시 둔다 */
+  --fl-text-link: #8aa9ff;         /* 7.7:1 */
+  --fl-tint-yellow: #d4a23c;       /* 5.6:1 */
+  --fl-tint-gray: #9e9e9e;         /* 5.1:1 */
+  --fl-tint-brown: #ba9a8d;        /* 5.3:1 */
+  --fl-tint-orange: #d3945d;       /* 5.2:1 */
+  --fl-tint-green: #79b08d;        /* 5.3:1 */
+  --fl-tint-blue: #81a6d9;         /* 5.3:1 */
+  --fl-tint-purple: #b298d3;       /* 5.2:1 */
+  --fl-tint-pink: #d289a7;         /* 5.1:1 */
+  --fl-tint-red: #d38b86;          /* 5.2:1 */
+}
+
+html {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 본문 — Folio 블록 본문(17px · 1.6)
+   Nextra가 article·제목에 slate 글자색 클래스를 직접 달아서(특이도 0,1,0),
+   속성 셀렉터로 한 단계 높여 Folio의 따뜻한 글자색으로 되돌린다. */
+article {
+  font-size: var(--fl-text-lg);
+  line-height: var(--fl-leading-normal);
+  /* 한국어는 단어 단위로 줄바꿈하고, 긴 URL만 필요할 때 끊는다 */
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+article[class*='x:text-slate-700'],
+article [class*='x:text-slate-900'],
+.dark article[class*='x:text-slate-700'],
+.dark article [class*='x:text-slate-900'] {
+  color: var(--fl-text);
+}
+
+/* 제목 — 노션처럼 밑줄 없이 크기와 굵기로만 위계를 준다 */
+article h1 {
+  font-size: var(--fl-text-4xl);
+  font-weight: var(--fl-weight-bold);
+  margin-top: var(--fl-space-9);
+  margin-bottom: var(--fl-space-3);
+  line-height: var(--fl-leading-tight);
+  letter-spacing: -0.02em;
+}
+
+article h2 {
+  font-size: var(--fl-text-2xl);
+  font-weight: var(--fl-weight-semibold);
+  margin-top: var(--fl-space-10);
+  margin-bottom: var(--fl-space-4);
+  line-height: var(--fl-leading-snug);
+  letter-spacing: -0.01em;
+}
+
+/* Nextra가 h2에 붙이는 밑줄(x:border-b) 제거 */
+article h2[class*='x:border-b'] {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+article h3 {
+  font-size: var(--fl-text-xl);
+  font-weight: var(--fl-weight-semibold);
+  margin-top: var(--fl-space-9);
+  margin-bottom: var(--fl-space-3);
+  line-height: var(--fl-leading-snug);
+}
+
+article p {
+  margin-bottom: var(--fl-space-5);
+}
+
+article hr {
+  border: none;
+  border-top: 1px solid var(--fl-border);
+  margin: var(--fl-space-9) 0;
+}
+
+/* 링크 기본(컴포넌트 링크 포함) — 옅은 밑줄 */
+article a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--fl-border-strong);
+  text-underline-offset: 2px;
+  transition: text-decoration-color var(--fl-duration-fast);
+}
+
+article a:hover {
+  text-decoration-color: currentColor;
+}
+
+/* 본문 텍스트 링크(MDX 링크) — 카드 등 컴포넌트 링크는 각자 스타일을 유지하고,
+   MDX가 만든 텍스트 링크만 파란색으로 통일한다. 외부 링크에 붙는 ↗ 아이콘은 숨긴다. */
+/* 색만으로 구분하지 않도록 옅은 밑줄을 함께 둔다(본문 글자와 명도 차이가 3:1에 못 미침).
+   Nextra 가 article 형 페이지(공지 등)에서 링크 밑줄을 지우는 규칙이 이 파일보다 뒤에 오므로,
+   Nextra 가 링크에 붙이는 x:underline 클래스까지 걸어 우선순위를 높인다. */
+article a.x\:text-primary-600.x\:underline {
+  color: var(--link);
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  text-decoration-color: color-mix(in srgb, currentColor 40%, transparent);
+}
+
+article a.x\:text-primary-600.x\:underline:hover {
+  color: var(--link-hover);
+  text-decoration-line: underline;
+  text-decoration-color: currentColor;
+}
+
+article a.x\:text-primary-600 > svg {
+  display: none;
+}
+
+/* 인라인 코드 — 노션처럼 옅은 회색 바탕에 붉은 글자 */
+article :not(pre) > code {
+  background: var(--fl-tint-gray-bg);
+  color: var(--fl-tint-red);
+  padding: 0.15em 0.4em;
+  border-radius: var(--fl-radius-xs);
+  font-size: 0.85em;
+  font-family: var(--fl-font-mono);
+}
+
+/* 코드블록 줄 간격 — Nextra 기본(1.43배)은 빈 줄이 많은 프롬프트 예시에서
+   지나치게 성겨 보인다. 조금 촘촘하게 조여 가독성을 높인다.
+   블록 코드(pre 안의 code.nextra-code)만 겨냥해 인라인 코드는 건드리지 않고,
+   Nextra의 code.nextra-code(0,1,1)를 pre 한정으로 이긴다(0,1,2).
+   1lh 단위(아래 빈 줄 보정)가 이 값을 따라가므로 빈 줄 높이도 함께 줄어든다. */
+pre code.nextra-code {
+  line-height: 1.3;
+}
+
+/* 코드블록 빈 줄 보정 — Shiki는 각 줄을 빈 <span>으로 만드는데,
+   내용이 없는 줄은 인라인 콘텐츠가 없어 height가 0으로 접힌다.
+   그 결과 코드블록 안 빈 줄(섹션 구분)이 화면에서 모두 사라져 가독성이 깨진다.
+   각 줄이 비어 있어도 한 줄 높이를 유지하게 한다. (1lh 미지원 브라우저는 rem 폴백) */
+.nextra-code > span {
+  min-height: 1.25rem;
+  min-height: 1lh;
+}
+
+/* 목록 */
+article ul,
+article ol {
+  padding-left: 1.5em;
+  margin-bottom: var(--fl-space-5);
+}
+
+article li {
+  margin-bottom: var(--fl-space-2);
+  line-height: var(--fl-leading-normal);
+}
+
+article li::marker {
+  color: var(--fl-text-tertiary);
+}
+
+article strong {
+  font-weight: var(--fl-weight-semibold);
+}
+
+/* 인용 — 노션처럼 글자색 세로줄 */
+article blockquote {
+  border-left: 3px solid currentColor;
+  padding: 0.1em 0 0.1em 1em;
+  margin: var(--fl-space-5) 0;
+  color: inherit;
+}
+
+/* 첫 섹션 아래에 이어지는 콘텐츠가 있음을 알려주는 작은 스크롤 힌트 */
+.scroll-cue {
+  display: flex;
+  justify-content: center;
+  margin: 1.5rem 0 0.25rem;
+  color: var(--text-tertiary);
+  font-size: 0.8125rem;
+}
+
+.scroll-cue a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.scroll-cue a:hover {
+  color: var(--accent-text);
+}
+
+.scroll-cue__arrow {
+  display: inline-grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 1px solid var(--fl-border);
+  border-radius: var(--fl-radius-full);
+  color: var(--accent-text);
+  line-height: 1;
+  animation: scrollCueNudge 1.8s ease-in-out infinite;
+}
+
+.section-anchor {
+  display: block;
+  scroll-margin-top: 5rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-cue__arrow {
+    animation: none;
+  }
+}
+
+@keyframes scrollCueNudge {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  45% {
+    transform: translateY(3px);
+  }
+}
+
+/* 표 — Folio .fl-table: 모든 칸에 옅은 선, 머리칸은 보조 글자색 */
+article table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: var(--fl-space-6) 0;
+  font-size: var(--fl-text-base);
+  line-height: var(--fl-leading-normal);
+}
+
+article th,
+article td {
+  text-align: left;
+  padding: 7px 10px;
+  border: 1px solid var(--fl-border);
+  vertical-align: top;
+}
+
+article th {
+  font-weight: var(--fl-weight-medium);
+  color: var(--fl-text-secondary);
+  background: var(--fl-surface-2);
+}
+
+/* 사이드바 — 노션처럼 회색 선택 표시 */
+:is(.nextra-sidebar, .nextra-mobile-nav) li a {
+  color: var(--fl-text-secondary);
+  border-radius: var(--fl-radius-sm);
+}
+
+:is(.nextra-sidebar, .nextra-mobile-nav) li a:hover {
+  color: var(--fl-text);
+  background-color: var(--fl-hover);
+}
+
+/* 선택 항목: Nextra는 aria-current 대신 primary 클래스(x:bg-primary-100)로 칠한다 */
+:is(.nextra-sidebar, .nextra-mobile-nav) li a[class*='x:bg-primary-100'] {
+  color: var(--fl-text);
+  font-weight: var(--fl-weight-medium);
+  background-color: var(--fl-hover-strong);
+}
+
+::selection {
+  background: var(--fl-accent-100);
+  color: var(--fl-text);
+}
+
+/* Navbar 스타일 - 깔끔하게 */
+nav[class*='nextra'] a {
+  font-weight: 500;
+}
+
+/* 사이드바 스타일 개선 */
+aside a {
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+/* 페이지 컨테이너 최대 너비 */
+:root {
+  --nextra-content-width: 85rem;
+}
+
+/* 랜딩 페이지 — Nextra 기본 패딩 제거 후 콘텐츠 중앙 정렬 */
+div.nextra-body-typesetting-article:has([data-landing-hero]) {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+div.nextra-body-typesetting-article:has([data-landing-hero]) > * {
+  max-width: 42rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* 랜딩 페이지 — 종이 그레인 배경 (풀블리드).
+   hero를 감싸는 article 컨테이너(w-full · min-h-screen)에 깔아 항상 콘텐츠 뒤·전체를 덮는다. */
+div.nextra-body-typesetting-article:has([data-landing-hero]) {
+  background-color: #fdfcfa;
+  background-image: var(--paper-noise);
+  background-size: 180px 180px;
+}
+
+.dark div.nextra-body-typesetting-article:has([data-landing-hero]) {
+  background-color: #0d0d10;
+}
+
+/* ===== 사이드바 footer(접기 버튼·중복 테마 스위치) 제거 ===== */
+
+/* 접기 토글 버튼은 layout.tsx의 sidebar.toggleButton:false로 비활성화한다.
+   토글이 빠져도 darkMode 기본값(true) 때문에 footer 바 자체는 렌더링되므로,
+   비어 있는 그 바를 통째로 숨긴다. 테마 전환은 헤더의 스위치로 일원화. */
+.nextra-sidebar-footer {
+  display: none !important;
+}
+
+/* footer 바를 없애면 첫 메뉴가 헤더에 바짝 붙어 어색하므로, 스크롤 영역 상단에
+   여백을 더해 첫 메뉴 항목을 본문 제목(H1) 줄에 맞춘다 — 사이드바와 본문이 같은
+   줄에서 시작해 정돈돼 보인다. (navbar 64px + 브레드크럼 영역 ≈ H1 위치) */
+.nextra-sidebar .nextra-scrollbar {
+  padding-top: 4.5rem;
+}
+
+/* 헤더 외 중복 ThemeSwitch 숨기기 (방어적) */
+button[title="Change theme"]:not(.theme-switch-navbar) {
+  display: none !important;
+}
+
+/* 본문 footer 위의 Nextra 기본 switcher 영역과 구분선 제거 */
+div:has(> .site-footer) > div:has(button[title="Change theme"]),
+div:has(> .site-footer) > hr.nextra-border {
+  display: none !important;
+}
+
+/* 헤더 내 ThemeSwitch 스타일 */
+.theme-switch-navbar {
+  margin-left: 0.25rem;
+}
+
+/* 모바일은 기기 설정(시스템 테마)을 그대로 따른다. 좁은 헤더에서 버튼을 뺀다 */
+@media (max-width: 767px) {
+  .theme-switch-navbar {
+    display: none !important;
+  }
+}
+
+/* ===== 헤더 검색창 너비 =====
+   Nextra 기본값은 md:w-64(16rem)인데, 메뉴 링크가 없는 이 네비바에서는
+   균형을 잡아줄 다른 요소가 없어 검색 pill이 우측을 독차지한다. 검색은 사이드바
+   내비게이션을 보조하는 수단이므로, 사용 빈도에 맞춰 10rem으로 줄여 무게를 낮춘다.
+   (.nextra-search input = specificity 0,1,1 > Tailwind .md:w-64 = 0,1,0 이라 우선됨) */
+@media (min-width: 768px) {
+  .nextra-search input {
+    width: 10rem;
+  }
+}
+
+/* ===== 헤더 로고 (워드마크 SVG) ===== */
+.site-logo {
+  display: block;
+}
+
+/* 워드마크는 단색(black) 패스 — 다크 모드에서 흰색으로 반전해 가독성 유지 */
+.dark .site-logo {
+  filter: invert(1);
+}
+
+/* ===== 반응형 줄바꿈 유틸 =====
+   한 문장을 디바이스별로 다른 지점에서 접는다. MDX/JSX 본문에서
+   <br className="br-desktop" /> · <br className="br-mobile" /> 로 쓴다.
+   폭에 따라 3단으로 동작한다:
+   - >640px       : br-desktop만 켜짐 → 데스크톱 전용 줄바꿈
+   - 481~640px    : 둘 다 꺼짐      → 자연 줄바꿈(중간대)
+   - ≤480px(폰)   : br-mobile만 켜짐 → 모바일 전용 줄바꿈
+   <br>는 display:none이면 줄바꿈이 사라지고, 기본값(inline)이면 되살아난다. */
+.br-mobile {
+  display: none;
+}
+
+/* 데스크톱 전용 줄바꿈은 태블릿·모바일(≤640px)에서 끈다 */
+@media (max-width: 640px) {
+  .br-desktop {
+    display: none;
+  }
+}
+
+/* 모바일 전용 줄바꿈은 실제 폰(≤480px)에서만 켠다.
+   481~640px(대형 폰 가로·소형 태블릿)는 자연 줄바꿈에 맡겨,
+   폰용 짧은-줄 브레이크가 넓은 폭에서 오른쪽에 큰 빈 공간을 남기는 것을 피한다. */
+@media (max-width: 480px) {
+  .br-mobile {
+    display: inline;
+  }
+}
+
+/* 도서 소개 — 도서 상세 페이지처럼 왼쪽 표지 + 오른쪽 정보(제목·소개·속성), 모두 왼쪽 정렬.
+   표지는 별밤 커버 아래에 둔다(커버에 걸치지 않게). */
+.book-hero {
+  display: grid;
+  grid-template-columns: 15rem minmax(0, 1fr);
+  column-gap: var(--fl-space-10);
+  align-items: start;
+  margin: var(--fl-space-8) 0 var(--fl-space-10);
+}
+.book-hero figure img {
+  width: 15rem;
+}
+.book-hero-info {
+  padding-top: var(--fl-space-4);
+}
+.book-hero-info h1 {
+  margin-top: 0;
+  font-size: var(--fl-text-3xl);
+  text-align: left !important;
+  line-height: var(--fl-leading-snug);
+}
+.book-hero-info p {
+  margin: 0 0 var(--fl-space-5);
+}
+/* 제목 위 '가제' — 노션 속성 태그처럼 작게. 제목은 책 이름만 한 줄로 */
+.book-hero-info .book-tentative {
+  display: inline-block;
+  margin: 0 0 var(--fl-space-4);
+  padding: 0.05rem 0.5rem;
+  border: 1px solid var(--fl-border-strong);
+  border-radius: var(--fl-radius-sm);
+  font-size: var(--fl-text-sm);
+  font-weight: var(--fl-weight-medium);
+  line-height: 1.6;
+  color: var(--fl-text-tertiary);
+}
+.book-hero-info {
+  min-width: 0;
+}
+/* 'AI 시대 개발자의 NEXT STEP' 한 줄. 제목 폭은 글자 크기의 약 12배라,
+   모바일은 화면 폭(좌우 여백 48px 제외)의 1/12 로 줄여 넘치지 않게 한다.
+   페이지 h1 규칙이 더 강해 크기는 !important 로 고정한다 */
+.book-hero-info h1 {
+  white-space: nowrap;
+  font-size: var(--fl-text-3xl) !important;
+  margin-top: 0 !important; /* 위 '가제' 태그와 붙여 한 덩어리로 */
+}
+@media (max-width: 640px) {
+  .book-hero-info h1 {
+    font-size: min(var(--fl-text-3xl), calc((100vw - 48px) / 12)) !important;
+  }
+}
+/* 노션 페이지 속성(공지 상세와 같은 모양) */
+.book-props {
+  margin: var(--fl-space-6) 0 0;
+  padding-top: var(--fl-space-5);
+  border-top: 1px solid var(--fl-border);
+}
+.book-props > div {
+  display: flex;
+  align-items: center;
+  min-height: 34px;
+}
+.book-props dt {
+  flex: 0 0 8.5rem;
+  color: var(--fl-text-tertiary);
+  font-size: var(--fl-text-base);
+}
+.book-props dt > span {
+  margin-right: 0.35rem;
+}
+.book-props dd {
+  margin: 0;
+  color: var(--fl-text);
+  font-size: var(--fl-text-base);
+}
+@media (max-width: 640px) {
+  .book-hero {
+    grid-template-columns: 1fr;
+    row-gap: var(--fl-space-6);
+  }
+  .book-hero figure img {
+    width: 10rem;
+  }
+  .book-hero-info {
+    padding-top: 0;
+  }
+  /* 모바일은 표지를 별밤 커버에 걸쳐 올린다. 세로로 쌓이는 화면에서 첫 화면에
+     표지와 제목이 함께 보이고, 커버 아래 빈 여백이 줄어든다 */
+  .book-hero {
+    margin-top: -7.5rem;
+  }
+  .book-hero figure {
+    position: relative;
+    z-index: 1;
+  }
+  /* 남색 표지가 남색 별밤 위에 놓여 경계가 묻히므로, 흰 빛으로 테두리를 띄운다 */
+  .book-hero figure img {
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.22),
+      0 0 26px rgba(255, 255, 255, 0.4),
+      0 18px 40px rgba(0, 0, 0, 0.35);
+  }
+}
+
+/* ===== 모바일 메뉴(햄버거) =====
+   Nextra 기본은 14px·32px 줄이라 손가락으로 누르기에 작고 글자가 옅다.
+   대메뉴(지원·공지·문의·도서)는 크고 진하게, '지원' 아래 하위 메뉴는 한 단계 작게 둔다.
+   줄 높이는 대메뉴 48px·하위 44px 이상(손가락 터치 권장 크기) */
+/* 메뉴 안 검색창은 뺀다. 모바일은 메뉴 이동이 주 목적이고, 문서도 몇 장 안 된다 */
+.nextra-mobile-nav div:has(> .nextra-search) {
+  display: none;
+}
+.nextra-mobile-nav ul.nextra-scrollbar {
+  padding-top: var(--fl-space-4);
+  gap: 0.125rem;
+  /* 메뉴 글자 시작선을 헤더 로고(24px)에 맞춘다. 항목 자체 안쪽 여백 0.5rem 을 뺀 값 */
+  padding-inline: calc(var(--page-gutter) - 0.5rem);
+}
+.nextra-mobile-nav ul.nextra-scrollbar > li > a,
+.nextra-mobile-nav ul.nextra-scrollbar > li > button {
+  min-height: 48px;
+  align-items: center;
+  padding: 0.625rem 0.5rem;
+  font-size: 1.125rem;
+  font-weight: var(--fl-weight-semibold);
+  color: var(--fl-text);
+}
+.nextra-mobile-nav ul.nextra-scrollbar ul a {
+  min-height: 44px;
+  align-items: center;
+  padding: 0.5rem 0.5rem;
+  font-size: 1rem;
+  color: var(--fl-text-secondary);
+}
+/* 대메뉴 사이 구분선 — 펼친 '지원' 하위 목록과 다음 대메뉴가 붙어 보이지 않게 */
+.nextra-mobile-nav ul.nextra-scrollbar > li + li {
+  border-top: 1px solid var(--fl-border);
+  padding-top: 0.125rem;
+}
+.nextra-mobile-nav ul.nextra-scrollbar > li:has(> div) {
+  padding-bottom: 0.5rem;
+}
+
+/* ===== 페이지 좌우 여백 =====
+   모바일은 헤더 로고와 같은 24px 하나로 맞춘다(Nextra 기본 본문 여백은 16px라 로고와 어긋났다).
+   랜딩 섹션은 자체 좌우 여백 없이 이 값을 따른다. 태블릿 이상은 Nextra 기본(48px) 그대로 */
+:root {
+  --page-gutter: 24px;
+}
+@media (max-width: 767px) {
+  article {
+    padding-left: var(--page-gutter) !important;
+    padding-right: var(--page-gutter) !important;
+  }
+}
+
+/* 사이트 상단 모집 안내 배너: 한국어는 단어 단위로 줄바꿈 */
+.site-banner-text {
+  word-break: keep-all;
+}
+
+/* 사이트 상단 모집 안내 배너의 링크 */
+.site-banner-link {
+  margin-left: 0.25rem;
+  font-weight: 600;
+  white-space: nowrap; /* 좁은 화면에서 '공지 / 보기 →'로 갈라지지 않게 */
+  padding: 0.3rem 0; /* 누르는 영역을 위아래로 넓힌다(줄 높이는 그대로) */
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* 공지(노션 데이터베이스 페이지) — 제목은 노션처럼 왼쪽 정렬, 본문 폭은 Folio 넓은 페이지 폭 */
+article:has([data-notice-page]) {
+  max-width: var(--fl-page-max-w-wide, 960px);
+}
+/* 페이지 제목은 노션처럼 왼쪽 정렬. Nextra 'article' 조판이 H1을 강제로 가운데 정렬하므로 이긴다.
+   랜딩(히어로)만 가운데 정렬을 유지한다. */
+article[class*='nextra-body-typesetting-article']:not(:has([data-landing-hero])) h1 {
+  text-align: left !important;
+}
+
+/* 푸터 — 개인정보 처리방침(굵게) · 문의 / 저작권 */
+.site-footer-inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fl-space-3);
+  font-size: var(--fl-text-sm);
+  color: var(--fl-text-tertiary);
+}
+
+.site-footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--fl-space-6);
+}
+
+.site-footer-links a {
+  display: inline-block;
+  padding: 0.25rem 0; /* 누르는 영역 24px 이상 */
+  color: var(--fl-text-secondary);
+  text-decoration: none;
+}
+
+.site-footer-links a:hover {
+  color: var(--fl-text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.site-footer-privacy {
+  font-weight: var(--fl-weight-bold);
+}
+
+.site-footer-copy {
+  font-size: var(--fl-text-xs);
+  color: var(--fl-text-quaternary);
+}
+
+/* 문의: 캠퍼스 지도 이미지 */
+.map-figure {
+  margin: var(--fl-space-6) 0 var(--fl-space-4);
+}
+.map-figure img {
+  display: block;
+  width: 100%;
+  max-width: 640px;
+  height: auto;
+  border: 1px solid var(--fl-border);
+  border-radius: var(--fl-radius-md);
+}
+.map-figure figcaption {
+  margin-top: var(--fl-space-3);
+  color: var(--fl-text-quaternary);
+  font-size: var(--fl-text-xs);
+}
+
+/* 글로벌 확장: 상단 배너(글자가 든 그림이라 자르지 않고 원래 비율로) */
+.hero-banner {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: var(--fl-space-6) 0;
+  border: 1px solid var(--fl-border);
+  border-radius: var(--fl-radius-md);
+}
+
+/* 노션 페이지 커버(PageCover) — 노션처럼 화면 가로를 꽉 채운다.
+   커버는 본문(article) 안에 있지만, 가운데 정렬된 바깥 레이아웃을 기준점으로 삼아
+   화면 전체 폭으로 펼치고, 레이아웃 위쪽에 커버 높이만큼 자리를 비워 사이드바·본문을 아래로 민다. */
+:root {
+  --page-cover-h: clamp(220px, 34vh, 360px);
+}
+
+div:has(> article .page-cover) {
+  position: relative;
+  padding-top: var(--page-cover-h);
+}
+
+.page-cover {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 100vw;
+  margin-left: -50vw;
+  height: var(--page-cover-h);
+}
+
+/* 100vw 가 세로 스크롤바 폭만큼 넘쳐 가로 스크롤이 생기지 않게 */
+body:has(.page-cover) {
+  overflow-x: clip;
+}
+
+@media (max-width: 640px) {
+  :root {
+    --page-cover-h: 180px;
+  }
+}

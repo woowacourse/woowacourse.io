@@ -1,0 +1,45 @@
+/* Manifesto — 교육 철학 페이지의 강조용 선언 형태.
+   액센트는 사이트 테마 primary 변수를 그대로 따른다(이 사이트는 무채색 모노크롬).
+   강조는 색이 아니라 크기·번호·여백·위계로 만든다. */
+
+/* ── 번호 붙은 원칙 선언 ───────────────────── */
+/* 테마 primary (라이트=짙은 회색, 다크=옅은 회색). 사이트 링크/액티브와 동일 톤. */
+.claim {
+  display: flex;
+  gap: 1rem;
+  align-items: baseline;
+  margin: 0.4rem 0 1.1rem;
+}
+
+.num {
+  flex-shrink: 0;
+  font-size: clamp(1.5rem, 1rem + 1.8vw, 2.1rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: rgba(23, 23, 23, 0.9);   /* 본문과 통일 — 검은색 */
+  font-variant-numeric: tabular-nums;
+}
+
+:global(.dark) .num {
+  color: rgba(245, 245, 245, 0.92);
+}
+
+.claimText {
+  margin: 0;
+  font-size: clamp(1.05rem, 0.95rem + 0.6vw, 1.28rem);
+  font-weight: 700;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  word-break: keep-all;
+  text-wrap: pretty;
+  color: rgba(23, 23, 23, 0.9);
+}
+
+:global(.dark) .claimText {
+  color: rgba(245, 245, 245, 0.92);
+}
+
+@media (max-width: 640px) {
+  .claim { gap: 0.7rem; }
+}

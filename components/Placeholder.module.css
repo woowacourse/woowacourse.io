@@ -1,0 +1,39 @@
+/* Notion-style Placeholder */
+.placeholder {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px 16px;
+  border-radius: 4px;
+  background: rgba(55, 53, 47, 0.024);
+  margin: 8px 0;
+}
+
+.icon {
+  font-size: 1.1em;
+  line-height: 1.4;
+  flex-shrink: 0;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.label {
+  font-size: 0.875em;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.hint {
+  font-size: 0.8125em;
+  color: var(--text-tertiary);
+  line-height: 1.5;
+}
+
+/* Dark mode — .label·.hint 글자색은 --text-* 토큰이 라이트/다크를 함께 처리 */
+:global(.dark) .placeholder {
+  background: rgba(255, 255, 255, 0.024);
+}

@@ -1,0 +1,217 @@
+/* CrewJourney — "우테코를 넘어 소프트웨어 생태계로" : 행성이 중심 궤도(데스크톱) / 칩(모바일) */
+.section {
+  max-width: 52rem;
+  margin: 0 auto;
+  padding: 5rem 0 3.75rem; /* 좌우 여백은 페이지 여백(article)을 따른다 */
+  text-align: center;
+}
+
+.heading {
+  font-size: clamp(1.5rem, 3.6vw, 2.05rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: rgb(55, 53, 47);
+  margin: 0 0 0.85rem;
+  word-break: keep-all;
+}
+
+:global(.dark) .heading {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.lede {
+  font-size: 1.05rem;
+  /* Nextra가 article p 줄높이를 2rem로 강제 → !important 없으면 무시됨 */
+  line-height: 1.6 !important;
+  color: rgba(55, 53, 47, 0.82);
+  max-width: 34rem;
+  margin: 0 auto;
+  word-break: keep-all;
+  text-wrap: pretty;
+}
+
+:global(.dark) .lede {
+  color: rgba(255, 255, 255, 0.74);
+}
+
+.lede strong {
+  font-weight: 800;
+  color: rgb(55, 53, 47);
+}
+
+:global(.dark) .lede strong {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+/* 궤도 */
+.orbit {
+  position: relative;
+  height: 465px;
+  max-width: 720px;
+  margin: 1.75rem auto 0;
+}
+
+/* 궤도 — 단 하나의 또렷한 얇은 링. 노드 타원(RX45/RY44)과 정확히 일치 → 각 노드 '중심'이 링 선 위에 놓인다 */
+.ring {
+  position: absolute;
+  inset: 6% 5%;
+  border: 1.5px solid rgba(55, 53, 47, 0.18);
+  border-radius: 50%;
+}
+
+:global(.dark) .ring {
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.core {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+/* 중심 행성 뒤 따뜻한 광원 — Hero의 별 광원과 같은 호박빛으로 통일감 */
+.coreGlow {
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  width: 280px;
+  height: 280px;
+  transform: translate(-50%, -50%);
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    50% 50% at 50% 50%,
+    rgba(255, 219, 170, 0.5),
+    rgba(255, 219, 170, 0) 70%
+  );
+}
+
+:global(.dark) .coreGlow {
+  background: radial-gradient(
+    50% 50% at 50% 50%,
+    rgba(255, 230, 195, 0.16),
+    rgba(255, 230, 195, 0) 70%
+  );
+}
+
+.planet {
+  height: auto;
+  mix-blend-mode: multiply; /* 라이트: 흰 배경이 종이에 녹는다 */
+}
+
+:global(.dark) .planet {
+  filter: invert(1); /* 다크: 검은 선 → 흰 선 */
+  mix-blend-mode: screen;
+}
+
+.coreN {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--fl-text-tertiary);
+}
+
+:global(.dark) .coreN {
+  color: var(--fl-text-tertiary);
+}
+
+/* 노드 — '궤도 위 정거장'처럼 읽히도록 옅은 pill 처리 */
+.node {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+  color: rgba(55, 53, 47, 0.92);
+  background: rgba(255, 253, 249, 0.92);
+  border: 1px solid rgba(55, 53, 47, 0.1);
+  border-radius: 999px;
+  padding: 0.26rem 0.56rem;
+  box-shadow: 0 1px 4px rgba(40, 38, 34, 0.06);
+  backdrop-filter: blur(2px);
+}
+
+:global(.dark) .node {
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(28, 28, 32, 0.82);
+  border-color: rgba(255, 255, 255, 0.14);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* 모바일 폴백 (기본 숨김) */
+.fallback {
+  display: none;
+}
+
+.chip {
+  font-size: 0.92rem;
+  font-weight: 600;
+  white-space: nowrap;
+  padding: 0.3rem 0.68rem;
+  border: 1px solid rgba(55, 53, 47, 0.16);
+  border-radius: 999px;
+  color: rgb(55, 53, 47);
+}
+
+:global(.dark) .chip {
+  color: rgba(255, 255, 255, 0.88);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* 글로벌 한 줄 */
+.global {
+  font-size: 0.98rem;
+  line-height: 1.6 !important; /* Nextra article p 2rem 강제를 이김 */
+  color: var(--fl-text-tertiary);
+  max-width: 32rem;
+  margin: 1.75rem auto 0;
+  word-break: keep-all;
+  text-wrap: pretty;
+}
+
+:global(.dark) .global {
+  color: rgba(255, 255, 255, 0.62);
+}
+
+/* 각 문장을 한 단위로 묶어 줄바꿈이 문장 경계에서만 일어나게 한다.
+   (뒷 문장 첫 단어가 앞 줄 끝에 홀로 남는 어색한 줄바꿈 방지) */
+.sentence {
+  display: inline-block;
+}
+
+.cities {
+  font-weight: 700;
+  color: rgb(55, 53, 47);
+}
+
+:global(.dark) .cities {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+@media (max-width: 680px) {
+  .orbit {
+    display: none;
+  }
+  .fallback {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.1rem;
+    margin: 1.5rem auto 0;
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-width: 30rem;
+  }
+}

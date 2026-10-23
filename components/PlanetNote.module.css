@@ -1,0 +1,52 @@
+/* 행성이 안내 — 노션 콜아웃처럼 옅은 회색 바탕 + 왼쪽 캐릭터 */
+.note {
+  display: flex;
+  align-items: center;
+  gap: var(--fl-space-7);
+  margin: var(--fl-space-8) 0;
+  padding: var(--fl-space-7) var(--fl-space-8);
+  border-radius: var(--fl-radius-md);
+  background: var(--fl-surface-2);
+}
+
+.character {
+  flex: none;
+  width: 96px;
+  height: auto;
+  mix-blend-mode: multiply; /* 라이트: 흰 배경이 바탕에 녹는다 */
+}
+
+:global(.dark) .character {
+  filter: invert(1); /* 다크: 검은 선을 흰 선으로 */
+  mix-blend-mode: screen;
+}
+
+.body {
+  min-width: 0;
+}
+
+.body p {
+  margin: 0;
+  color: var(--fl-text);
+  line-height: var(--fl-leading-normal);
+  word-break: keep-all;
+}
+
+/* 둘째 문단부터는 보조 설명 */
+.body p + p {
+  margin-top: var(--fl-space-3);
+  color: var(--fl-text-secondary);
+}
+
+@media (max-width: 640px) {
+  .note {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--fl-space-5);
+    padding: var(--fl-space-7);
+  }
+
+  .character {
+    width: 72px;
+  }
+}

@@ -1,0 +1,71 @@
+/* BookNote — 랜딩 아래쪽 책 소개 섹션(크루의 행선지 다음, 닫는 입구 앞). 다른 섹션처럼 라벨·제목을 두되 버튼은 테두리형으로 차분하게 */
+.section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 54rem;
+  margin: 0 auto;
+  padding: 3.75rem 0 1rem; /* 좌우 여백은 페이지 여백(article)을 따른다 */
+  text-align: center;
+}
+
+.heading {
+  font-size: clamp(1.45rem, 3.4vw, 2rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: rgb(55, 53, 47);
+  margin: 0 0 1.75rem;
+  word-break: keep-all;
+}
+
+:global(.dark) .heading {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.coverLink {
+  text-decoration: none !important;
+}
+
+.note {
+  margin: 1.25rem 0 0;
+  font-size: 0.95rem;
+  line-height: 1.7 !important; /* Nextra article p 2rem 강제를 이김 */
+  color: rgba(55, 53, 47, 0.75);
+  word-break: keep-all;
+}
+
+:global(.dark) .note {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.tag {
+  font-weight: 700;
+}
+
+
+.more {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 1.25rem;
+  padding: 0.7rem 1.4rem;
+  border: 1px solid rgba(38, 36, 32, 0.25);
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: rgb(38, 36, 32);
+  text-decoration: none !important;
+  transition: background 0.18s ease;
+}
+
+.more:hover {
+  background: rgba(38, 36, 32, 0.04);
+}
+
+:global(.dark) .more {
+  color: rgba(255, 255, 255, 0.92);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+:global(.dark) .more:hover {
+  background: rgba(255, 255, 255, 0.06);
+}

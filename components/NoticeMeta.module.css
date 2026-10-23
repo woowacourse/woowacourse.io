@@ -1,0 +1,33 @@
+/* 공지 상세 — 노션 페이지 속성 블록 */
+.wrap {
+  margin: var(--fl-space-6) 0 var(--fl-space-9);
+  padding-bottom: var(--fl-space-6);
+  border-bottom: 1px solid var(--fl-border);
+}
+
+.props {
+  margin: 0;
+}
+
+.prop {
+  display: flex;
+  align-items: center;
+  min-height: 34px;
+  border-radius: var(--fl-radius-sm);
+}
+
+.name {
+  flex: 0 0 8.5rem;
+  display: flex;
+  align-items: center;
+  gap: var(--fl-space-3);
+  color: var(--fl-text-tertiary);
+  font-size: var(--fl-text-base);
+}
+
+.value {
+  margin: 0;
+  color: var(--fl-text);
+  font-size: var(--fl-text-base);
+  font-variant-numeric: tabular-nums;
+}

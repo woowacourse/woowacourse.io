@@ -1,0 +1,33 @@
+node_modules/
+.next/
+.next.broken-*/
+out/
+*.tsbuildinfo
+next-env.d.ts
+.DS_Store
+
+# 빌드 산출물 (npm run build 시 생성)
+public/_pagefind/
+
+# 로컬 작업 공간 (공개 저장소에 올리지 않음)
+/llm-wiki/
+/.claude
+/CLAUDE.md
+/AGENTS.md
+/.docs
+/docs
+/.research
+/.inbox/
+/.temp/
+/.worktrees/
+/.superpowers/
+/.firecrawl/
+/.playwright-mcp/
+/.omc/
+
+# 디버그용 스크린샷 (루트 임시 저장)
+/*.png
+
+# 빌드할 때 생성(prebuild). 저장소에 두면 옛 내용이 남는다
+public/llms.txt
+public/llms-full.txt

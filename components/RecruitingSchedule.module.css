@@ -1,0 +1,20 @@
+.wrap {
+  margin: var(--fl-space-8) 0;
+}
+
+.info {
+  margin: var(--fl-space-10) 0 0;
+}
+
+/* 제목 단계는 h2(페이지 제목 바로 아래)지만 크기는 소제목(h3)으로 둔다 */
+article .infoTitle {
+  font-size: var(--fl-text-xl);
+  margin-top: 0;
+  margin-bottom: var(--fl-space-3);
+}
+
+.infoLede {
+  margin: 0 0 var(--fl-space-5);
+  color: var(--fl-text-secondary);
+  font-size: var(--fl-text-md);
+}

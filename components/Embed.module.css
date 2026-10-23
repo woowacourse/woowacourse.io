@@ -1,0 +1,27 @@
+.outer {
+  margin: 1.25rem 0;
+}
+.frameWrap {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 0.6rem;
+  border: 1px solid var(--fl-border);
+  background: var(--fl-surface-2);
+}
+/* 다크 모드 — 라이트 surface(var(--fl-surface-2))가 그대로 밝게 남던 문제.
+   Card·AssetCard와 같은 반투명 오버레이 surface로 맞춘다. */
+:global(.dark) .frameWrap {
+  background: rgba(255, 255, 255, 0.04);
+}
+.frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+.fallback {
+  margin: 0.5rem 0 0;
+  font-size: 0.85rem;
+}

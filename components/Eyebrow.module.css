@@ -1,0 +1,22 @@
+.eyebrow {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--accent-text);
+  background: rgba(214, 104, 48, 0.12);
+  border-radius: 999px;
+  padding: 0.22rem 0.64rem;
+  margin: 0 0 1rem;
+}
+
+:global(.dark) .eyebrow {
+  color: var(--accent-text);
+  background: rgba(240, 165, 112, 0.14);
+}
+
+/* 늘 어두운 바탕 위(테마와 무관) — #15141c 위 7:1 */
+.eyebrow.onDark {
+  color: #f0a570;
+  background: rgba(240, 165, 112, 0.14);
+}

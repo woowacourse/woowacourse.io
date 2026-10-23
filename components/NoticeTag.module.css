@@ -1,0 +1,26 @@
+/* Folio .fl-tag — 노션 색 태그 */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 var(--fl-space-4);
+  border-radius: var(--fl-radius-sm);
+  font-size: var(--fl-text-xs);
+  font-weight: var(--fl-weight-medium);
+  white-space: nowrap;
+}
+
+.gray {
+  background: var(--fl-tint-gray-bg);
+  color: var(--fl-tint-gray);
+}
+
+.orange {
+  background: var(--fl-tint-orange-bg);
+  color: var(--fl-tint-orange);
+}
+
+.blue {
+  background: var(--fl-tint-blue-bg);
+  color: var(--fl-tint-blue);
+}

@@ -1,0 +1,131 @@
+.card {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(16rem, 0.85fr);
+  overflow: hidden;
+  width: 100%;
+  margin: 1.5rem 0;
+  border: 1px solid rgba(55, 53, 47, 0.12);
+  border-radius: 8px;
+  background: rgba(55, 53, 47, 0.024);
+  color: inherit;
+  text-decoration: none !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.card:hover {
+  border-color: rgba(55, 53, 47, 0.2);
+  background: rgba(55, 53, 47, 0.04);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
+}
+
+.media {
+  min-height: 17rem;
+  border-right: 1px solid rgba(55, 53, 47, 0.1);
+  background: var(--fl-surface-2);
+}
+
+.image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  transition: transform 0.2s ease;
+}
+
+.card:hover .image {
+  transform: scale(1.015);
+}
+
+.content {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.7rem;
+  padding: 1.4rem;
+}
+
+.eyebrow {
+  color: var(--text-tertiary);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.description,
+.meta {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.meta {
+  color: var(--text-tertiary);
+  font-size: 0.82rem;
+}
+
+.action {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 0.45rem;
+  min-height: 2.7rem;
+  margin-top: 0.25rem;
+  padding: 0 1rem;
+  border-radius: 6px;
+  background: var(--fl-text);
+  color: #fff;
+  font-size: 0.93rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+:global(.dark) .card {
+  border-color: rgba(255, 255, 255, 0.11);
+  background: rgba(255, 255, 255, 0.035);
+}
+
+:global(.dark) .card:hover {
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.055);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.24);
+}
+
+:global(.dark) .media {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+:global(.dark) .action {
+  background: var(--fl-surface-2);
+  color: var(--fl-text);
+}
+
+@media (max-width: 720px) {
+  .card {
+    grid-template-columns: 1fr;
+  }
+
+  .media {
+    min-height: 12rem;
+    border-right: 0;
+    border-bottom: 1px solid rgba(55, 53, 47, 0.1);
+  }
+
+  .content {
+    padding: 1.15rem;
+  }
+
+  .title {
+    font-size: 1.15rem;
+  }
+}

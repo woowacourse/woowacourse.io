@@ -1,0 +1,76 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* safe-area까지 고려한 여백 */
+  padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right))
+    max(1rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
+  background: rgba(0, 0, 0, 0.82);
+  animation: ytlbFade 0.15s ease;
+}
+
+@keyframes ytlbFade {
+  from {
+    opacity: 0;
+  }
+}
+
+.dialog {
+  position: relative;
+  /* 16:9를 가로·세로 양쪽에 맞춰 어떤 화면에서도 안 잘리게 폭을 높이에도 종속 */
+  width: min(960px, calc(100vw - 2rem), calc((100vh - 2rem) * 16 / 9));
+}
+
+.frameWrap {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+}
+
+.frame {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+
+.close {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+
+.close:hover,
+.close:focus-visible {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.close:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overlay {
+    animation: none;
+  }
+}

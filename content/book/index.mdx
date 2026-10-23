@@ -1,0 +1,59 @@
+---
+title: 도서
+# 메뉴의 '도서'를 누르면 바로 이 페이지로 온다(접었다 펴는 단계 없이)
+asIndexPage: true
+---
+
+<PageCover src="/images/book/starfield.svg" alt="" />
+
+<div className="book-hero">
+  <BookCover size="lg" overlap label={false} />
+  <div className="book-hero-info">
+
+<p className="book-tentative">가제</p>
+
+# AI 시대 개발자의 NEXT STEP
+
+{/* 수료생 수는 랜딩과 같은 값(content/crew-voices.ts 의 crewCount)으로 맞춘다. LLM 요약(llms-full.txt)이 변수를 풀지 못해 숫자로 적는다 */}
+우아한테크코스가 8년 동안 쌓아 온 교육 경험과 735명의 수료생이 개발자로 성장해 온 과정을 책으로 쓰고 있습니다. 제목과 표지는 아직 가안입니다.
+
+<dl className="book-props">
+  <div><dt><span aria-hidden="true">📅</span> 출간 예정</dt><dd>2027년</dd></div>
+  <div><dt><span aria-hidden="true">✍️</span> 진행</dt><dd>집필 중</dd></div>
+</dl>
+
+  </div>
+</div>
+
+## 목차
+
+현재 집필 중이며 제목과 구성은 바뀔 수 있습니다.
+
+### 1부. 우테코 설계의 출발점
+
+- 1장. 우테코는 어떻게 돌아가는가
+- 2장. 교육을 설계하려는 사람에게
+
+### 2부. 강의 없는 학습 환경
+
+- 3장. 선발도 교육이다, 프리코스
+- 4장. 왜 심리적 안전감을 강조하는가
+- 5장. 강의를 없애면 무슨 일이 벌어질까
+- 6장. 페어 프로그래밍은 생각을 밖으로 꺼내는 훈련이다
+- 7장. 경험이 지식이 되는 순간은 언제인가
+- 8장. 리뷰로 배우기
+
+### 3부. 가르치지 않는 코치
+
+- 9장. 질문에 질문으로 답하기
+- 10장. 스스로 답을 찾는 시간, 원온원
+- 11장. 점수 없이 배움을 확인하기
+
+### 4부. 앞으로의 교육, 대체되지 않는 개발자
+
+- 12장. AI가 바꿔 놓은 것
+- 13장. 다가오는 변화를 위한 교육 개선
+- 14장. 결국 우리가 집중해야 하는 것
+
+{/* 원고 미리 읽기를 열 때: 여기에 '## 미리 읽기' 섹션과 원고 카드(CardGrid)를 넣고, content/book/_meta.ts 에 원고를 등록합니다.
+    목차 출처: woowacourse-book 통합본(2026-09-29) 번호 목차. 목차가 바뀌면 이 목록도 고칩니다. */}

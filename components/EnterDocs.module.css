@@ -1,0 +1,175 @@
+/* EnterDocs — 랜딩의 닫는 초대. 증거 다음에 교육·책·지원 세 입구를 연다 */
+.section {
+  max-width: 54rem;
+  margin: 0 auto;
+  padding: 3.75rem 0 1rem; /* 좌우 여백은 페이지 여백(article)을 따른다 */
+  text-align: center;
+}
+
+.heading {
+  font-size: clamp(1.45rem, 3.4vw, 2rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: rgb(55, 53, 47);
+  margin: 0 0 0.85rem;
+  word-break: keep-all;
+}
+
+:global(.dark) .heading {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.lede {
+  font-size: 1.05rem;
+  line-height: 1.6 !important; /* Nextra article p 2rem 강제를 이김 */
+  color: rgba(55, 53, 47, 0.82);
+  max-width: 34rem;
+  margin: 0 auto 2rem;
+  word-break: keep-all;
+  text-wrap: pretty;
+}
+
+:global(.dark) .lede {
+  color: rgba(255, 255, 255, 0.74);
+}
+
+/* 세 입구 — 데스크톱에서 한 줄로 나란히, 모바일에서 세로로 */
+.doors {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.door {
+  box-sizing: border-box;
+  flex: 1 1 12rem;
+  max-width: 17rem;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 1.15rem 1.3rem;
+  border: 1px solid rgba(55, 53, 47, 0.16);
+  border-radius: 14px;
+  text-decoration: none !important;
+  text-align: left;
+  background: rgba(55, 53, 47, 0.015);
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.door:hover {
+  transform: translateY(-2px);
+  border-color: rgba(214, 104, 48, 0.45);
+  box-shadow: 0 8px 24px rgba(214, 104, 48, 0.14);
+}
+
+:global(.dark) .door {
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.025);
+}
+
+:global(.dark) .door:hover {
+  border-color: rgba(240, 165, 112, 0.5);
+  box-shadow: 0 8px 24px rgba(240, 165, 112, 0.16);
+}
+
+/* 아이콘 — 따뜻한 오렌지 chip 배지로 감싸 팔레트와 묶고 '버튼'처럼 보이게 */
+.icon {
+  font-size: 1.45rem;
+  line-height: 1;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.9rem;
+  height: 2.9rem;
+  border-radius: 12px;
+  background: rgba(214, 104, 48, 0.1);
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.door:hover .icon {
+  background: rgba(214, 104, 48, 0.16);
+  transform: scale(1.04);
+}
+
+:global(.dark) .icon {
+  background: rgba(240, 165, 112, 0.14);
+}
+
+:global(.dark) .door:hover .icon {
+  background: rgba(240, 165, 112, 0.2);
+}
+
+.doorBody {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.doorTitle {
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: rgb(55, 53, 47);
+}
+
+:global(.dark) .doorTitle {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.doorDesc {
+  font-size: 0.92rem;
+  color: var(--fl-text-tertiary);
+  word-break: keep-all; /* 한글을 어절 단위로만 끊는다 (것부/터 → 것부터) */
+  text-wrap: balance; /* 2줄이 될 때 두 줄 길이를 고르게 — 끝줄에 1~2글자만 남는 것 방지 */
+}
+
+:global(.dark) .doorDesc {
+  color: var(--fl-text-tertiary);
+}
+
+.arrow {
+  font-size: 1.1rem;
+  color: rgba(55, 53, 47, 0.4);
+  flex-shrink: 0;
+  transition: transform 0.15s ease, color 0.15s ease;
+}
+
+.door:hover .arrow {
+  transform: translateX(3px);
+  color: rgb(214, 104, 48);
+}
+
+:global(.dark) .arrow {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+:global(.dark) .door:hover .arrow {
+  color: rgb(240, 165, 112);
+}
+
+@media (max-width: 640px) {
+  .section {
+    padding-top: 2.5rem;
+  }
+  .doors {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.6rem;
+  }
+  .door {
+    max-width: none;
+    /* 세로 스택에선 flex-basis(16rem)가 '높이'로 잡혀 카드가 과도하게 커진다.
+       basis를 auto로 되돌려 높이를 내용에 맞추고, 패딩을 조여 단정하게 */
+    flex: 0 0 auto;
+    padding: 0.9rem 1.05rem;
+  }
+  .icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 1.3rem;
+  }
+}

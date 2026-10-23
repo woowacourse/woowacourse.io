@@ -1,0 +1,249 @@
+/* TecoWay: 랜딩 'Hero 다음' 선언. 레벨 0→5를 5단계 가로 타임라인으로(단계마다 우테코만의 사실 하나).
+   헤더 토큰은 형제 섹션(CrewJourney)과 동일. 마커는 동일 크기 행성이 포즈,
+   연결은 마커 사이만 잇는 점선 구간 — 캐릭터를 관통하지 않는다(multiply 블렌드라 선이 비쳐 보임).
+   마지막 수료 정거장(반짝)에만 글로우를 얹어 아크를 닫는다. */
+.section {
+  max-width: 52rem;
+  margin: 0 auto;
+  padding: 5rem 0 3.75rem; /* 좌우 여백은 페이지 여백(article)을 따른다 */
+  text-align: center;
+  /* 랜딩 CTA(#teco-way) 앵커 착지 시 고정 네비바(64px)에 eyebrow가 붙지 않도록 */
+  scroll-margin-top: 2rem;
+}
+
+.heading {
+  font-size: clamp(1.5rem, 3.6vw, 2.05rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: rgb(55, 53, 47);
+  margin: 0 0 0.85rem;
+  word-break: keep-all;
+}
+
+:global(.dark) .heading {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+/* 히어로(문서의 약속)와 이 섹션(현장)을 잇는 리드 — 토큰은 CrewJourney .lede와 동일 */
+.lede {
+  font-size: 1.05rem;
+  /* Nextra가 article p 줄높이를 2rem로 강제 → !important 없으면 무시됨 */
+  line-height: 1.6 !important;
+  color: rgba(55, 53, 47, 0.82);
+  max-width: 34rem;
+  margin: 0 auto;
+  word-break: keep-all;
+  text-wrap: pretty;
+}
+
+:global(.dark) .lede {
+  color: rgba(255, 255, 255, 0.74);
+}
+
+/* 4단계 가로 타임라인 */
+.timeline {
+  position: relative;
+  list-style: none;
+  margin: 2.5rem 0 0;
+  padding: 0;
+  display: flex;
+}
+
+.step {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 0 0.35rem;
+}
+
+/* 마커 사이를 잇는 점선 구간 — 이전 마커 중심 옆에서 시작해 내 마커 중심 옆에서 끝난다.
+   중심에서 34px씩 물러나 행성이 몸통을 관통하지 않는다. */
+.step + .step::before {
+  content: '';
+  position: absolute;
+  top: 36px; /* 마커 슬롯(72px) 세로 중앙 */
+  left: calc(-50% + 34px);
+  width: calc(100% - 68px);
+  border-top: 2px dashed rgba(55, 53, 47, 0.25);
+  z-index: 0;
+}
+
+:global(.dark) .step + .step::before {
+  border-top-color: rgba(255, 255, 255, 0.28);
+}
+
+/* 마커 슬롯 — 높이 고정(72px)으로 크기가 다른 포즈를 모두 중앙 정렬 → 점선이 같은 높이를 지난다 */
+.marker {
+  position: relative;
+  z-index: 1;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.glow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(120px, 34vw);
+  height: min(120px, 34vw);
+  transform: translate(-50%, -50%);
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    50% 50% at 50% 50%,
+    rgba(255, 219, 170, 0.5),
+    rgba(255, 219, 170, 0) 70%
+  );
+}
+
+:global(.dark) .glow {
+  background: radial-gradient(
+    50% 50% at 50% 50%,
+    rgba(255, 230, 195, 0.16),
+    rgba(255, 230, 195, 0) 70%
+  );
+}
+
+.pose {
+  height: auto;
+  max-width: 100%;
+  mix-blend-mode: multiply; /* 라이트: 흰 배경이 종이에 녹는다 */
+}
+
+:global(.dark) .pose {
+  filter: invert(1); /* 다크: 검은 선을 흰 선으로 */
+  mix-blend-mode: screen;
+}
+
+/* 단계 킥커 — 레벨 구간. 사실 헤드라인 위의 작은 이정표 */
+.stepLevel {
+  margin-top: 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--fl-text-tertiary);
+}
+
+:global(.dark) .stepLevel {
+  color: var(--fl-text-tertiary);
+}
+
+/* 단계 사실 헤드라인 — 이 섹션의 차별점을 실어 나르는 자리 */
+.stepFact {
+  margin-top: 0.35rem;
+  max-width: 12rem;
+  font-size: 0.98rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.45;
+  color: rgb(55, 53, 47);
+  word-break: keep-all;
+  text-wrap: pretty;
+}
+
+:global(.dark) .stepFact {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.stepText {
+  margin-top: 0.35rem;
+  max-width: 11.5rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: rgba(55, 53, 47, 0.72);
+  word-break: keep-all;
+  text-wrap: pretty;
+}
+
+:global(.dark) .stepText {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+/* 마지막 정거장(수료) 텍스트의 735 강조 */
+.stepText strong {
+  font-weight: 800;
+  color: rgb(55, 53, 47);
+}
+
+:global(.dark) .stepText strong {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+/* 태블릿 — 5열이 좁아지는 구간은 2열 그리드로, 마지막 수료 정거장은 한 줄 전체 (연결선은 숨김) */
+@media (min-width: 681px) and (max-width: 940px) {
+  .timeline {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem 1.25rem;
+    max-width: 30rem;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .step:last-child {
+    grid-column: 1 / -1;
+  }
+  .step + .step::before {
+    display: none;
+  }
+  .marker {
+    height: auto;
+    margin-bottom: 0.15rem;
+  }
+}
+
+/* 모바일 — 왼쪽 레일 세로 타임라인(CrewGrowth 세로 척추와 같은 관용구).
+   행성이가 왼쪽 레일의 정거장, 점선이 세로로 흐르고 텍스트는 좌측 정렬로 스캔이 빠르다. */
+@media (max-width: 680px) {
+  .timeline {
+    flex-direction: column;
+    gap: 1.5rem;
+    max-width: 22rem;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .step {
+    display: grid;
+    grid-template-columns: 64px 1fr;
+    column-gap: 0.9rem;
+    align-items: center;
+    text-align: left;
+    padding: 0;
+  }
+  .marker {
+    grid-column: 1;
+    grid-row: 1 / span 3;
+    height: auto;
+  }
+  .stepLevel {
+    grid-column: 2;
+    margin-top: 0;
+  }
+  .stepFact {
+    grid-column: 2;
+    margin-top: 0.2rem;
+    max-width: none;
+  }
+  .stepText {
+    grid-column: 2;
+    margin-top: 0.25rem;
+    max-width: none;
+  }
+  /* 가로 점선을 세로 점선으로 — 레일(마커 열 중앙)을 따라 행 사이 간격을 잇는다 */
+  .step + .step::before {
+    left: 31px;
+    top: calc(-1.5rem - 2px);
+    width: 0;
+    height: calc(1.5rem + 4px);
+    border-top: none;
+    border-left: 2px dashed rgba(55, 53, 47, 0.25);
+  }
+  :global(.dark) .step + .step::before {
+    border-left-color: rgba(255, 255, 255, 0.28);
+  }
+}

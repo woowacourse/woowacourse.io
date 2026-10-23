@@ -1,0 +1,38 @@
+{
+  "name": "woowacourse-docs",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "prebuild": "npm run build:llms-txt && npm run check:llms-txt",
+    "build": "next build",
+    "postbuild": "npm run build:redirects && npm run build:search-index && npm run check:search-index",
+    "build:redirects": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/redirects/build.mjs && node scripts/sitemap/build.mjs",
+    "build:llms-txt": "node scripts/llms-txt/build.mjs",
+    "check:llms-txt": "node scripts/llms-txt/verify.mjs",
+    "build:search-index": "node scripts/search/build-pagefind.mjs",
+    "check:search-index": "node scripts/search/verify-pagefind.mjs",
+    "test:llms-txt": "node --test scripts/llms-txt/__tests__/build.test.mjs",
+    "lint:tone": "node scripts/style/tone-lint.mjs",
+    "lint:style": "node scripts/style/ai-style-lint.mjs",
+    "lint:codefence": "node scripts/style/codefence-lint.mjs",
+    "lint:mobile": "node scripts/mobile/mobile-lint.mjs",
+    "test:mobile": "node --test scripts/mobile/__tests__/mobile-lint.test.mjs",
+    "start": "npx --yes serve@14.2.4 out"
+  },
+  "dependencies": {
+    "mermaid": "^11.13.0",
+    "next": "^15.1.0",
+    "nextra": "^4.2.0",
+    "nextra-theme-docs": "^4.2.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.2.3",
+    "pagefind": "^1.5.2",
+    "typescript": "^5.7.0"
+  }
+}

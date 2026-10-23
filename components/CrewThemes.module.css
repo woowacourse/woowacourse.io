@@ -1,0 +1,108 @@
+/* CrewThemes — docs 본문용 "빈도순 주제 목록".
+   랜딩의 별무리(CrewVoiceMap)와 달리 풀블리드·어두운 배경이 없다 → 사이드바와 충돌하지 않고
+   본문 칼럼 안에 자연히 머문다. 색 토큰은 같은 페이지 CrewVoices와 동일. */
+.list {
+  margin: 1.25rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+}
+
+/* 순위 — '빈도순'임을 알리는 보조 단서. 눈에 띄지 않게 죽인다 */
+.rank {
+  min-width: 1.2em;
+  font-size: 0.8rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: rgba(55, 53, 47, 0.38);
+}
+
+.label {
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: rgb(55, 53, 47);
+  word-break: keep-all;
+}
+
+.count {
+  margin-left: auto;
+  font-size: 0.95rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: rgb(213, 124, 64);
+  white-space: nowrap;
+}
+
+.unit {
+  margin-left: 0.12em;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: rgba(55, 53, 47, 0.5);
+}
+
+/* 빈도 막대 — 가장 자주 나온 주제 대비 상대 길이. 별 크기를 대신하는 '빈도 인코딩' */
+.track {
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(55, 53, 47, 0.08);
+  overflow: hidden;
+}
+
+.bar {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: rgb(240, 165, 112);
+}
+
+/* 대표 문장 — 풀-쿼트 느낌의 왼쪽 액센트 바 */
+.quote {
+  margin: 0;
+  padding-left: 0.85rem;
+  border-left: 2px solid rgba(240, 165, 112, 0.45);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: rgba(55, 53, 47, 0.78);
+  word-break: keep-all;
+  text-wrap: pretty;
+}
+
+/* ── 다크 테마 (CrewVoices와 동일 토큰) ── */
+:global(.dark) .rank {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+:global(.dark) .label {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+:global(.dark) .count {
+  color: rgb(240, 165, 112);
+}
+
+:global(.dark) .unit {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+:global(.dark) .track {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+:global(.dark) .quote {
+  color: rgba(255, 255, 255, 0.75);
+  border-left-color: rgba(240, 165, 112, 0.5);
+}

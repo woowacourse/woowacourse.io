@@ -1,0 +1,324 @@
+/* CrewGrowth — 성장 아크 히어로(가로/세로 반응형) + 단계별 서사 */
+.section {
+  max-width: 52rem;
+  margin: 0 auto;
+  /* 교육 과정 페이지 소개 문장 바로 아래에 온다. 위 여백은 문단 간격 정도로만, 좌우는 페이지 여백을 따른다 */
+  padding: 1.5rem 0 3.5rem;
+  text-align: center;
+}
+
+.heading {
+  font-size: clamp(1.5rem, 3.6vw, 2.05rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: rgb(55, 53, 47);
+  margin: 0 0 0.85rem;
+  word-break: keep-all;
+}
+
+:global(.dark) .heading {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.lede {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: rgba(55, 53, 47, 0.82);
+  max-width: 36rem;
+  margin: 0 auto;
+  word-break: keep-all;
+  text-wrap: pretty;
+}
+
+:global(.dark) .lede {
+  color: rgba(255, 255, 255, 0.74);
+}
+
+.lede strong {
+  font-weight: 800;
+  color: var(--accent-text);
+}
+
+:global(.dark) .lede strong {
+  color: var(--accent-text);
+}
+
+/* 라인아트 공통 — 흰 배경을 종이에 녹이고, 다크에선 선을 반전 */
+.pose {
+  height: auto;
+  display: block;
+  mix-blend-mode: multiply;
+}
+
+:global(.dark) .pose {
+  filter: invert(1);
+  mix-blend-mode: screen;
+}
+
+/* ── 데스크톱: 가로 성장 길 ─────────────────────────── */
+.arcDesktop {
+  margin-top: 2.25rem;
+}
+
+.rail {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  padding-bottom: 0.9rem;
+  border-bottom: 1.5px dashed rgba(55, 53, 47, 0.28);
+}
+
+:global(.dark) .rail {
+  border-bottom-color: rgba(255, 255, 255, 0.26);
+}
+
+.fig {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.rail .pose {
+  width: 72px;
+}
+
+.labels {
+  display: flex;
+  margin-top: 0.8rem;
+}
+
+.col {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.18rem;
+  padding: 0 0.35rem;
+}
+
+.lv {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--fl-text-tertiary);
+  white-space: nowrap;
+}
+
+:global(.dark) .lv {
+  color: var(--fl-text-tertiary);
+}
+
+.gl {
+  font-size: 0.8rem;
+  line-height: 1.42;
+  color: rgba(55, 53, 47, 0.82);
+  word-break: keep-all;
+  text-wrap: pretty;
+}
+
+:global(.dark) .gl {
+  color: rgba(255, 255, 255, 0.74);
+}
+
+/* ── 모바일: 세로 성장 척추 ─────────────────────────── */
+.arcMobile {
+  display: none;
+  position: relative;
+  list-style: none;
+  margin: 1.75rem 0 0;
+  padding: 0;
+  flex-direction: column;
+  gap: 0.9rem;
+  text-align: left;
+}
+
+/* 세로 스파인 라인 (포즈 열 중앙을 지난다) */
+.arcMobile::before {
+  content: '';
+  position: absolute;
+  top: 0.5rem;
+  bottom: 0.5rem;
+  left: 36px;
+  border-left: 1.5px dashed rgba(55, 53, 47, 0.22);
+}
+
+:global(.dark) .arcMobile::before {
+  border-left-color: rgba(255, 255, 255, 0.22);
+}
+
+.spineRow {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.spineFig {
+  flex: 0 0 72px;
+  display: flex;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+}
+
+.arcMobile .pose {
+  width: 52px;
+}
+
+.spineText {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+/* ── 단계별 서사 ─────────────────────────────────── */
+.storiesIntro {
+  margin: 3.25rem 0 1.1rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--fl-text-tertiary);
+}
+
+:global(.dark) .storiesIntro {
+  color: var(--fl-text-tertiary);
+}
+
+.stories {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  max-width: 40rem;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.storyCard {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  padding: 1.1rem 1.2rem;
+  border: 1px solid rgba(55, 53, 47, 0.1);
+  border-radius: 14px;
+  background: rgba(255, 253, 249, 0.6);
+}
+
+:global(.dark) .storyCard {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.storyFigure {
+  flex: 0 0 64px;
+  display: flex;
+  justify-content: center;
+  padding-top: 0.15rem;
+}
+
+.storyBody {
+  flex: 1;
+  min-width: 0;
+}
+
+.storyHead {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.3rem;
+}
+
+.storyLevel {
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: var(--accent-text);
+}
+
+:global(.dark) .storyLevel {
+  color: var(--accent-text);
+}
+
+.storyStage {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--fl-text-tertiary);
+}
+
+:global(.dark) .storyStage {
+  color: var(--fl-text-tertiary);
+}
+
+.storyTitle {
+  font-size: 1.08rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: rgb(55, 53, 47);
+  margin: 0 0 0.4rem;
+  word-break: keep-all;
+}
+
+:global(.dark) .storyTitle {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.storyText {
+  font-size: 0.95rem;
+  line-height: 1.72;
+  color: rgba(55, 53, 47, 0.82);
+  margin: 0;
+  word-break: keep-all;
+  text-wrap: pretty;
+}
+
+:global(.dark) .storyText {
+  color: rgba(255, 255, 255, 0.74);
+}
+
+.storyLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.7rem;
+}
+
+.storyLink {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--accent-text);
+  text-decoration: none !important;
+}
+
+.storyLink:hover {
+  color: rgb(184, 82, 32);
+  text-decoration: none !important;
+}
+
+:global(.dark) .storyLink {
+  color: var(--accent-text);
+}
+
+:global(.dark) .storyLink:hover {
+  color: rgb(248, 185, 140);
+}
+
+@media (max-width: 880px) {
+  .arcDesktop {
+    display: none;
+  }
+  .arcMobile {
+    display: flex;
+  }
+}
+
+@media (max-width: 520px) {
+  .storyCard {
+    gap: 0.75rem;
+    padding: 1rem;
+  }
+  .storyFigure {
+    flex-basis: 48px;
+  }
+}
