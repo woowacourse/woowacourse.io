@@ -229,8 +229,11 @@
 }
 /* 펼쳤을 때 왼쪽 면 밑에 드리우는 그림자. 오른쪽 뒤표지의 그림자와 이어져 책 전체에 하나의 그림자로 보이게 상자 하나로 둔다.
    (표지판에 그림자를 붙이고 경첩에서 자르면, 오른쪽 그림자와 겹치는 정도가 달라져 책 아래에 세로 이음선이 생긴다.)
-   크기·위치는 고정이고 투명도만 바뀐다. 배경이 없는 상자라 바깥 그림자만 그려지므로, 표지판이 닿기 전에 나타나면
-   왼쪽에 그림자로 둘러싸인 빈 흰 칸이 보인다 — 그래서 표지가 거의 넘어간 뒤(0.3s)에 나타나고, 닫을 땐 곧바로 사라진다 */
+   표지가 넘어가는 동안 그림자가 경첩에서 바깥으로 *자라난다* — 실제 책처럼. 투명도를 켜는 대신 scaleX로 폭을 키우고,
+   그 easing을 표지 회전(cubic-bezier(0.2, 0.8, 0.2, 1))이 바닥에 드리우는 투영 폭 max(0, -cos θ)에 맞춰 linear()로 미리 계산했다
+   (표지가 수직을 지나는 13% 지점까지 0, 그 뒤 cos 곡선으로 1까지). 그래서 그림자 폭과 표지판 폭이 매 프레임 맞물리고,
+   배경 없는 상자가 표지판보다 먼저 나타나 빈 흰 칸으로 보이는 일도 없다. 닫을 땐 표지가 0.1s 안에 수직을 지나므로 그만큼 빨리 접힌다.
+   scaleX(0)은 그리지 않는 행렬이라 닫혀 있을 땐 아무것도 없다. linear()를 모르는 브라우저는 앞 줄의 bezier로 떨어진다 */
 .back::before {
   content: '';
   position: absolute;
@@ -240,20 +243,23 @@
   width: calc(var(--w) + var(--stack) + 3px);
   border-radius: 6px 0 0 6px;
   box-shadow: 0 18px 34px rgba(38, 36, 32, 0.3);
-  opacity: 0;
   pointer-events: none;
-  transition: opacity 0.08s ease;
+  transform-origin: right center;
+  transform: scaleX(0);
+  transition: transform 0.75s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: transform 0.75s linear(0, 0.032 2%, 0.126 4%, 0.276 6%, 0.468 8%, 0.681 10%, 0.896 12%, 1 14%, 1);
 }
 :global(a):hover .back::before,
 :global(a):focus-visible .back::before,
 .cover:hover .back::before {
-  opacity: 1;
-  transition: opacity 0.3s ease 0.3s;
+  transform: scaleX(1);
+  transition: transform 0.75s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: transform 0.75s linear(0, 0 13%, 0.188 15%, 0.35 17%, 0.484 19%, 0.591 21%, 0.713 24%, 0.798 27%, 0.857 30%, 0.909 34%, 0.943 38%, 0.971 44%, 0.989 52%, 0.998 65%, 1);
 }
 /* 이음새 밑 띠 — 뒤표지는 책등 자리부터 오른쪽 끝까지 이어져 있어서, 펼쳤을 때 왼쪽 면과 첫 장이 맞닿는 가운데 이음새 밑에도 있다.
    두 면의 경계 픽셀 사이로 그 남색이 비치면 어두운 세로선이 되므로, 이음새 둘레(경첩 -1px ~ +7px, 종이가 있는 높이만)는 종이색 띠로 덮는다.
    닫혀 있을 땐 투명하다. 항상 보이게 두면 책등·표지 경계의 반투명 픽셀 사이와 표지 아래 끝으로 종이색이 비쳐
-   표지 옆 얇은 선과 왼쪽 아래 조각으로 보인다. 표지가 거의 넘어간 뒤(0.4s)에 나타나고, 닫을 땐 곧바로 사라진다 */
+   표지 옆 얇은 선과 왼쪽 아래 조각으로 보인다. 책등이 사라지고 표지판이 경첩 왼쪽을 덮은 뒤(0.18s)에 나타나고, 닫을 땐 곧바로 사라진다 */
 .back::after {
   content: '';
   position: absolute;
@@ -270,7 +276,7 @@
 :global(a):focus-visible .back::after,
 .cover:hover .back::after {
   opacity: 1;
-  transition: opacity 0.15s ease 0.4s;
+  transition: opacity 0.15s ease 0.18s;
 }
 
 /* 펼치면 첫 장이 비켜 섰던 만큼 제자리로 올라온다. 위로는 3px만 비워 왼쪽 면과 같은 위 테두리(3px)를 남긴다.
