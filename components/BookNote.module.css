@@ -22,10 +22,6 @@
   color: rgba(255, 255, 255, 0.95);
 }
 
-.coverLink {
-  text-decoration: none !important;
-}
-
 .note {
   margin: 1.25rem 0 0;
   font-size: 0.95rem;

@@ -10,9 +10,8 @@ export function BookNote() {
   return (
     <section className={styles.section} aria-label="우테코 책 소개">
       <h2 className={styles.heading}>우테코의 8년을 책으로 만들고 있습니다</h2>
-      <Link href="/book" className={styles.coverLink} aria-label="도서 보기">
-        <BookCover />
-      </Link>
+      {/* 책은 링크가 아니다: 누르면 펼쳐진다. 도서 페이지로는 아래 '도서 보기' 버튼으로만 간다 */}
+      <BookCover />
       <p className={styles.note}>
         {/* 랜딩은 '표지 시안' 태그가 바로 위에 있어, 태그를 하나 더 두지 않고 제목 앞에 (가제)로 적는다 */}
         (가제) AI 시대 개발자의 NEXT STEP

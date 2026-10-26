@@ -22,8 +22,23 @@
    평소엔 정면(기울이면 불안해 보였다). 대신 왼쪽에 남색 책등(둥근 음영), 표지 뒤로 종이 단면(오른쪽·아래 띠)과
    종이보다 조금 더 나온 뒤표지 테두리가 보여 두께가 읽힌다. 표지 왼쪽에는 경첩 홈(양장 표지가 접히는 자리)과 옅은 광택.
    종이 단면은 어긋난 그림자를 쌓지 않고 직사각형 두 띠로 그린다(그림자를 쌓으면 우상단·좌하단 모서리가 사선으로 깎인다).
-   마우스를 올리면 표지(.lid)가 왼쪽 모서리를 축으로 완전히 넘어가 첫 장(.page)의 목차가 보인다.
+   펼치면(.open) 표지(.lid)가 왼쪽 모서리를 축으로 완전히 넘어가 첫 장(.page)의 목차가 보인다.
+   마우스는 올리면 펼치고, 터치·키보드는 누를 때마다 펼치고 접는다(.toggle 버튼, BookCover.tsx). 책은 링크가 아니라서
+   모바일에서 탭해도 페이지가 넘어가지 않는다 — 도서 페이지로는 아래 '도서 보기' 버튼으로 간다.
    펼친 책은 표지 폭만큼 왼쪽으로 넓어지므로, 펼칠 때 전체를 오른쪽으로 반 폭 옮겨 가운데를 지킨다. */
+/* 책 전체를 감싼 버튼 — 브라우저 기본 버튼 모양을 지우고, 탭할 때 파란 하이라이트도 없앤다 */
+.toggle {
+  all: unset;
+  display: block;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation; /* 두 번 탭 확대 대기 없이 바로 펼친다 */
+}
+.toggle:focus-visible {
+  outline: 2px solid var(--fl-text);
+  outline-offset: 8px;
+  border-radius: 6px;
+}
 .sm {
   --w: 9.5rem;
   --d: 1.1rem;
@@ -208,9 +223,7 @@
 .spine {
   transition: opacity 0.25s ease 0.3s;
 }
-:global(a):hover .spine,
-:global(a):focus-visible .spine,
-.cover:hover .spine {
+.open .spine {
   opacity: 0;
   transition: opacity 0.1s ease;
 }
@@ -249,9 +262,7 @@
   transition: transform 0.75s cubic-bezier(0.2, 0.8, 0.2, 1);
   transition: transform 0.75s linear(0, 0.032 2%, 0.126 4%, 0.276 6%, 0.468 8%, 0.681 10%, 0.896 12%, 1 14%, 1);
 }
-:global(a):hover .back::before,
-:global(a):focus-visible .back::before,
-.cover:hover .back::before {
+.open .back::before {
   transform: scaleX(1);
   transition: transform 0.75s cubic-bezier(0.2, 0.8, 0.2, 1);
   transition: transform 0.75s linear(0, 0 13%, 0.188 15%, 0.35 17%, 0.484 19%, 0.591 21%, 0.713 24%, 0.798 27%, 0.857 30%, 0.909 34%, 0.943 38%, 0.971 44%, 0.989 52%, 0.998 65%, 1);
@@ -272,35 +283,25 @@
   pointer-events: none;
   transition: opacity 0.08s ease;
 }
-:global(a):hover .back::after,
-:global(a):focus-visible .back::after,
-.cover:hover .back::after {
+.open .back::after {
   opacity: 1;
   transition: opacity 0.15s ease 0.18s;
 }
 
 /* 펼치면 첫 장이 비켜 섰던 만큼 제자리로 올라온다. 위로는 3px만 비워 왼쪽 면과 같은 위 테두리(3px)를 남긴다.
    그러면 아래 테두리는 stack이 되어 왼쪽 면과도 같다 */
-:global(a):hover .page,
-:global(a):focus-visible .page,
-.cover:hover .page {
+.open .page {
   transform: translateZ(calc(var(--d) / 2 - 1px)) translate(0, 3px);
 }
-:global(a):hover .page::after,
-:global(a):focus-visible .page::after,
-.cover:hover .page::after {
+.open .page::after {
   opacity: 0;
 }
 
 /* 펼치기 — 링크(랜딩)나 그림 위에 마우스를 올리면 */
-:global(a):hover .volume,
-:global(a):focus-visible .volume,
-.cover:hover .volume {
+.open .volume {
   transform: translateX(calc(var(--w) / 2)) rotateY(0deg);
 }
-:global(a):hover .lid,
-:global(a):focus-visible .lid,
-.cover:hover .lid {
+.open .lid {
   transform: translateZ(calc(var(--d) / 2)) rotateY(-180deg); /* 딱 평평하게 — 원근으로 위아래가 어긋나지 않게 */
 }
 
