@@ -413,6 +413,10 @@
   .star.up .lab {
     margin-bottom: 3px;
   }
+  /* 이웃 라벨과 맞닿는 별만 라벨을 오른쪽으로 12px — 가운데 정렬 기준(-50%)은 그대로 두고 덧붙여 민다 */
+  .star.nudgeRight .lab {
+    transform: translateX(calc(-50% + 12px));
+  }
   .pole .lab {
     font-size: 0.8rem;
   }

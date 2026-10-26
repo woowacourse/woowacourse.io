@@ -63,8 +63,9 @@ const STAR = {
 
 // 국자 7별 = 테마 7개. count 내림차순 순서와 1:1로 자리·라벨방향을 준다.
 // dir: 라벨을 별의 위/아래 어느 쪽에 둘지 — 좁은 폭에서 라벨끼리 겹치지 않게 손튜닝.
-const THEME_SLOTS: Array<{ pos: readonly [number, number]; dir: 'up' | 'down' }> = [
-  { pos: STAR.dubhe, dir: 'down' }, //  소프트스킬·협업 (포인터·최대)
+// nudge: 좁은 화면(모바일)에서 라벨을 별 기준 오른쪽으로 살짝 민다 — 이웃 라벨과 맞닿는 자리만(손튜닝)
+const THEME_SLOTS: Array<{ pos: readonly [number, number]; dir: 'up' | 'down'; nudge?: 'right' }> = [
+  { pos: STAR.dubhe, dir: 'down', nudge: 'right' }, //  소프트스킬·협업 (포인터·최대) — 375px에서 '자기주도 학습'과 5px 겹쳤다
   { pos: STAR.alioth, dir: 'up' }, //   실전 프로젝트·미션
   { pos: STAR.megrez, dir: 'down' }, // 자기주도 학습
   { pos: STAR.phecda, dir: 'down' }, // '왜'를 묻는 사고
@@ -213,7 +214,9 @@ export function CrewVoiceMap({ bleed = false }: { bleed?: boolean }) {
           const slot = THEME_SLOTS[i]
           const [x, y] = slot.pos
           const on = t.key === active.key
-          const cls = [styles.star, slot.dir === 'up' ? styles.up : '', on ? styles.on : ''].filter(Boolean).join(' ')
+          const cls = [styles.star, slot.dir === 'up' ? styles.up : '', slot.nudge === 'right' ? styles.nudgeRight : '', on ? styles.on : '']
+            .filter(Boolean)
+            .join(' ')
           return (
             <button
               key={t.key}
