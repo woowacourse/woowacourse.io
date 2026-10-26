@@ -19,8 +19,9 @@
 
 /* ===== 랜딩: 입체 책 =====
    --w 표지 폭, --d 책 두께, --sp 책등 폭, --stack 종이 뭉치가 표지 뒤에서 오른쪽·아래로 비어져 나오는 거리.
-   평소엔 정면(기울이면 불안해 보였다). 대신 왼쪽에 남색 책등(둥근 음영), 표지 뒤로 종이 단면 여섯 겹과
-   뒤표지 테두리가 보여 두께가 읽힌다. 표지 왼쪽에는 경첩 홈(양장 표지가 접히는 자리)과 옅은 광택.
+   평소엔 정면(기울이면 불안해 보였다). 대신 왼쪽에 남색 책등(둥근 음영), 표지 뒤로 종이 단면(오른쪽·아래 띠)과
+   종이보다 조금 더 나온 뒤표지 테두리가 보여 두께가 읽힌다. 표지 왼쪽에는 경첩 홈(양장 표지가 접히는 자리)과 옅은 광택.
+   종이 단면은 어긋난 그림자를 쌓지 않고 직사각형 두 띠로 그린다(그림자를 쌓으면 우상단·좌하단 모서리가 사선으로 깎인다).
    마우스를 올리면 표지(.lid)가 왼쪽 모서리를 축으로 완전히 넘어가 첫 장(.page)의 목차가 보인다.
    펼친 책은 표지 폭만큼 왼쪽으로 넓어지므로, 펼칠 때 전체를 오른쪽으로 반 폭 옮겨 가운데를 지킨다. */
 .sm {
@@ -39,7 +40,9 @@
 .stage {
   display: block;
   box-sizing: content-box;
-  perspective: 2400px; /* 멀리서 보듯 — 펼친 표지가 원근으로 커져 위아래가 어긋나지 않게 */
+  /* 멀리서 보듯 — 펼친 표지가 원근으로 커져 위아래가 어긋나지 않게. 뒤표지(뒤쪽)와 앞표지의 크기 차이도 0.2% 안쪽이라
+     닫혀 있을 때 윗변이 어긋나 이중 모서리로 보이지 않는다 */
+  perspective: 8000px;
   /* 안쪽 칸은 표지 크기, 왼쪽 여백이 책등 자리. 레이아웃이 흔들리지 않게 크기를 고정한다 */
   width: var(--w);
   aspect-ratio: 2 / 3;
@@ -106,16 +109,9 @@
 /* 첫 장 — 표지 바로 뒤. 종이색 바탕에 목차 */
 .page {
   inset: 0;
-  /* 표지보다 오른쪽·아래로 조금 비켜 서고, 그 뒤로 종이 단면이 여섯 겹 */
+  /* 표지보다 오른쪽·아래로 조금 비켜 서고, 표지 밖으로 나온 오른쪽·아래 띠(::after)가 종이 단면 */
   transform: translateZ(calc(var(--d) / 2 - 1px)) translate(var(--stack), var(--stack));
   transition: transform 0.9s cubic-bezier(0.2, 0.8, 0.2, 1);
-  box-shadow:
-    1px 1px 0 #e9e2d3,
-    2px 2px 0 #f6f1e6,
-    3px 3px 0 #e2dacb,
-    4px 4px 0 #f3eee3,
-    5px 5px 0 #ddd4c2,
-    6px 6px 0 #efe9dc;
   display: flex;
   flex-direction: column;
   gap: 0.5em;
@@ -143,10 +139,23 @@
   display: block;
   padding-bottom: 0.3em;
 }
+/* 종이 단면 — 표지 밖으로 나온 오른쪽 띠와 아래 띠. 낱장 결을 1px 줄무늬로 그린다.
+   펼치면 첫 장이 제자리로 올라와 단면이 필요 없으므로 사라진다 */
+.page::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(90deg, #f1ebdd 0 1px, #ddd4c2 1px 2px) right top / var(--stack) 100% no-repeat,
+    repeating-linear-gradient(180deg, #f1ebdd 0 1px, #ddd4c2 1px 2px) left bottom / 100% var(--stack) no-repeat;
+  transition: opacity 0.4s ease;
+}
 
 /* 책등 — 뒤표지에서 이어져 올라와 표지 왼쪽에 닿는 둥근 남색 등.
    왼쪽 끝은 뒤표지와 같은 색(한 장의 천이 돌아 나온 것처럼), 경첩 쪽으로 가며 밝아졌다가 접히는 자리에서 살짝 어두워진다.
-   위·아래에는 양장본 머리띠(얇은 밝은 줄). 표지보다 아주 조금 앞에 두어 표지를 펼쳤을 때도 가려지지 않는다 */
+   위에는 양장본 머리띠(1px 밝은 줄; 아래에도 두면 뒤표지와 이음새로 보여 뺐다). 표지보다 아주 조금 앞에 두어 표지를 펼쳤을 때도 가려지지 않는다 */
 .spine {
   top: 0;
   left: calc(-1 * var(--sp));
@@ -155,7 +164,7 @@
   transform: translateZ(calc(var(--d) / 2 + 0.5px));
   border-radius: 3px 0 0 3px;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.22) 0, rgba(255, 255, 255, 0.22) 1.2%, transparent 1.2%, transparent 98.8%, rgba(255, 255, 255, 0.22) 98.8%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.22) 0, rgba(255, 255, 255, 0.22) 1px, transparent 1px),
     linear-gradient(90deg, #0a1631 0, #0e1e45 20%, #24396e 58%, #1c3263 82%, #112349 100%);
 }
 /* 펼치면 책등 자리가 제본 홈이 된다 — 남색 띠가 가운데에 두껍게 남지 않고, 면지와 첫 장 사이의 그늘진 골로 */
@@ -177,26 +186,16 @@
   transition: opacity 0.45s ease 0.3s;
 }
 
-/* 책장 단면(오른쪽 면) */
-.edge {
-  top: 1.5%;
-  left: calc(var(--w) - 2px);
-  width: calc(var(--d) - 2px);
-  height: 97%;
-  transform-origin: left center;
-  transform: translateZ(calc(var(--d) / 2 - 1px)) rotateY(90deg);
-  background: repeating-linear-gradient(90deg, #f4efe4 0 2px, #e3dccd 2px 3px);
-}
-
-/* 뒤표지 — 책등 왼쪽 끝에서 시작해 종이 뭉치보다 오른쪽·아래로 더 넓은 한 장의 판.
+/* 뒤표지 — 책등 왼쪽 끝에서 시작해 종이 뭉치보다 오른쪽·아래로 3px 더 나온 한 장의 판(양장본 표지판이 종이보다 조금 큰 만큼).
    그래서 책등 → 아래 모서리 → 오른쪽 테두리가 끊기지 않고 한 줄로 이어진다(표지·책등·뒤표지가 한 덩어리로 읽힌다).
+   왼쪽 모서리는 책등과 같은 3px, 오른쪽은 앞표지(4px)보다 나온 만큼 키운 6px로 둔다.
    책 전체의 그림자도 여기에 */
 .back {
-  inset: 0 calc(-1 * (var(--stack) + 8px)) calc(-1 * (var(--stack) + 8px)) calc(-1 * var(--sp));
+  inset: 0 calc(-1 * (var(--stack) + 3px)) calc(-1 * (var(--stack) + 3px)) calc(-1 * var(--sp));
   /* 좌우를 뒤집지 않는다(뒤집으면 왼쪽·오른쪽 여백이 바뀌어 테두리가 한쪽으로 쏠린다) */
   transform: translateZ(calc(var(--d) / -2));
-  background: linear-gradient(90deg, #0a1631 0, #0a1631 calc(100% - 10px), #0d1b3f 100%);
-  border-radius: 4px 3px 3px 4px;
+  background: linear-gradient(90deg, #0a1631 0, #0a1631 calc(100% - 4px), #0d1b3f 100%);
+  border-radius: 3px 6px 6px 3px;
   box-shadow: 0 18px 34px rgba(38, 36, 32, 0.3);
 }
 
@@ -205,6 +204,11 @@
 :global(a):focus-visible .page,
 .cover:hover .page {
   transform: translateZ(calc(var(--d) / 2 - 1px)) translate(0, 0);
+}
+:global(a):hover .page::after,
+:global(a):focus-visible .page::after,
+.cover:hover .page::after {
+  opacity: 0;
 }
 
 /* 펼치기 — 링크(랜딩)나 그림 위에 마우스를 올리면 */
@@ -223,6 +227,7 @@
   .volume,
   .lid,
   .page,
+  .page::after,
   .spine::after {
     transition: none;
   }

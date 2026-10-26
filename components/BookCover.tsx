@@ -51,7 +51,6 @@ export function BookCover({ size = 'sm', overlap = false, label = true }: BookCo
               <span className={styles.inside} aria-hidden="true" />
             </span>
             <span className={styles.spine} aria-hidden="true" />
-            <span className={styles.edge} aria-hidden="true" />
             <span className={styles.back} aria-hidden="true" />
           </span>
         </span>
