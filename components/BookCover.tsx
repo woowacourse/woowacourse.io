@@ -50,12 +50,14 @@ export function BookCover({ size = 'sm', overlap = false, label = true }: BookCo
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img className={styles.front} src={COVER_SRC} alt={COVER_ALT} width={960} height={1440} loading="lazy" />
               <span className={styles.inside} aria-hidden="true">
-                <span className={styles.pageHead}>목차</span>
-                {PARTS.slice(0, PARTS_ON_LEFT).map((part) => (
-                  <span key={part} className={styles.pageLine}>
-                    {part}
-                  </span>
-                ))}
+                <span className={styles.sheet}>
+                  <span className={styles.pageHead}>목차</span>
+                  {PARTS.slice(0, PARTS_ON_LEFT).map((part) => (
+                    <span key={part} className={styles.pageLine}>
+                      {part}
+                    </span>
+                  ))}
+                </span>
               </span>
             </span>
             <span className={styles.spine} aria-hidden="true" />
