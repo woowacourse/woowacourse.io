@@ -329,6 +329,30 @@
   letter-spacing: 0.01em;
 }
 
+/* 터치 안내 — 마우스가 없는(누르기만 하는) 기기에서만. 별자리 안내('✦ 별을 누르면…')와 같은 모양으로 맞춘다 */
+.tapHint {
+  display: none;
+}
+@media (hover: none) and (pointer: coarse) {
+  .tapHint {
+    display: block;
+    margin-top: 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    line-height: 1.4;
+    color: var(--fl-text-tertiary);
+    word-break: keep-all;
+    transition: opacity 0.4s ease;
+  }
+  .tapHint::before {
+    content: '✦ ';
+    color: rgb(240, 165, 112);
+  }
+  .tapHintGone {
+    opacity: 0;
+  }
+}
+
 /* 도서 페이지: 별밤 커버 아래, 왼쪽 열의 표지 */
 .overlap {
   align-items: flex-start;
