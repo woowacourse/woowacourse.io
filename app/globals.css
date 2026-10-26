@@ -821,17 +821,24 @@ div:has(> .site-footer) > hr.nextra-border {
     border-radius: 8px;
     margin-bottom: var(--fl-space-3);
   }
-  /* 오른쪽 종이 뭉치 — 남은 쪽 하나에 2px. 넘길수록 얇아져 책의 어디쯤인지 손으로 쥔 듯 보인다 */
+  /* 오른쪽 종이 뭉치 — 남은 쪽 하나에 2px. 넘길수록 얇아져 책의 어디쯤인지 손으로 쥔 듯 보인다.
+     쪽 오른쪽 끝(표지판 안쪽 여백 16px 지점)에 바로 붙인다: 떨어져 있으면 그 틈으로 표지판이 비쳐
+     종이 두께가 아니라 테두리가 한 줄 더 그어진 것처럼 보인다. 위아래는 2px씩 들여 쪽 뒤에 겹친 종이처럼,
+     바깥으로 갈수록 결을 어둡게 해 두께가 읽히게 한다 */
   .book-spread::after {
     content: '';
     position: absolute;
     top: 12px;
     bottom: 16px;
-    right: 6px;
+    right: calc(16px - var(--leaves-left, 0) * 2px);
     width: calc(var(--leaves-left, 0) * 2px);
-    border-radius: 0 2px 2px 0;
-    background: repeating-linear-gradient(90deg, #f1ebdd 0 1px, #d6ccb8 1px 2px);
-    transition: width 0.3s ease;
+    border-radius: 0 3px 3px 0;
+    background:
+      linear-gradient(90deg, rgba(38, 36, 32, 0) 0, rgba(38, 36, 32, 0.18) 100%),
+      repeating-linear-gradient(90deg, #f4efe4 0 1px, #e2d9c8 1px 2px);
+    transition:
+      width 0.3s ease,
+      right 0.3s ease;
   }
   .book-pages {
     display: flex;
@@ -840,7 +847,7 @@ div:has(> .site-footer) > hr.nextra-border {
     overscroll-behavior-x: contain;
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
-    border-radius: 2px 6px 6px 2px;
+    border-radius: 2px 3px 3px 2px; /* 쪽(.book-leaf)과 같게 — 더 둥글면 쪽 모서리를 깎아 종이 뭉치와 어긋난다 */
     counter-reset: leaf;
     outline: none;
     -webkit-tap-highlight-color: transparent;
@@ -866,7 +873,8 @@ div:has(> .site-footer) > hr.nextra-border {
     scroll-snap-align: start;
     scroll-snap-stop: always; /* 세게 밀어도 한 쪽씩 */
     counter-increment: leaf;
-    border-radius: 2px 6px 6px 2px;
+    /* 오른쪽(종이 단면 쪽) 모서리는 거의 각지게: 6px이면 둥근 모서리와 곧은 종이 뭉치 사이로 표지판이 쐐기처럼 비친다 */
+    border-radius: 2px 3px 3px 2px;
     background-color: #fbf8f1;
     background-image:
       var(--paper-noise),
