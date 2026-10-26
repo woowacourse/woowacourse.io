@@ -98,12 +98,18 @@
   display: block;
   object-fit: cover;
 }
-/* 표지 안쪽 — 면지(종이색). 펼치면 경첩(가운데) 쪽이 그늘지게: 뒤집혀 보이므로 왼쪽(0deg) 시작이 화면에선 오른쪽 */
+/* 표지 안쪽 — 오른쪽 첫 장과 같은 종이색. 펼치면 경첩(가운데) 쪽이 그늘지게 한다.
+   .inside(180deg)가 펼칠 때 표지(-180deg)와 겹쳐 화면에선 뒤집히지 않으므로, 경첩은 화면 오른쪽 = 270deg 방향이다 */
 .inside {
   transform: rotateY(180deg);
+  border-radius: 4px 0 0 4px; /* 펼치면 경첩이 오른쪽이다. 가운데 모서리는 직각, 바깥쪽만 둥글게 */
+  /* 첫 장과 정확히 맞닿으면 경계 픽셀 사이로 흰 배경이 머리카락 선처럼 비친다. 제본선 쪽으로 2px 겹친다.
+     이 면은 자기 중심으로 뒤집혀 있어서, CSS 왼쪽을 늘려야 펼쳤을 때 제본선(화면 오른쪽) 쪽이 늘어난다 */
+  left: -2px;
+  width: calc(100% + 2px);
   background:
-    linear-gradient(90deg, rgba(38, 36, 32, 0.16), rgba(38, 36, 32, 0) 16%),
-    #efe9dc;
+    linear-gradient(270deg, rgba(38, 36, 32, 0.16), rgba(38, 36, 32, 0) 16%),
+    #fbf8f1;
 }
 
 /* 첫 장 — 표지 바로 뒤. 종이색 바탕에 목차 */
@@ -116,7 +122,7 @@
   flex-direction: column;
   gap: 0.5em;
   padding: 16% 12% 0 14%;
-  border-radius: 2px 4px 4px 2px;
+  border-radius: 0 4px 4px 0; /* 경첩(왼쪽) 모서리는 펼친 왼쪽 면과 이어지도록 직각 */
   background:
     linear-gradient(90deg, rgba(38, 36, 32, 0.12), rgba(38, 36, 32, 0) 12%),
     #fbf8f1;
@@ -167,23 +173,15 @@
     linear-gradient(180deg, rgba(255, 255, 255, 0.22) 0, rgba(255, 255, 255, 0.22) 1px, transparent 1px),
     linear-gradient(90deg, #0a1631 0, #0e1e45 20%, #24396e 58%, #1c3263 82%, #112349 100%);
 }
-/* 펼치면 책등 자리가 제본 홈이 된다 — 남색 띠가 가운데에 두껍게 남지 않고, 면지와 첫 장 사이의 그늘진 골로 */
-.spine::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background:
-    linear-gradient(90deg, rgba(38, 36, 32, 0.2) 0, rgba(38, 36, 32, 0.05) 35%, rgba(38, 36, 32, 0.06) 65%, rgba(38, 36, 32, 0.24) 100%),
-    #efe9dc;
-  opacity: 0;
-  transition: opacity 0.5s ease 0.2s;
+/* 펼치면 책등은 사라진다 — 왼쪽 면과 첫 장이 가운데에서 바로 맞닿고, 양쪽 종이가 각자 경첩 쪽으로 드리운 그늘이
+   하나의 골이 된다(띠나 이음선이 따로 남으면 가운데에 세로 영역이 생겨 어색하다) */
+.spine {
+  transition: opacity 0.35s ease 0.2s;
 }
-:global(a):hover .spine::after,
-:global(a):focus-visible .spine::after,
-.cover:hover .spine::after {
-  opacity: 1;
-  transition: opacity 0.45s ease 0.3s;
+:global(a):hover .spine,
+:global(a):focus-visible .spine,
+.cover:hover .spine {
+  opacity: 0;
 }
 
 /* 뒤표지 — 책등 왼쪽 끝에서 시작해 종이 뭉치보다 오른쪽·아래로 3px 더 나온 한 장의 판(양장본 표지판이 종이보다 조금 큰 만큼).
@@ -197,6 +195,14 @@
   background: linear-gradient(90deg, #0a1631 0, #0a1631 calc(100% - 4px), #0d1b3f 100%);
   border-radius: 3px 6px 6px 3px;
   box-shadow: 0 18px 34px rgba(38, 36, 32, 0.3);
+  transition: left 0.9s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+/* 펼치면 뒤표지는 첫 장 폭 안쪽(12px)에서 시작한다. 책등 자리(왼쪽 면 뒤)까지 뻗어 있거나 제본선 가까이에서 시작하면,
+   왼쪽 면과 첫 장이 맞닿는 가운데 이음새로 뒤표지(남색)가 비쳐 어두운 세로선이 생긴다 */
+:global(a):hover .back,
+:global(a):focus-visible .back,
+.cover:hover .back {
+  left: 12px;
 }
 
 /* 펼치면 첫 장이 비켜 섰던 만큼 제자리로 올라와 왼쪽 면지와 위아래가 가지런해진다(뒤표지 윗선이 튀어나와 보이지 않게) */
@@ -228,7 +234,8 @@
   .lid,
   .page,
   .page::after,
-  .spine::after {
+  .back,
+  .spine {
     transition: none;
   }
 }
