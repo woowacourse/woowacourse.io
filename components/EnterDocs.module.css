@@ -13,6 +13,7 @@
   color: rgb(55, 53, 47);
   margin: 0 0 0.85rem;
   word-break: keep-all;
+  text-wrap: balance; /* 책 소개 제목과 같게 — 좁은 화면에서 두 줄 길이를 고르게 */
 }
 
 :global(.dark) .heading {

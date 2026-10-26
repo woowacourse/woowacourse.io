@@ -16,6 +16,8 @@
   color: rgb(55, 53, 47);
   margin: 0 0 1.75rem;
   word-break: keep-all;
+  /* 좁은 화면에서 끝 단어 하나만 다음 줄로 떨어지지 않게('…만들고 / 있습니다') 두 줄 길이를 고르게 */
+  text-wrap: balance;
 }
 
 :global(.dark) .heading {
