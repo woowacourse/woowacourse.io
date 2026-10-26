@@ -204,13 +204,15 @@
 }
 /* 펼치면 책등은 사라진다 — 왼쪽 면과 첫 장이 가운데에서 바로 맞닿고, 양쪽 종이가 각자 경첩 쪽으로 드리운 그늘이
    하나의 골이 된다(띠나 이음선이 따로 남으면 가운데에 세로 영역이 생겨 어색하다) */
+/* 사라질 땐 곧바로(0.1s), 돌아올 땐 표지가 거의 닫힌 뒤(0.3s)에. 느리게 사라지면 반투명한 책등이 가운데 이음새에 푸른 회색 세로선으로 남는다 */
 .spine {
-  transition: opacity 0.35s ease 0.2s;
+  transition: opacity 0.25s ease 0.3s;
 }
 :global(a):hover .spine,
 :global(a):focus-visible .spine,
 .cover:hover .spine {
   opacity: 0;
+  transition: opacity 0.1s ease;
 }
 
 /* 뒤표지 — 책등 왼쪽 끝에서 시작해 종이 뭉치보다 오른쪽·아래로 3px 더 나온 한 장의 판(양장본 표지판이 종이보다 조금 큰 만큼).
@@ -225,9 +227,10 @@
   border-radius: 3px 6px 6px 3px;
   box-shadow: 0 18px 34px rgba(38, 36, 32, 0.3);
 }
-/* 펼쳤을 때 왼쪽 면 밑에 드리우는 그림자. 크기·위치는 고정이고 투명도만 바뀐다(opacity는 합성 스레드에서 돌아 다시 그리지 않는다).
-   배경이 없는 상자라 바깥 그림자만 그려지고, 왼쪽 표지판이 덮는 안쪽에는 아무것도 비치지 않는다.
-   닫혀 있을 땐 보이면 책 왼쪽에 그림자만 떠 있게 되므로 0이다 */
+/* 펼쳤을 때 왼쪽 면 밑에 드리우는 그림자. 오른쪽 뒤표지의 그림자와 이어져 책 전체에 하나의 그림자로 보이게 상자 하나로 둔다.
+   (표지판에 그림자를 붙이고 경첩에서 자르면, 오른쪽 그림자와 겹치는 정도가 달라져 책 아래에 세로 이음선이 생긴다.)
+   크기·위치는 고정이고 투명도만 바뀐다. 배경이 없는 상자라 바깥 그림자만 그려지므로, 표지판이 닿기 전에 나타나면
+   왼쪽에 그림자로 둘러싸인 빈 흰 칸이 보인다 — 그래서 표지가 거의 넘어간 뒤(0.3s)에 나타나고, 닫을 땐 곧바로 사라진다 */
 .back::before {
   content: '';
   position: absolute;
@@ -239,25 +242,35 @@
   box-shadow: 0 18px 34px rgba(38, 36, 32, 0.3);
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.08s ease;
 }
 :global(a):hover .back::before,
 :global(a):focus-visible .back::before,
 .cover:hover .back::before {
   opacity: 1;
-  transition: opacity 0.35s ease 0.1s;
+  transition: opacity 0.3s ease 0.3s;
 }
 /* 이음새 밑 띠 — 뒤표지는 책등 자리부터 오른쪽 끝까지 이어져 있어서, 펼쳤을 때 왼쪽 면과 첫 장이 맞닿는 가운데 이음새 밑에도 있다.
-   두 면의 경계 픽셀 사이로 그 남색이 비치면 어두운 세로선이 되므로, 이음새 둘레(경첩 -3px ~ +7px, 종이가 있는 높이만)는 종이색 띠로 덮는다.
-   띠를 책등 폭까지 넓히면 닫히는 도중 책등이 아직 투명할 때 책 왼쪽에 회색 띠가 비친다. 닫혀 있을 땐 표지·책등 뒤라 보이지 않는다 */
+   두 면의 경계 픽셀 사이로 그 남색이 비치면 어두운 세로선이 되므로, 이음새 둘레(경첩 -1px ~ +7px, 종이가 있는 높이만)는 종이색 띠로 덮는다.
+   닫혀 있을 땐 투명하다. 항상 보이게 두면 책등·표지 경계의 반투명 픽셀 사이와 표지 아래 끝으로 종이색이 비쳐
+   표지 옆 얇은 선과 왼쪽 아래 조각으로 보인다. 표지가 거의 넘어간 뒤(0.4s)에 나타나고, 닫을 땐 곧바로 사라진다 */
 .back::after {
   content: '';
   position: absolute;
   top: 5px; /* 종이 윗변(3px)보다 2px 안쪽: 끝이 테두리 밖으로 튀어 보이지 않게 */
   bottom: calc(var(--stack) + 2px); /* 종이 아랫변(h+3px)보다 2px 안쪽 */
-  left: calc(var(--sp) - 3px);
-  width: 10px;
+  left: calc(var(--sp) - 1px);
+  width: 8px;
   background: #e6e0d3;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.08s ease;
+}
+:global(a):hover .back::after,
+:global(a):focus-visible .back::after,
+.cover:hover .back::after {
+  opacity: 1;
+  transition: opacity 0.15s ease 0.4s;
 }
 
 /* 펼치면 첫 장이 비켜 섰던 만큼 제자리로 올라온다. 위로는 3px만 비워 왼쪽 면과 같은 위 테두리(3px)를 남긴다.
@@ -291,6 +304,7 @@
   .page,
   .page::after,
   .back::before,
+  .back::after,
   .spine {
     transition: none;
   }
