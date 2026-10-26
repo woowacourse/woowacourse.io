@@ -11,6 +11,8 @@
 
 :root {
   --font-sans: var(--fl-font-sans);
+  /* 책 안쪽 글꼴(원고와 같은 Noto Serif KR) — 펼친 목차·랜딩 책의 첫 장 */
+  --font-book: 'Noto Serif KR', 'Nanum Myeongjo', serif;
   --nextra-primary-hue: 0deg;
   --nextra-primary-saturation: 0%;
   --nextra-primary-lightness: 20%;
@@ -163,6 +165,12 @@ article a {
 
 article a:hover {
   text-decoration-color: currentColor;
+}
+
+/* 문서 맨 아래 이전·다음 페이지 링크(Nextra 페이지 넘김) — 화살표와 위치로 이미 링크임이 보여 밑줄은 뺀다 */
+article div.nextra-border[class*='x:print:hidden'] > a,
+article div.nextra-border[class*='x:print:hidden'] > a:hover {
+  text-decoration: none;
 }
 
 /* 본문 텍스트 링크(MDX 링크) — 카드 등 컴포넌트 링크는 각자 스타일을 유지하고,
@@ -617,6 +625,32 @@ div:has(> .site-footer) > hr.nextra-border {
   padding-bottom: 0.5rem;
 }
 
+/* ===== 모바일 화면 보정 ===== */
+@media (max-width: 767px) {
+  /* 상단 안내 배너는 화면을 따라다니지 않게(Nextra 는 모바일에서만 붙여 둔다).
+     작은 화면에서 배너+헤더가 늘 124px(화면의 16%)를 차지했다. 헤더만 위에 붙는다 */
+  .nextra-banner {
+    position: relative !important;
+  }
+  .nextra-navbar {
+    top: 0 !important;
+  }
+  /* 모바일 메뉴는 배너가 지금 보이는 만큼만 비우고 시작한다(MobileBannerOffset) */
+  .nextra-banner:not([class$='hidden']) ~ .nextra-mobile-nav {
+    padding-top: calc(var(--banner-visible, var(--nextra-banner-height)) + var(--nextra-navbar-height)) !important;
+  }
+  /* 페이지 제목: 38~40px 는 좁은 화면에서 긴 제목(공지)이 4줄까지 갔다.
+     랜딩 히어로 제목과, 한 줄 맞춤 크기를 따로 정한 도서 제목은 제외 */
+  article h1:not([class*='Hero_title']):not(.book-hero-info h1) {
+    font-size: 1.875rem !important;
+    line-height: 1.3;
+  }
+  /* 푸터 링크: 누르는 영역을 36px 이상으로 */
+  .site-footer-links a {
+    padding: 0.45rem 0;
+  }
+}
+
 /* ===== 페이지 좌우 여백 =====
    모바일은 헤더 로고와 같은 24px 하나로 맞춘다(Nextra 기본 본문 여백은 16px라 로고와 어긋났다).
    랜딩 섹션은 자체 좌우 여백 없이 이 값을 따른다. 태블릿 이상은 Nextra 기본(48px) 그대로 */
@@ -627,6 +661,207 @@ div:has(> .site-footer) > hr.nextra-border {
   article {
     padding-left: var(--page-gutter) !important;
     padding-right: var(--page-gutter) !important;
+  }
+}
+
+/* ===== 도서 목차 — 펼친 책 =====
+   남색 양장 표지(.book-spread) 위에 종이 쪽(.book-spread-page)을 놓은 모습. 글꼴은 원고와 같은 Noto Serif KR.
+   - 데스크톱: 두 쪽을 펼친 모습(왼쪽 1·2부, 오른쪽 3·4부), 가운데 제본 그늘
+   - 모바일: 한 쪽짜리 긴 종이(제본 그늘은 왼쪽 가장자리)
+   - 두께: 쪽 바깥·아래로 종이 단면을 여러 겹, 그 아래로 표지가 살짝 비어져 나온다
+   - 질감: 종이 결(--paper-noise)
+   종이 위 글자는 테마와 상관없이 먹색(다크 모드에서도 불 켠 종이처럼). 글자는 MDX 그대로라 검색·요약에도 남는다 */
+.book-spread {
+  position: relative;
+  margin: var(--fl-space-8) 0 var(--fl-space-11);
+  border-radius: 10px;
+  background: linear-gradient(180deg, #13244a, #0b1a3a);
+  box-shadow:
+    0 2px 0 #08132b,
+    0 22px 48px rgba(16, 24, 48, 0.28),
+    0 6px 14px rgba(16, 24, 48, 0.18);
+  color: #37352f;
+}
+.book-spread-page {
+  position: relative;
+  background-color: #fbf8f1;
+  font-family: var(--font-book);
+}
+/* 차례 쪽 머리 — 실제 책처럼 첫 쪽 맨 위에 '목차'와 집필 중 안내. 높이를 고정해 두면
+   오른쪽 쪽이 같은 높이를 비워 두 쪽의 시작선을 맞출 수 있다 */
+.book-spread-head {
+  height: 6.25rem;
+}
+.book-spread-title {
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  font-family: var(--font-book) !important;
+  font-size: 1.5rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.08em !important;
+  line-height: 1.3 !important;
+  color: #262420 !important;
+}
+.book-spread-title a {
+  display: none;
+}
+.book-spread-note {
+  margin: var(--fl-space-3) 0 0 !important;
+  font-size: var(--fl-text-sm) !important;
+  line-height: 1.5 !important;
+  color: #8d877b !important;
+}
+.book-spread-page h3 {
+  margin: 0 0 var(--fl-space-4) !important;
+  font-size: var(--fl-text-lg) !important;
+  font-family: var(--font-book) !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.01em;
+  color: #262420 !important; /* 다크 모드 제목 색(흰색)이 종이 위에서 사라지지 않게 */
+}
+.book-spread-page h3:not(:first-child) {
+  margin-top: var(--fl-space-9) !important;
+}
+/* 차례 쪽 머리 바로 다음 부(1부)는 위 여백 없이 — 오른쪽 쪽 3부와 시작선을 맞춘다 */
+.book-spread-page .book-spread-head + h3 {
+  margin-top: 0 !important;
+}
+/* 제목 옆 링크 표시(#)는 종이 위에서 감춘다 */
+.book-spread-page h3 a {
+  display: none;
+}
+.book-spread-page ul {
+  margin: 0 !important;
+  padding: 0 !important;
+  list-style: none !important;
+}
+.book-spread-page li {
+  margin: 0 !important;
+  padding: 0.28rem 0;
+  font-size: var(--fl-text-md);
+  line-height: 1.6;
+  color: #4a473f;
+  word-break: keep-all;
+}
+
+/* 데스크톱 — 두 쪽 펼침 */
+@media (min-width: 768px) {
+  .book-spread {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 8px; /* 두 쪽 사이로 남색 표지(책등)가 보여, 바깥 테두리가 가운데까지 한 틀로 이어진다 */
+    padding: 12px 18px 26px;
+  }
+  .book-spread-page {
+    padding: 2.75rem 2.75rem 2.9rem;
+  }
+  /* 오른쪽 쪽은 차례 쪽 머리만큼 비워 두 쪽의 시작선을 맞춘다 */
+  .book-spread-page:last-child::before {
+    content: '';
+    display: block;
+    height: 6.25rem;
+  }
+  /* 왼쪽 쪽 — 제본(오른쪽 가장자리) 쪽으로 휘어 들어가며 어두워진다. 바깥·아래로 종이 단면 */
+  .book-spread-page:first-child {
+    border-radius: 6px 2px 2px 8px;
+    background-image:
+      var(--paper-noise),
+      linear-gradient(90deg, rgba(38, 36, 32, 0.05) 0, rgba(38, 36, 32, 0) 6%, rgba(38, 36, 32, 0) 82%, rgba(38, 36, 32, 0.07) 93%, rgba(38, 36, 32, 0.2) 100%);
+    box-shadow:
+      -1px 1px 0 #e9e2d3,
+      -2px 2px 0 #f6f1e6,
+      -3px 3px 0 #e2dacb,
+      -4px 4px 0 #f3eee3,
+      -5px 5px 0 #ddd4c2,
+      -6px 6px 0 #f1ebdf,
+      -7px 7px 0 #d9d0bd,
+      -8px 8px 0 #efe9dc,
+      -9px 9px 0 #d6ccb8,
+      -10px 10px 0 #ece5d7,
+      -11px 11px 0 #d3c8b3,
+      -12px 12px 0 #e9e1d1;
+  }
+  /* 오른쪽 쪽 — 거울처럼 */
+  .book-spread-page:last-child {
+    border-radius: 2px 6px 8px 2px;
+    background-image:
+      var(--paper-noise),
+      linear-gradient(270deg, rgba(38, 36, 32, 0.05) 0, rgba(38, 36, 32, 0) 6%, rgba(38, 36, 32, 0) 82%, rgba(38, 36, 32, 0.07) 93%, rgba(38, 36, 32, 0.2) 100%);
+    box-shadow:
+      1px 1px 0 #e9e2d3,
+      2px 2px 0 #f6f1e6,
+      3px 3px 0 #e2dacb,
+      4px 4px 0 #f3eee3,
+      5px 5px 0 #ddd4c2,
+      6px 6px 0 #f1ebdf,
+      7px 7px 0 #d9d0bd,
+      8px 8px 0 #efe9dc,
+      9px 9px 0 #d6ccb8,
+      10px 10px 0 #ece5d7,
+      11px 11px 0 #d3c8b3,
+      12px 12px 0 #e9e1d1;
+  }
+}
+
+/* 모바일 — 한 쪽짜리 긴 종이. 두 쪽(1·2부 / 3·4부)을 이어 붙여 한 장처럼 보이게 한다 */
+@media (max-width: 767px) {
+  .book-spread {
+    padding: 10px 16px 20px 10px;
+    border-radius: 8px;
+  }
+  .book-spread-page {
+    padding: 1.9rem 1.5rem 0 1.75rem;
+    background-image:
+      var(--paper-noise),
+      linear-gradient(90deg, rgba(38, 36, 32, 0.16) 0, rgba(38, 36, 32, 0.05) 5%, rgba(38, 36, 32, 0) 12%);
+    /* 오른쪽으로 종이 단면 */
+    box-shadow:
+      1px 0 0 #e9e2d3,
+      2px 0 0 #f6f1e6,
+      3px 0 0 #e2dacb,
+      4px 0 0 #f3eee3,
+      5px 0 0 #ddd4c2,
+      6px 0 0 #f1ebdf,
+      7px 0 0 #d9d0bd,
+      8px 0 0 #ece5d7;
+  }
+  .book-spread-page:first-child {
+    border-radius: 2px 6px 0 0;
+  }
+  /* 두 번째 쪽은 이어지는 종이 — 제목 없이, 아래로 종이 단면 */
+  .book-spread-page:last-child {
+    padding-top: var(--fl-space-9);
+    padding-bottom: 1.9rem;
+    border-radius: 0 0 6px 2px;
+    box-shadow:
+      1px 0 0 #e9e2d3,
+      2px 0 0 #f6f1e6,
+      3px 0 0 #e2dacb,
+      4px 0 0 #f3eee3,
+      5px 0 0 #ddd4c2,
+      6px 0 0 #f1ebdf,
+      7px 0 0 #d9d0bd,
+      8px 0 0 #ece5d7,
+      1px 1px 0 #e9e2d3,
+      2px 2px 0 #f6f1e6,
+      3px 3px 0 #e2dacb,
+      4px 4px 0 #f3eee3,
+      5px 5px 0 #ddd4c2,
+      6px 6px 0 #f1ebdf,
+      7px 7px 0 #d9d0bd,
+      8px 8px 0 #ece5d7;
+  }
+  .book-spread-head {
+    height: auto;
+    margin-bottom: var(--fl-space-8);
+  }
+  /* 두 쪽을 한 장처럼 — 이음새가 보이지 않게 1px 겹친다 */
+  .book-spread-page:last-child {
+    margin-top: -1px;
+  }
+  .book-spread-page li {
+    font-size: 1rem;
   }
 }
 

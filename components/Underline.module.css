@@ -21,6 +21,23 @@
   vector-effect: non-scaling-stroke;
 }
 
+/* 페이지가 열리면 왼쪽에서 오른쪽으로 손으로 긋듯 한 번 드러난다(첫 화면의 유일한 움직임).
+   늘어나는 밑줄이라 선 그리기(dasharray) 대신 잘라 보이기(clip-path)로 — 브라우저마다 같게 */
+.line {
+  animation: underlineDraw 0.75s cubic-bezier(0.45, 0, 0.25, 1) 0.25s both;
+}
+
+@keyframes underlineDraw {
+  from { clip-path: inset(-50% 100% -50% 0); }
+  to { clip-path: inset(-50% 0 -50% 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .line {
+    animation: none;
+  }
+}
+
 :global(.dark) .line path {
   stroke: rgb(240, 165, 112);
 }

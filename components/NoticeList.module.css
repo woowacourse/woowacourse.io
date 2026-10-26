@@ -18,6 +18,7 @@
   gap: var(--fl-space-3);
   height: 28px;
   padding: 0 var(--fl-space-4);
+  /* 모바일에서는 아래 미디어 쿼리에서 36px 로 키운다 */
   border: none;
   border-radius: var(--fl-radius-sm);
   background: transparent;
@@ -145,5 +146,13 @@
   .date {
     grid-area: date;
     text-align: left;
+  }
+}
+
+@media (max-width: 640px) {
+  /* 손가락으로 누르기 쉽게(28px → 36px) */
+  .view {
+    height: 36px;
+    padding: 0 var(--fl-space-5);
   }
 }

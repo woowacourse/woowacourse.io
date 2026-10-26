@@ -25,10 +25,8 @@
 }
 .answer {
   margin: 0.5rem 0 0;
-  font-size: 0.9rem;
+  /* 답이 이 페이지의 본문이다. 옅은 회색·작은 글자로 두면 모바일에서 읽기 힘들다 */
+  font-size: 1rem;
   line-height: 1.7;
-  color: rgba(55, 53, 47, 0.72);
-}
-:global(.dark) .answer {
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--fl-text-secondary);
 }

@@ -41,71 +41,54 @@
   flex-wrap: wrap;
 }
 
+/* 입구 카드 — 색 바탕·그림자 없이 옅은 선 하나. 행성이 라인아트 + 이름 + 무엇이 있는지 한 줄 */
 .door {
   box-sizing: border-box;
-  flex: 1 1 12rem;
+  flex: 1 1 13rem;
   max-width: 17rem;
   display: flex;
-  align-items: center;
-  gap: 0.9rem;
-  padding: 1.15rem 1.3rem;
-  border: 1px solid rgba(55, 53, 47, 0.16);
-  border-radius: 14px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1.25rem 1.35rem 1.3rem;
+  border: 1px solid var(--fl-border);
+  border-radius: var(--fl-radius-lg);
   text-decoration: none !important;
   text-align: left;
-  background: rgba(55, 53, 47, 0.015);
-  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  background: transparent;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
 }
 
 .door:hover {
-  transform: translateY(-2px);
-  border-color: rgba(214, 104, 48, 0.45);
-  box-shadow: 0 8px 24px rgba(214, 104, 48, 0.14);
+  border-color: var(--fl-border-strong);
+  background: var(--fl-hover);
 }
 
-:global(.dark) .door {
-  border-color: rgba(255, 255, 255, 0.18);
-  background: rgba(255, 255, 255, 0.025);
+.door:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
-:global(.dark) .door:hover {
-  border-color: rgba(240, 165, 112, 0.5);
-  box-shadow: 0 8px 24px rgba(240, 165, 112, 0.16);
+/* 행성이 — 누르기 전, 살짝 뛰어오른다(누를 수 있다는 대답) */
+.pose {
+  display: block;
+  height: 3.5rem;
+  width: auto;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* 아이콘 — 따뜻한 오렌지 chip 배지로 감싸 팔레트와 묶고 '버튼'처럼 보이게 */
-.icon {
-  font-size: 1.45rem;
-  line-height: 1;
-  flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.9rem;
-  height: 2.9rem;
-  border-radius: 12px;
-  background: rgba(214, 104, 48, 0.1);
-  transition: background 0.15s ease, transform 0.15s ease;
+.door:hover .pose {
+  transform: translateY(-3px) rotate(-5deg);
 }
 
-.door:hover .icon {
-  background: rgba(214, 104, 48, 0.16);
-  transform: scale(1.04);
-}
-
-:global(.dark) .icon {
-  background: rgba(240, 165, 112, 0.14);
-}
-
-:global(.dark) .door:hover .icon {
-  background: rgba(240, 165, 112, 0.2);
+:global(.dark) .pose {
+  filter: invert(1); /* 다크: 검은 선을 흰 선으로 */
 }
 
 .doorBody {
   display: flex;
   flex-direction: column;
-  gap: 0.15rem;
-  flex: 1;
+  gap: 0.2rem;
   min-width: 0;
 }
 
@@ -113,42 +96,29 @@
   font-size: 1.1rem;
   font-weight: 700;
   letter-spacing: -0.02em;
-  color: rgb(55, 53, 47);
+  color: var(--fl-text);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 4px;
+  transition: text-decoration-color 0.2s ease;
 }
 
-:global(.dark) .doorTitle {
-  color: rgba(255, 255, 255, 0.92);
+.door:hover .doorTitle {
+  text-decoration-color: currentColor;
 }
 
 .doorDesc {
   font-size: 0.92rem;
+  line-height: 1.5;
   color: var(--fl-text-tertiary);
-  word-break: keep-all; /* 한글을 어절 단위로만 끊는다 (것부/터 → 것부터) */
-  text-wrap: balance; /* 2줄이 될 때 두 줄 길이를 고르게 — 끝줄에 1~2글자만 남는 것 방지 */
+  word-break: keep-all;
+  text-wrap: balance;
 }
 
-:global(.dark) .doorDesc {
-  color: var(--fl-text-tertiary);
-}
-
-.arrow {
-  font-size: 1.1rem;
-  color: rgba(55, 53, 47, 0.4);
-  flex-shrink: 0;
-  transition: transform 0.15s ease, color 0.15s ease;
-}
-
-.door:hover .arrow {
-  transform: translateX(3px);
-  color: rgb(214, 104, 48);
-}
-
-:global(.dark) .arrow {
-  color: rgba(255, 255, 255, 0.4);
-}
-
-:global(.dark) .door:hover .arrow {
-  color: rgb(240, 165, 112);
+@media (prefers-reduced-motion: reduce) {
+  .pose {
+    transition: none;
+  }
 }
 
 @media (max-width: 640px) {
@@ -162,14 +132,17 @@
   }
   .door {
     max-width: none;
-    /* 세로 스택에선 flex-basis(16rem)가 '높이'로 잡혀 카드가 과도하게 커진다.
-       basis를 auto로 되돌려 높이를 내용에 맞추고, 패딩을 조여 단정하게 */
     flex: 0 0 auto;
-    padding: 0.9rem 1.05rem;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.9rem 1.1rem;
   }
-  .icon {
-    width: 2.5rem;
-    height: 2.5rem;
-    font-size: 1.3rem;
+  /* 포즈마다 그림 폭이 달라 제목 시작선이 들쭉날쭉했다. 같은 폭의 칸에 가운데로 담는다 */
+  .pose {
+    width: 4.5rem;
+    height: 2.75rem;
+    object-fit: contain;
+    flex-shrink: 0;
   }
 }

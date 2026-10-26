@@ -6,19 +6,226 @@
   gap: 0.6rem;
 }
 
-.cover img {
+/* ===== 도서 페이지: 펼치지 않는 평면 표지 ===== */
+.flat {
   display: block;
   height: auto;
   border-radius: 4px;
   box-shadow: 0 1px 2px rgba(38, 36, 32, 0.12), 0 10px 24px rgba(38, 36, 32, 0.16);
 }
-
-.sm img {
-  width: 9.5rem;
+.lg .flat {
+  width: min(15rem, 60vw);
 }
 
-.lg img {
-  width: min(15rem, 60vw);
+/* ===== 랜딩: 입체 책 =====
+   --w 표지 폭, --d 책 두께, --sp 책등 폭, --stack 종이 뭉치가 표지 뒤에서 오른쪽·아래로 비어져 나오는 거리.
+   평소엔 정면(기울이면 불안해 보였다). 대신 왼쪽에 남색 책등(둥근 음영), 표지 뒤로 종이 단면 여섯 겹과
+   뒤표지 테두리가 보여 두께가 읽힌다. 표지 왼쪽에는 경첩 홈(양장 표지가 접히는 자리)과 옅은 광택.
+   마우스를 올리면 표지(.lid)가 왼쪽 모서리를 축으로 완전히 넘어가 첫 장(.page)의 목차가 보인다.
+   펼친 책은 표지 폭만큼 왼쪽으로 넓어지므로, 펼칠 때 전체를 오른쪽으로 반 폭 옮겨 가운데를 지킨다. */
+.sm {
+  --w: 9.5rem;
+  --d: 1.1rem;
+  --sp: 0.6rem;
+  --stack: 3px;
+}
+.lg {
+  --w: min(15rem, 60vw);
+  --d: 1.6rem;
+  --sp: 0.9rem;
+  --stack: 4px;
+}
+
+.stage {
+  display: block;
+  box-sizing: content-box;
+  perspective: 2400px; /* 멀리서 보듯 — 펼친 표지가 원근으로 커져 위아래가 어긋나지 않게 */
+  /* 안쪽 칸은 표지 크기, 왼쪽 여백이 책등 자리. 레이아웃이 흔들리지 않게 크기를 고정한다 */
+  width: var(--w);
+  aspect-ratio: 2 / 3;
+  padding-left: var(--sp);
+  /* 종이 뭉치·뒤표지가 아래로 비어져 나오는 만큼 비워, 아래 '표지 시안' 라벨이 가려지지 않게 */
+  margin-bottom: calc(var(--stack) + 10px);
+}
+.volume {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transform: rotateY(0deg);
+  transition: transform 0.9s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.volume > * {
+  position: absolute;
+  display: block;
+}
+
+/* 표지 — 바깥면(그림) + 안쪽면 */
+.lid {
+  inset: 0;
+  transform-style: preserve-3d;
+  transform-origin: left center;
+  transform: translateZ(calc(var(--d) / 2)) rotateY(0deg);
+  transition: transform 0.9s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+/* 표지 위 빛 — 왼쪽 경첩 홈(어두운 선 + 밝은 능선)과 왼쪽 위에서 비치는 옅은 광택. 뒤집히면 안 보인다 */
+.lid::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: 0 4px 4px 0;
+  background:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.28) 0, rgba(0, 0, 0, 0.1) 2.5%, rgba(255, 255, 255, 0.12) 4.2%, rgba(0, 0, 0, 0) 7.5%),
+    linear-gradient(118deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0) 38%);
+  backface-visibility: hidden;
+  pointer-events: none;
+}
+.front,
+.inside {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 0 4px 4px 0; /* 왼쪽은 책등에 붙는다 */
+  backface-visibility: hidden;
+}
+.front {
+  display: block;
+  object-fit: cover;
+}
+/* 표지 안쪽 — 면지(종이색). 펼치면 경첩(가운데) 쪽이 그늘지게: 뒤집혀 보이므로 왼쪽(0deg) 시작이 화면에선 오른쪽 */
+.inside {
+  transform: rotateY(180deg);
+  background:
+    linear-gradient(90deg, rgba(38, 36, 32, 0.16), rgba(38, 36, 32, 0) 16%),
+    #efe9dc;
+}
+
+/* 첫 장 — 표지 바로 뒤. 종이색 바탕에 목차 */
+.page {
+  inset: 0;
+  /* 표지보다 오른쪽·아래로 조금 비켜 서고, 그 뒤로 종이 단면이 여섯 겹 */
+  transform: translateZ(calc(var(--d) / 2 - 1px)) translate(var(--stack), var(--stack));
+  transition: transform 0.9s cubic-bezier(0.2, 0.8, 0.2, 1);
+  box-shadow:
+    1px 1px 0 #e9e2d3,
+    2px 2px 0 #f6f1e6,
+    3px 3px 0 #e2dacb,
+    4px 4px 0 #f3eee3,
+    5px 5px 0 #ddd4c2,
+    6px 6px 0 #efe9dc;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+  padding: 16% 12% 0 14%;
+  border-radius: 2px 4px 4px 2px;
+  background:
+    linear-gradient(90deg, rgba(38, 36, 32, 0.12), rgba(38, 36, 32, 0) 12%),
+    #fbf8f1;
+  color: #37352f;
+  font-family: var(--font-book);
+  font-size: 0.66rem;
+  line-height: 1.35;
+  text-align: left;
+  word-break: keep-all;
+}
+.lg .page {
+  font-size: 0.82rem;
+}
+.pageHead {
+  margin-bottom: 0.4em;
+  font-size: 1.25em;
+  font-weight: 700;
+}
+.pageLine {
+  display: block;
+  padding-bottom: 0.3em;
+}
+
+/* 책등 — 뒤표지에서 이어져 올라와 표지 왼쪽에 닿는 둥근 남색 등.
+   왼쪽 끝은 뒤표지와 같은 색(한 장의 천이 돌아 나온 것처럼), 경첩 쪽으로 가며 밝아졌다가 접히는 자리에서 살짝 어두워진다.
+   위·아래에는 양장본 머리띠(얇은 밝은 줄). 표지보다 아주 조금 앞에 두어 표지를 펼쳤을 때도 가려지지 않는다 */
+.spine {
+  top: 0;
+  left: calc(-1 * var(--sp));
+  width: var(--sp);
+  height: 100%;
+  transform: translateZ(calc(var(--d) / 2 + 0.5px));
+  border-radius: 3px 0 0 3px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.22) 0, rgba(255, 255, 255, 0.22) 1.2%, transparent 1.2%, transparent 98.8%, rgba(255, 255, 255, 0.22) 98.8%),
+    linear-gradient(90deg, #0a1631 0, #0e1e45 20%, #24396e 58%, #1c3263 82%, #112349 100%);
+}
+/* 펼치면 책등 자리가 제본 홈이 된다 — 남색 띠가 가운데에 두껍게 남지 않고, 면지와 첫 장 사이의 그늘진 골로 */
+.spine::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    linear-gradient(90deg, rgba(38, 36, 32, 0.2) 0, rgba(38, 36, 32, 0.05) 35%, rgba(38, 36, 32, 0.06) 65%, rgba(38, 36, 32, 0.24) 100%),
+    #efe9dc;
+  opacity: 0;
+  transition: opacity 0.5s ease 0.2s;
+}
+:global(a):hover .spine::after,
+:global(a):focus-visible .spine::after,
+.cover:hover .spine::after {
+  opacity: 1;
+  transition: opacity 0.45s ease 0.3s;
+}
+
+/* 책장 단면(오른쪽 면) */
+.edge {
+  top: 1.5%;
+  left: calc(var(--w) - 2px);
+  width: calc(var(--d) - 2px);
+  height: 97%;
+  transform-origin: left center;
+  transform: translateZ(calc(var(--d) / 2 - 1px)) rotateY(90deg);
+  background: repeating-linear-gradient(90deg, #f4efe4 0 2px, #e3dccd 2px 3px);
+}
+
+/* 뒤표지 — 책등 왼쪽 끝에서 시작해 종이 뭉치보다 오른쪽·아래로 더 넓은 한 장의 판.
+   그래서 책등 → 아래 모서리 → 오른쪽 테두리가 끊기지 않고 한 줄로 이어진다(표지·책등·뒤표지가 한 덩어리로 읽힌다).
+   책 전체의 그림자도 여기에 */
+.back {
+  inset: 0 calc(-1 * (var(--stack) + 8px)) calc(-1 * (var(--stack) + 8px)) calc(-1 * var(--sp));
+  /* 좌우를 뒤집지 않는다(뒤집으면 왼쪽·오른쪽 여백이 바뀌어 테두리가 한쪽으로 쏠린다) */
+  transform: translateZ(calc(var(--d) / -2));
+  background: linear-gradient(90deg, #0a1631 0, #0a1631 calc(100% - 10px), #0d1b3f 100%);
+  border-radius: 4px 3px 3px 4px;
+  box-shadow: 0 18px 34px rgba(38, 36, 32, 0.3);
+}
+
+/* 펼치면 첫 장이 비켜 섰던 만큼 제자리로 올라와 왼쪽 면지와 위아래가 가지런해진다(뒤표지 윗선이 튀어나와 보이지 않게) */
+:global(a):hover .page,
+:global(a):focus-visible .page,
+.cover:hover .page {
+  transform: translateZ(calc(var(--d) / 2 - 1px)) translate(0, 0);
+}
+
+/* 펼치기 — 링크(랜딩)나 그림 위에 마우스를 올리면 */
+:global(a):hover .volume,
+:global(a):focus-visible .volume,
+.cover:hover .volume {
+  transform: translateX(calc(var(--w) / 2)) rotateY(0deg);
+}
+:global(a):hover .lid,
+:global(a):focus-visible .lid,
+.cover:hover .lid {
+  transform: translateZ(calc(var(--d) / 2)) rotateY(-180deg); /* 딱 평평하게 — 원근으로 위아래가 어긋나지 않게 */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .volume,
+  .lid,
+  .page,
+  .spine::after {
+    transition: none;
+  }
 }
 
 /* 시안임을 분명히: 노션 노란 태그처럼 눈에 띄게(바탕·글자는 다크 모드도 토큰이 맡는다) */
@@ -38,6 +245,6 @@
   align-items: flex-start;
 }
 
-.overlap img {
+.overlap .flat {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25), 0 18px 40px rgba(0, 0, 0, 0.35);
 }

@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import { BookCover } from './BookCover'
-import { Eyebrow } from './Eyebrow'
 import styles from './BookNote.module.css'
 
 /**
@@ -10,7 +9,6 @@ import styles from './BookNote.module.css'
 export function BookNote() {
   return (
     <section className={styles.section} aria-label="우테코 책 소개">
-      <Eyebrow>우테코의 책</Eyebrow>
       <h2 className={styles.heading}>우테코의 8년을 책으로 만들고 있습니다</h2>
       <Link href="/book" className={styles.coverLink} aria-label="도서 보기">
         <BookCover />

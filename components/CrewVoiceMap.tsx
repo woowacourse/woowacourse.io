@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, type CSSProperties } from 'react'
+import { useEffect, useRef, useState, type RefObject } from 'react'
 import styles from './CrewVoiceMap.module.css'
 import { crewThemes, crewThemesAreExample } from '../content/crew-voices'
-import { Eyebrow } from './Eyebrow'
+import { useInViewPhase } from './InView'
 
 /**
  * CrewVoiceMap — "크루들이 가장 많이 남긴 메시지"를 손그림 별자리로.
@@ -73,25 +73,50 @@ const THEME_SLOTS: Array<{ pos: readonly [number, number]; dir: 'up' | 'down' }>
   { pos: STAR.mizar, dir: 'down' } //   자신감·정체성
 ]
 
-// 연결선: 국자(핸들+사발). 북극성은 포인터별 dubhe와 실선으로 잇는다(다른 선과 동일 스타일).
-// 실제 하늘에서도 사발 끝 dubhe가 북극성을 가리키는 포인터별. 점선(겹쳐 어색)이 아니라 실선으로.
-const DIPPER_LINE = [STAR.alkaid, STAR.mizar, STAR.alioth, STAR.megrez, STAR.dubhe, STAR.merak, STAR.phecda, STAR.megrez]
+// 연결선: 국자(손잡이 + 사발)와, 사발 끝 dubhe 에서 북극성(polaris)으로 가는 선.
+// 실제 하늘에서도 사발 끝 두 별(merak·dubhe)을 이은 선을 늘이면 북극성이 나온다.
+const DIPPER_LINE = [STAR.alkaid, STAR.mizar, STAR.alioth, STAR.megrez, STAR.phecda, STAR.merak, STAR.dubhe, STAR.megrez]
 const POLE_LINE = [STAR.dubhe, STAR.polaris]
 
-const pts = (line: readonly (readonly [number, number])[]) => line.map(([x, y]) => `${x},${y}`).join(' ')
+// 별 칸(.field)은 늘 62:34 비율이라, 선 좌표도 같은 비율(620×340)로 두면 가로·세로가 똑같이 확대된다.
+// 그래야 선 굵기가 방향마다 달라지지 않는다.
+const VW = 620
+const VH = 340
+const pts = (line: readonly (readonly [number, number])[]) =>
+  line.map(([x, y]) => `${(x * VW) / 100},${(y * VH) / 100}`).join(' ')
+
+// ===== 깊이 있는 밤하늘 — 먼 별·중간 별·가까운 별 세 겹 =====
+// 결정적 난수라 매번 같은 하늘이 나온다(서버·브라우저 렌더 일치).
+const seeded = (seed: number) => {
+  let t = seed
+  return () => {
+    t = (t * 9301 + 49297) % 233280
+    return t / 233280
+  }
+}
+type SkyStar = { x: number; y: number; s: number; o: number }
+const SKY: Array<{ depth: 'far' | 'mid' | 'near'; stars: SkyStar[] }> = (
+  [
+    ['far', 60, [0.8, 1.3], [0.22, 0.45]],
+    ['mid', 26, [1.3, 2], [0.35, 0.65]],
+    ['near', 9, [2.2, 3.2], [0.55, 0.9]]
+  ] as const
+).map(([depth, n, [s0, s1], [o0, o1]], li) => {
+  const r = seeded(31 + li * 977)
+  return {
+    depth,
+    stars: Array.from({ length: n }, () => {
+      const x = r() * 100
+      const y = r() * 100
+      const s = s0 + r() * (s1 - s0)
+      const o = o0 + r() * (o1 - o0)
+      return { x, y, s, o }
+    })
+  }
+})
 
 // 점마다 다른 기울기 → 같은 path라도 손그림처럼 제각각 (결정적)
 const ROT = [8, -10, 6, -7, 5, -6, 9]
-
-// 배경 잔별 (장식) — 밤하늘 깊이
-const SPARKS: Array<[number, number, number]> = [
-  [14, 20, 3],
-  [88, 24, 4],
-  [46, 86, 3],
-  [70, 84, 3],
-  [8, 62, 2],
-  [93, 60, 3]
-]
 
 export function CrewVoiceMap({ bleed = false }: { bleed?: boolean }) {
   const sorted = [...crewThemes].sort((a, b) => b.count - a.count)
@@ -107,6 +132,11 @@ export function CrewVoiceMap({ bleed = false }: { bleed?: boolean }) {
   const dMin = Math.min(...counts)
   const dotPx = (c: number) => Math.round(9 + Math.sqrt((c - dMin) / (dMax - dMin || 1)) * 8)
 
+  // 밤하늘 띠가 화면 아래에서 들어올 때 별똥별이 한 번 지나간다(별자리 자체는 처음부터 다 보인다)
+  const sectionRef = useRef<HTMLElement>(null)
+  const phase = useInViewPhase(sectionRef)
+  useSkyDepth(sectionRef)
+
   // 한 번이라도 별을 건드리면 '눌러 보세요' 안내를 거둔다
   const [explored, setExplored] = useState(false)
   const activate = (key: string) => {
@@ -116,10 +146,27 @@ export function CrewVoiceMap({ bleed = false }: { bleed?: boolean }) {
 
   return (
     <section
+      ref={sectionRef}
+      data-inview={phase}
       className={bleed ? `${styles.section} ${styles.bleed}` : styles.section}
       aria-label="크루들이 가장 많이 남긴 메시지"
     >
-      <Eyebrow onDark>크루의 목소리</Eyebrow>
+      {/* 밤하늘 — 먼 별일수록 작고 흐리고 덜 움직인다(마우스·스크롤 시차). 장식이라 읽지 않는다 */}
+      <div className={styles.sky} aria-hidden="true">
+        <div className={`${styles.layer} ${styles.far} ${styles.nebula}`} />
+        {SKY.map((l) => (
+          <div key={l.depth} className={`${styles.layer} ${styles[l.depth]}`}>
+            {l.stars.map((st, i) => (
+              <span
+                key={i}
+                className={styles.skyStar}
+                style={{ left: `${st.x}%`, top: `${st.y}%`, width: st.s, height: st.s, opacity: st.o }}
+              />
+            ))}
+          </div>
+        ))}
+      </div>
+
       <h2 className={styles.heading}>크루들이 가장 많이 남긴 메시지</h2>
       <p className={styles.sub}>
         이 10개월을 경험한 크루들이 수료 직전 마지막 설문에 남긴 메시지를{' '}
@@ -136,17 +183,11 @@ export function CrewVoiceMap({ bleed = false }: { bleed?: boolean }) {
         aria-label={`크루가 가장 많이 남긴 메시지: ${sorted.map((t) => t.label).join(', ')}`}
       >
         <div className={styles.glow} aria-hidden="true" />
-        {SPARKS.map(([x, y, s], i) => (
-          <span
-            key={`s${i}`}
-            className={styles.spark}
-            style={{ left: `${x}%`, top: `${y}%`, width: s, height: s }}
-            aria-hidden="true"
-          />
-        ))}
+        {/* 별똥별 — 띠가 화면에 들어올 때 한 번, 오른쪽 위 빈 하늘에서 북극성(함께 자란 동료)을 향해 떨어진다 */}
+        <span className={styles.meteor} aria-hidden="true" />
 
         {/* 별자리 연결선 — 국자(북두칠성) + 포인터별 dubhe→북극성. 모두 같은 실선 스타일. */}
-        <svg className={styles.lines} viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+        <svg className={styles.lines} viewBox={`0 0 ${VW} ${VH}`} aria-hidden="true">
           <polyline className={styles.dipperLine} points={pts(DIPPER_LINE)} />
           <polyline className={styles.dipperLine} points={pts(POLE_LINE)} />
         </svg>
@@ -157,7 +198,7 @@ export function CrewVoiceMap({ bleed = false }: { bleed?: boolean }) {
           className={
             active.key === pole.key ? `${styles.star} ${styles.pole} ${styles.on}` : `${styles.star} ${styles.pole}`
           }
-          style={{ left: `${STAR.polaris[0]}%`, top: `${STAR.polaris[1]}%`, '--tw': '0s' } as CSSProperties}
+          style={{ left: `${STAR.polaris[0]}%`, top: `${STAR.polaris[1]}%` }}
           onMouseEnter={() => activate(pole.key)}
           onFocus={() => activate(pole.key)}
           onClick={() => activate(pole.key)}
@@ -178,7 +219,7 @@ export function CrewVoiceMap({ bleed = false }: { bleed?: boolean }) {
               key={t.key}
               type="button"
               className={cls}
-              style={{ left: `${x}%`, top: `${y}%`, '--tw': `${(i + 1) * 0.55}s` } as CSSProperties}
+              style={{ left: `${x}%`, top: `${y}%` }}
               onMouseEnter={() => activate(t.key)}
               onFocus={() => activate(t.key)}
               onClick={() => activate(t.key)}
@@ -210,4 +251,42 @@ export function CrewVoiceMap({ bleed = false }: { bleed?: boolean }) {
       </p>
     </section>
   )
+}
+
+/**
+ * 밤하늘 깊이 — 스크롤 위치만 CSS 변수(--sy)로 넘긴다.
+ *   --sy: 섹션 중심이 화면 중심에서 얼마나 떨어졌나(-1 ~ 1).
+ * 레이어마다 다른 배율로 움직여(먼 별은 조금, 가까운 별은 많이) 내려 읽을 때 깊이가 느껴진다.
+ * 마우스를 따라 움직이는 시차는 정신없어서 쓰지 않는다.
+ * 화면에 보일 때만 계산하고, 모션 최소화 설정이면 아무것도 하지 않는다.
+ */
+function useSkyDepth(ref: RefObject<HTMLElement | null>) {
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
+    let raf = 0
+    let visible = false
+    const frame = () => {
+      raf = 0
+      const r = el.getBoundingClientRect()
+      const sy = Math.max(-1, Math.min(1, (r.top + r.height / 2 - window.innerHeight / 2) / window.innerHeight))
+      el.style.setProperty('--sy', sy.toFixed(3))
+    }
+    const kick = () => {
+      if (visible && !raf) raf = requestAnimationFrame(frame)
+    }
+    const io = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting
+      kick()
+    })
+    io.observe(el)
+    window.addEventListener('scroll', kick, { passive: true })
+    return () => {
+      io.disconnect()
+      window.removeEventListener('scroll', kick)
+      if (raf) cancelAnimationFrame(raf)
+    }
+  }, [ref])
 }

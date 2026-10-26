@@ -17,6 +17,8 @@ import { BookNote } from './components/BookNote'
 import { BookCover } from './components/BookCover'
 import { EnterDocs } from './components/EnterDocs'
 import { Reveal } from './components/Reveal'
+import { InView } from './components/InView'
+import { Traits, Trait } from './components/Traits'
 import { Mermaid } from './components/Mermaid'
 import { Claim } from './components/Manifesto'
 import { PromotionPipeline } from './components/PromotionPipeline'
@@ -57,6 +59,9 @@ export function useMDXComponents(components?: Record<string, React.FC>) {
     BookCover,
     EnterDocs,
     Reveal,
+    InView,
+    Traits,
+    Trait,
     Mermaid,
     Claim,
     PromotionPipeline,

@@ -3,6 +3,7 @@ import { Banner, Head, Search } from 'nextra/components'
 import { getPageMap } from 'nextra/page-map'
 import Link from 'next/link'
 import recruiting from '../content/recruiting'
+import { MobileBannerOffset } from '../components/MobileBannerOffset'
 import 'nextra-theme-docs/style.css'
 import './folio-tokens.css'
 import './globals.css'
@@ -67,8 +68,16 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           as="style"
           href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
         />
+        {/* 책 안쪽(펼친 목차·첫 장) 글꼴 — 원고에 쓴 Noto Serif KR. 한글은 필요한 글자 묶음만 내려받는다 */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&display=swap"
+        />
       </Head>
       <body>
+        <MobileBannerOffset />
         <Layout
           banner={recruitingBanner}
           navbar={

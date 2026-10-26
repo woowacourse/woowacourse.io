@@ -1,0 +1,71 @@
+/* 사람의 특징 목록 — 행성이(왼쪽) + 제목·설명(오른쪽), 항목 사이 옅은 선 */
+.list {
+  list-style: none;
+  margin: var(--fl-space-6) 0 var(--fl-space-8);
+  padding: 0;
+  border-top: 1px solid var(--fl-border);
+}
+
+.item {
+  display: grid;
+  grid-template-columns: 5.5rem minmax(0, 1fr);
+  column-gap: var(--fl-space-7);
+  align-items: start;
+  margin: 0;
+  padding: var(--fl-space-7) 0;
+  border-bottom: 1px solid var(--fl-border);
+}
+
+/* 포즈마다 그림 폭이 달라도 같은 칸에 담아 글자 시작선을 맞춘다 */
+.pose {
+  display: block;
+  width: 5.5rem;
+  height: 4.25rem;
+  object-fit: contain;
+  object-position: center top;
+}
+
+:global(.dark) .pose {
+  filter: invert(1); /* 다크: 검은 선을 흰 선으로 */
+}
+
+.body {
+  min-width: 0;
+}
+
+.title {
+  margin: 0 !important;
+  font-size: var(--fl-text-lg);
+  font-weight: var(--fl-weight-bold);
+  line-height: 1.45 !important;
+  letter-spacing: -0.01em;
+  color: var(--fl-text);
+  word-break: keep-all;
+}
+
+.desc {
+  margin-top: var(--fl-space-3);
+  font-size: var(--fl-text-md);
+  line-height: 1.7;
+  color: var(--fl-text-secondary);
+  word-break: keep-all;
+}
+
+.desc p {
+  margin: 0 !important;
+}
+
+@media (max-width: 640px) {
+  .item {
+    grid-template-columns: 4rem minmax(0, 1fr);
+    column-gap: var(--fl-space-6);
+    padding: var(--fl-space-6) 0;
+  }
+  .pose {
+    width: 4rem;
+    height: 3.25rem;
+  }
+  .desc {
+    font-size: 1rem;
+  }
+}
