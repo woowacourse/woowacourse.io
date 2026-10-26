@@ -25,10 +25,12 @@ asIndexPage: true
   </div>
 </div>
 
-{/* 목차는 책을 펼친 모습 안에 둔다. 데스크톱은 두 쪽(왼쪽 1·2부, 오른쪽 3·4부), 모바일은 한 쪽짜리 긴 종이.
-    '목차' 제목과 집필 중 안내는 책 첫 쪽에(실제 책의 차례 쪽처럼) */}
-<div className="book-spread">
+{/* 목차는 책을 펼친 모습 안에 둡니다. 데스크톱은 두 쪽(왼쪽 1·2부, 오른쪽 3·4부)을 펼치고,
+    모바일은 이북처럼 부마다 한 쪽씩 옆으로 넘깁니다(BookReader). 부 하나를 book-leaf 로 감쌉니다.
+    '목차' 제목과 집필 중 안내는 실제 책의 차례 쪽처럼 첫 쪽에 둡니다 */}
+<BookReader>
 <div className="book-spread-page">
+<div className="book-leaf">
 <div className="book-spread-head">
   <h2 className="book-spread-title" id="목차">목차</h2>
   <p className="book-spread-note">현재 집필 중이며 제목과 구성은 바뀔 수 있습니다.</p>
@@ -38,6 +40,9 @@ asIndexPage: true
 
 - 1장. 우테코는 어떻게 돌아가는가
 - 2장. 교육을 설계하려는 사람에게
+
+</div>
+<div className="book-leaf">
 
 ### 2부. 강의 없는 학습 환경
 
@@ -49,13 +54,18 @@ asIndexPage: true
 - 8장. 리뷰로 배우기
 
 </div>
+</div>
 <div className="book-spread-page">
+<div className="book-leaf">
 
 ### 3부. 가르치지 않는 코치
 
 - 9장. 질문에 질문으로 답하기
 - 10장. 스스로 답을 찾는 시간, 원온원
 - 11장. 점수 없이 배움을 확인하기
+
+</div>
+<div className="book-leaf">
 
 ### 4부. 앞으로의 교육, 대체되지 않는 개발자
 
@@ -65,6 +75,7 @@ asIndexPage: true
 
 </div>
 </div>
+</BookReader>
 
 {/* 원고 미리 읽기를 열 때: 여기에 '## 미리 읽기' 섹션과 원고 카드(CardGrid)를 넣고, content/book/_meta.ts 에 원고를 등록합니다.
     목차 출처: woowacourse-book 통합본(2026-09-29) 번호 목차. 목차가 바뀌면 이 목록도 고칩니다. */}

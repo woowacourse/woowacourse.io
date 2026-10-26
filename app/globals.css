@@ -804,64 +804,101 @@ div:has(> .site-footer) > hr.nextra-border {
   }
 }
 
-/* 모바일 — 한 쪽짜리 긴 종이. 두 쪽(1·2부 / 3·4부)을 이어 붙여 한 장처럼 보이게 한다 */
+/* 쪽 묶음(BookReader 가 감싼다). 데스크톱에선 없는 것처럼 두어(display: contents) 두 쪽이 .book-spread 격자에 바로 놓인다 */
+.book-pages {
+  display: contents;
+}
+/* 쪽 안의 부(部) 하나. 데스크톱은 한 쪽에 부가 둘이라 부 사이를 띄운다 */
+.book-leaf + .book-leaf {
+  margin-top: var(--fl-space-9);
+}
+
+/* 모바일 — 이북 리더처럼 한 번에 한 쪽(부 하나)만, 화면에 들어오는 높이로. 옆으로 밀어 넘긴다(BookReader).
+   남색 표지판 안에 종이 쪽이 앉고, 왼쪽은 제본 그늘, 오른쪽엔 남은 쪽만큼의 종이 뭉치, 아래 가운데엔 쪽 번호 */
 @media (max-width: 767px) {
   .book-spread {
-    padding: 10px 16px 20px 10px;
+    padding: 10px 16px 14px 10px;
     border-radius: 8px;
+    margin-bottom: var(--fl-space-3);
   }
+  /* 오른쪽 종이 뭉치 — 남은 쪽 하나에 2px. 넘길수록 얇아져 책의 어디쯤인지 손으로 쥔 듯 보인다 */
+  .book-spread::after {
+    content: '';
+    position: absolute;
+    top: 12px;
+    bottom: 16px;
+    right: 6px;
+    width: calc(var(--leaves-left, 0) * 2px);
+    border-radius: 0 2px 2px 0;
+    background: repeating-linear-gradient(90deg, #f1ebdd 0 1px, #d6ccb8 1px 2px);
+    transition: width 0.3s ease;
+  }
+  .book-pages {
+    display: flex;
+    gap: 12px; /* 넘기는 동안 쪽과 쪽 사이로 표지판이 비친다 */
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    border-radius: 2px 6px 6px 2px;
+    counter-reset: leaf;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .book-pages::-webkit-scrollbar {
+    display: none;
+  }
+  .book-pages:focus-visible {
+    outline: 2px solid #f1ebdd;
+    outline-offset: 3px;
+  }
+  /* 데스크톱의 두 쪽(1·2부 / 3·4부)은 풀고, 부 하나하나가 한 쪽이 된다 */
   .book-spread-page {
-    padding: 1.9rem 1.5rem 0 1.75rem;
+    display: contents;
+  }
+  .book-leaf {
+    position: relative;
+    flex: 0 0 100%;
+    box-sizing: border-box;
+    height: min(33rem, 68svh);
+    overflow-y: auto; /* 아주 작은 화면에서 쪽이 넘치면 그 쪽 안에서만 내려 읽는다 */
+    padding: 2.1rem 1.5rem 2.9rem 1.75rem;
+    scroll-snap-align: start;
+    scroll-snap-stop: always; /* 세게 밀어도 한 쪽씩 */
+    counter-increment: leaf;
+    border-radius: 2px 6px 6px 2px;
+    background-color: #fbf8f1;
     background-image:
       var(--paper-noise),
       linear-gradient(90deg, rgba(38, 36, 32, 0.16) 0, rgba(38, 36, 32, 0.05) 5%, rgba(38, 36, 32, 0) 12%);
-    /* 오른쪽으로 종이 단면 */
-    box-shadow:
-      1px 0 0 #e9e2d3,
-      2px 0 0 #f6f1e6,
-      3px 0 0 #e2dacb,
-      4px 0 0 #f3eee3,
-      5px 0 0 #ddd4c2,
-      6px 0 0 #f1ebdf,
-      7px 0 0 #d9d0bd,
-      8px 0 0 #ece5d7;
   }
-  .book-spread-page:first-child {
-    border-radius: 2px 6px 0 0;
+  .book-leaf + .book-leaf {
+    margin-top: 0;
   }
-  /* 두 번째 쪽은 이어지는 종이 — 제목 없이, 아래로 종이 단면 */
-  .book-spread-page:last-child {
-    padding-top: var(--fl-space-9);
-    padding-bottom: 1.9rem;
-    border-radius: 0 0 6px 2px;
-    box-shadow:
-      1px 0 0 #e9e2d3,
-      2px 0 0 #f6f1e6,
-      3px 0 0 #e2dacb,
-      4px 0 0 #f3eee3,
-      5px 0 0 #ddd4c2,
-      6px 0 0 #f1ebdf,
-      7px 0 0 #d9d0bd,
-      8px 0 0 #ece5d7,
-      1px 1px 0 #e9e2d3,
-      2px 2px 0 #f6f1e6,
-      3px 3px 0 #e2dacb,
-      4px 4px 0 #f3eee3,
-      5px 5px 0 #ddd4c2,
-      6px 6px 0 #f1ebdf,
-      7px 7px 0 #d9d0bd,
-      8px 8px 0 #ece5d7;
+  /* 쪽 번호 — 실제 책처럼 아래 가운데 */
+  .book-leaf::after {
+    content: counter(leaf);
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 1rem;
+    text-align: center;
+    font-size: var(--fl-text-xs);
+    letter-spacing: 0.05em;
+    color: #a39d90;
   }
   .book-spread-head {
     height: auto;
     margin-bottom: var(--fl-space-8);
   }
-  /* 두 쪽을 한 장처럼 — 이음새가 보이지 않게 1px 겹친다 */
-  .book-spread-page:last-child {
-    margin-top: -1px;
-  }
   .book-spread-page li {
     font-size: 1rem;
+  }
+}
+
+@media (max-width: 767px) and (prefers-reduced-motion: reduce) {
+  .book-spread::after {
+    transition: none;
   }
 }
 

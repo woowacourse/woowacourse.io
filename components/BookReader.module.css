@@ -1,0 +1,90 @@
+/* BookReader 의 쪽 넘김 막대·안내 — 모바일에서만 보인다(데스크톱은 두 쪽을 한눈에 펼쳐 둔다) */
+.bar,
+.hint {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--fl-space-4);
+    margin: 0 0 var(--fl-space-2);
+  }
+
+  /* ‹ › — 누르기 쉬운 44px 원 */
+  .turn {
+    all: unset;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    font-size: 1.6rem;
+    line-height: 1;
+    color: var(--fl-text);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  .turn:disabled {
+    opacity: 0.25;
+    cursor: default;
+  }
+  .turn:focus-visible {
+    outline: 2px solid var(--fl-text);
+    outline-offset: 2px;
+  }
+
+  .status {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    min-width: 7rem;
+    font-size: var(--fl-text-sm);
+    font-variant-numeric: tabular-nums;
+    color: var(--fl-text-secondary);
+  }
+
+  /* 진행 막대 — 폭 대신 scaleX 로 늘려 다시 그리지 않는다 */
+  .progress {
+    position: relative;
+    width: 7rem;
+    height: 3px;
+    border-radius: 2px;
+    background: color-mix(in srgb, var(--fl-text) 14%, transparent);
+    overflow: hidden;
+  }
+  .progress > span {
+    position: absolute;
+    inset: 0;
+    background: var(--fl-text);
+    transform-origin: left center;
+    transition: transform 0.25s ease;
+  }
+
+  /* 넘기는 법 — 첫 쪽에서만. 한 번 넘기면 사라진다(자리는 남겨 아래 내용이 들썩이지 않게) */
+  .hint {
+    display: block;
+    margin: 0 0 var(--fl-space-11);
+    text-align: center;
+    font-size: var(--fl-text-xs);
+    color: var(--fl-text-tertiary);
+    word-break: keep-all;
+    transition: opacity 0.3s ease;
+  }
+  .hintGone {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progress > span,
+  .hint {
+    transition: none;
+  }
+}

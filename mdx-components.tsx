@@ -15,6 +15,7 @@ import { CrewVoiceMap } from './components/CrewVoiceMap'
 import { CrewThemes } from './components/CrewThemes'
 import { BookNote } from './components/BookNote'
 import { BookCover } from './components/BookCover'
+import { BookReader } from './components/BookReader'
 import { EnterDocs } from './components/EnterDocs'
 import { Reveal } from './components/Reveal'
 import { InView } from './components/InView'
@@ -57,6 +58,7 @@ export function useMDXComponents(components?: Record<string, React.FC>) {
     CrewThemes,
     BookNote,
     BookCover,
+    BookReader,
     EnterDocs,
     Reveal,
     InView,
