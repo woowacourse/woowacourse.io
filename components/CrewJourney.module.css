@@ -67,6 +67,7 @@
   fill: none;
   stroke-width: 1.6;
   stroke-linecap: round;
+  stroke-dasharray: 1; /* path 길이를 1로 둔다(pathLength) — 들어올 때 0→1 로 그어지게 */
 }
 .ringFar {
   stop-color: rgba(55, 53, 47, 0.07);
@@ -259,47 +260,36 @@
   }
 }
 
-/* ===== 화면에 들어올 때 한 번: 행성이 → 회사 이름이 가운데에서 제자리로 퍼져 나간다 → 궤도 선 =====
-   단순하게 둔다. 행성이가 떠오르고(0 ~ 0.6초), 이름이 12시부터 시계방향으로 0.05초 간격으로 곧장 날아가
-   제자리에 내려앉으며(각 0.8초), 마지막에 궤도 선이 드러난다. 가운데 숫자는 0 부터 차오른다(CountUp).
-   'waiting'(아직 화면 아래)일 때만 숨겨 두고 'in' 에서 재생한다. 처음부터 보이면 'static' 이라 그대로 */
-:global([data-inview='waiting']) .core,
-:global([data-inview='waiting']) .node,
-:global([data-inview='waiting']) .ring {
-  opacity: 0;
+/* ===== 화면에 들어올 때 한 번: 궤도 선이 12시부터 한 바퀴 그어지고, 행성이가 살짝 떠오른다 =====
+   랜딩 전체의 원칙 — 콘텐츠는 처음부터 다 보이고, 움직임은 의미 있는 곳에만 짧게 덧붙인다.
+   그래서 회사 이름·행성이·숫자는 숨기지 않는다. 예전엔 'waiting'에서 숨겨 두었다가 가운데에서 퍼뜨리고 숫자를 0부터 세었는데,
+   랜딩에서 콘텐츠를 숨기는 곳이 여기뿐이었고, 진행 중에 숫자가 642·677명으로 보이거나(본문은 735명) 날아오던 라벨이 겹쳐 보였다.
+   이제 'waiting'(아직 화면 아래)에선 장식인 궤도 선만 비워 두고 행성이는 8px 아래에 둔 채(보이는 채로) 기다렸다가,
+   'in'에서 선을 긋고 행성이를 제자리로 올린다. 처음부터 보이면 'static'이라 그대로 */
+:global([data-inview='waiting']) .ring path {
+  stroke-dashoffset: 1;
+}
+:global([data-inview='waiting']) .core {
+  transform: translate(-50%, calc(-50% + 8px));
+}
+:global([data-inview='in']) .ring path {
+  animation: journeyRing 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
+}
+@keyframes journeyRing {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
 }
 :global([data-inview='in']) .core {
   animation: journeyCore 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 @keyframes journeyCore {
-  from { opacity: 0; transform: translate(-50%, -50%) scale(0.88); }
-  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-}
-:global([data-inview='in']) .node {
-  animation: journeyFly 0.8s cubic-bezier(0.22, 1, 0.36, 1) calc(0.3s + var(--i, 0) * 0.05s) both;
-}
-@keyframes journeyFly {
-  from {
-    opacity: 0;
-    transform: translate(-50%, -50%) translate(calc(var(--dx, 0) * 1cqw), calc(var(--dy, 0) * 1cqh)) scale(0.5);
-  }
-  to {
-    opacity: var(--o);
-    transform: translate(-50%, -50%) scale(var(--s));
-  }
-}
-:global([data-inview='in']) .ring {
-  animation: journeyRing 0.7s ease 1.15s both;
-}
-@keyframes journeyRing {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from { transform: translate(-50%, calc(-50% + 8px)); }
+  to { transform: translate(-50%, -50%); }
 }
 
 @media (prefers-reduced-motion: reduce) {
   :global([data-inview='in']) .core,
-  :global([data-inview='in']) .node,
-  :global([data-inview='in']) .ring {
+  :global([data-inview='in']) .ring path {
     animation: none;
   }
 }

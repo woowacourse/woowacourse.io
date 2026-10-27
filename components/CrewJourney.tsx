@@ -1,6 +1,5 @@
 import type { CSSProperties } from 'react'
 import styles from './CrewJourney.module.css'
-import { CountUp } from './CountUp'
 import { crewCount } from '../content/crew-voices'
 
 /**
@@ -87,29 +86,25 @@ export function CrewJourney() {
               <stop offset="1" className={styles.ringNear} />
             </linearGradient>
           </defs>
-          <path d={RING_D} stroke="url(#journey-ring)" />
+          <path d={RING_D} stroke="url(#journey-ring)" pathLength={1} />
         </svg>
         <div className={styles.core}>
           <span className={styles.coreGlow} aria-hidden="true" />
           <img className={styles.planet} src="/images/characters/행성이-걷기.png" alt="" width={104} />
-          <span className={styles.coreN}>
-            <CountUp to={crewCount} suffix="명" delay={500} />
-          </span>
+          {/* 숫자는 세어 올리지 않고 처음부터 보여 준다 — 바로 위 본문의 '735명'과 언제 봐도 같아야 한다 */}
+          <span className={styles.coreN}>{crewCount}명</span>
         </div>
-        {NODES.map((n, i) => (
+        {NODES.map((n) => (
           <span
             key={n.name}
             className={styles.node}
-            // --dx·--dy: 제자리에서 가운데(행성이)까지의 거리(궤도 칸 대비 %). 들어올 때 가운데에서 이만큼 날아간다
+            // --t: 깊이(먼 위쪽 0 → 가까운 아래쪽 1). 크기·진하기·그림자가 이 값을 따른다
             style={
               {
                 left: n.left,
                 top: n.top,
                 zIndex: 1 + Math.round(n.t * 10),
-                '--i': i,
-                '--t': n.t.toFixed(3),
-                '--dx': (50 - n.x).toFixed(2),
-                '--dy': (50 - n.y).toFixed(2)
+                '--t': n.t.toFixed(3)
               } as CSSProperties
             }
             aria-hidden="true"
