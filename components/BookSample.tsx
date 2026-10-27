@@ -54,12 +54,13 @@ function geometry(stageW: number, stageH: number) {
 }
 
 /**
- * 터치로 쪽을 톡 쳤을 때 넘길 방향(-1 앞 쪽, 1 다음 쪽). x 는 책 왼쪽 끝에서 잰 자리, width 는 책 너비.
- * 양면은 마우스로 누를 때처럼 왼쪽 쪽 = 앞, 오른쪽 쪽 = 다음.
- * 한 면은 전자책처럼 왼쪽 가장자리만 앞으로 — 엄지가 닿는 오른쪽·가운데는 모두 다음 쪽
+ * 터치로 쪽을 톡 친 자리 — 전자책 앱(리디·밀리의 서재·교보 eBook)처럼 책을 세로로 셋으로 나눈다.
+ * 왼쪽 = 앞 쪽(-1), 오른쪽 = 다음 쪽(1), 가운데 = 위아래 막대 보이기·숨기기(0). 한 면·양면 같다.
+ * x 는 책 왼쪽 끝에서 잰 자리, width 는 책 너비
  */
-function tapDirection(x: number, width: number, spread: boolean): -1 | 1 {
-  return x < width * (spread ? 0.5 : 0.3) ? -1 : 1
+function tapZone(x: number, width: number): -1 | 0 | 1 {
+  if (x < width / 3) return -1
+  return x > (width * 2) / 3 ? 1 : 0
 }
 
 /**
@@ -94,6 +95,8 @@ export function BookSample({ chapter, title, children }: { chapter: string; titl
   const [scrollSection, setScrollSection] = useState('')
   // 창 크기가 바뀌면 다시 짠다
   const [resizeTick, setResizeTick] = useState(0)
+  // 위아래 막대 — 책 가운데를 톡 치면 숨겼다 보인다(책으로 볼 때만). 자리는 그대로 두고 감춰서 쪽을 다시 짜지 않는다
+  const [chrome, setChrome] = useState(true)
 
   const pageRef = useRef(0)
   const totalRef = useRef(0)
@@ -262,7 +265,7 @@ export function BookSample({ chapter, title, children }: { chapter: string; titl
 
   // 책: 터치는 page-flip 에 맡기지 않고 여기서 받는다. page-flip 은 손가락을 대고 0.25초가 지나야 잡은 것으로 치고
   // 방향도 그때 손가락 자리로 정해서, 톡 치면 안 넘어가고 천천히 밀면 거꾸로 넘어갔다.
-  // 톡 = 친 자리 쪽으로 넘기기(tapDirection), 휙 밀기 = 민 방향으로 넘기기, 가로로 끌기 = 종이를 손가락으로 잡아 넘기기
+  // 톡 = 친 자리로 넘기기·막대 보이기(tapZone), 휙 밀기 = 민 방향으로 넘기기, 가로로 끌기 = 종이를 손가락으로 잡아 넘기기
   useEffect(() => {
     const el = bookRef.current
     if (view !== 'book' || !el) return
@@ -316,11 +319,11 @@ export function BookSample({ chapter, title, children }: { chapter: string; titl
       const dx = pos.x - start.x
       const quick = Date.now() - start.time < 350
       if (!dragging) {
-        if (Math.hypot(dx, pos.y - start.y) <= 8) {
-          const host = el.querySelector('.bs-host')?.getBoundingClientRect()
-          const t = e.changedTouches[0]
-          const spread = screenRef.current?.dataset.layout === 'spread'
-          if (host) turn(tapDirection(t.clientX - host.left, host.width, spread))
+        const host = el.querySelector('.bs-host')?.getBoundingClientRect()
+        if (host && Math.hypot(dx, pos.y - start.y) <= 8) {
+          const zone = tapZone(e.changedTouches[0].clientX - host.left, host.width)
+          if (zone) turn(zone)
+          else setChrome((c) => !c)
         }
       } else if (quick && Math.abs(dx) > 30) {
         const corner = start.y < flip.getUI().getDistElement().clientHeight / 2 ? 'top' : 'bottom'
@@ -440,6 +443,7 @@ export function BookSample({ chapter, title, children }: { chapter: string; titl
       data-size={size}
       data-view={view}
       data-ready={ready ? '' : undefined}
+      data-chrome={chrome || view !== 'book' ? undefined : 'hidden'}
     >
       <header className={styles.bar}>
         <Link href="/book#목차" className={styles.back}>

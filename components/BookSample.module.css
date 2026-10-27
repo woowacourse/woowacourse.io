@@ -304,12 +304,27 @@
   }
 }
 
+/* 책 가운데를 톡 치면 위아래 막대를 감춘다(전자책처럼 책만 남긴다). 자리는 그대로 — 쪽을 다시 짜지 않게 */
+.bar,
+.foot {
+  transition:
+    opacity 0.2s ease,
+    visibility 0.2s;
+}
+.screen[data-chrome='hidden'] .bar,
+.screen[data-chrome='hidden'] .foot {
+  opacity: 0;
+  visibility: hidden;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .screen {
     animation: none;
   }
   .progress > span,
-  .board {
+  .board,
+  .bar,
+  .foot {
     transition: none;
   }
 }
