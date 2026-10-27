@@ -928,17 +928,17 @@ div:has(> .site-footer) > hr.nextra-border {
   border-radius: 2px;
 }
 .book-sample-hl {
-  --hl: rgba(240, 165, 112, 0.42); /* --accent-soft 를 종이 위 형광펜 농도로 */
-  padding: 0 0.12em;
+  --hl: rgba(255, 226, 70, 0.62); /* 노란 형광펜 — 종이 톤이 살짝 비치는 농도 */
+  padding: 0.04em 0.12em;
   margin: 0 -0.12em; /* 칠은 글자 양옆으로 살짝 넘치되 글자 시작선은 다른 장과 같게 */
   border-radius: 0.15em;
-  background: linear-gradient(180deg, transparent 0 46%, var(--hl) 46% 92%, transparent 92%);
+  background: var(--hl); /* 글자 높이 전체를 덮는다 */
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
 }
 @media (hover: hover) {
   .book-spread-page a.book-sample-link:hover .book-sample-hl {
-    --hl: rgba(240, 165, 112, 0.65);
+    --hl: rgba(255, 214, 20, 0.75);
   }
 }
 /* '미리 읽기'는 눈에 보이지 않게 — 칠을 볼 수 없는 화면 읽기 프로그램이 링크를 '5장 …, 미리 읽기'로 읽는다 */
