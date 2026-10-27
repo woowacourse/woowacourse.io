@@ -1,11 +1,8 @@
-/* BookSample 의 화면 틀 — 사이트 위를 덮는 전체 화면, 위 막대, 읽는 자리(내려 읽기 한 장 / 두 쪽 펼침).
-   종이 쪽과 본문 서식은 globals.css 의 .book-sample-* (MDX 요소라 전역에서 잡는다) */
+/* BookSample 의 화면 틀 — 사이트 위를 덮는 전체 화면, 위 막대, 읽는 자리(책 / 스크롤), 아래 쪽 넘김 막대.
+   쪽 안의 조판(.bs-page)과 스크롤 보기의 종이(.book-sample-page)는 globals.css 가 맡는다(복제·MDX 요소라 전역 클래스) */
 
-/* 사이트 머리·배너보다 위. 데스크톱은 남색 표지 위에 종이, 모바일은 종이가 화면 가득 */
+/* 사이트 머리·배너보다 위. 남색 표지 위에 책 */
 .screen {
-  /* 펼친 두 쪽의 안쪽 여백 — globals.css 의 단 사이(column-gap)도 이 값으로 계산한다 */
-  --spread-pad-x: 3rem;
-  --spread-pad-y: 2.75rem;
   position: fixed;
   inset: 0;
   z-index: 100;
@@ -30,6 +27,7 @@
 
 .bar {
   position: relative;
+  z-index: 2;
   flex: none;
   display: flex;
   align-items: center;
@@ -122,166 +120,178 @@
   transition: transform 0.3s ease;
 }
 
-/* 읽는 자리 — 내려 읽기에선 이 칸이 세로로 스크롤되고, 펼침 틀(frame·viewport)은 없는 것처럼 둔다 */
+/* 읽는 자리. 책으로 볼 땐 책을 가운데 두고, 스크롤로 볼 땐 이 칸이 세로로 스크롤된다 */
 .stage {
+  position: relative;
   flex: 1;
   min-height: 0;
+  outline: none;
+}
+.screen[data-view='book'] .stage {
+  overflow: hidden;
+}
+.screen[data-view='scroll'] .stage {
   overflow-y: auto;
   overscroll-behavior: contain;
-  outline: none;
   -webkit-overflow-scrolling: touch;
 }
-.frame,
-.viewport {
-  display: contents;
+
+/* 책 — 표지 판(남색) 위에 page-flip 이 쪽을 놓는다. 판 아래·옆으로 종이 단면이 비어져 나온다 */
+.shelf {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--fl-space-4);
 }
-.turn,
-.folio,
-.view {
+.screen[data-view='scroll'] .shelf,
+.screen[data-view='scroll'] .foot {
   display: none;
 }
-.srStatus {
+.board {
+  position: relative;
+  padding: 12px 18px 26px;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #172a55, #0d1d40);
+  box-shadow:
+    0 2px 0 #08132b,
+    0 22px 48px rgba(0, 0, 0, 0.35),
+    0 6px 14px rgba(0, 0, 0, 0.2);
+  transition: opacity 0.3s ease;
+}
+.screen:not([data-ready]) .board {
+  opacity: 0;
+}
+/* 종이 단면 — 왼쪽 쪽 아래·바깥, 오른쪽 쪽 아래·바깥. 쪽(page-flip)이 그 위를 덮고 가장자리만 비친다 */
+.board::before,
+.board::after {
+  content: '';
   position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
+  top: 12px;
+  bottom: 26px;
+  width: calc(50% - 18px);
+  border-radius: 4px;
+  background: #fbf8f1;
+}
+.board::before {
+  left: 18px;
+  box-shadow:
+    -2px 2px 0 #e2dacb,
+    -4px 4px 0 #f3eee3,
+    -6px 6px 0 #ddd4c2,
+    -8px 8px 0 #efe9dc,
+    -10px 10px 0 #d6ccb8;
+}
+.board::after {
+  right: 18px;
+  box-shadow:
+    2px 2px 0 #e2dacb,
+    4px 4px 0 #f3eee3,
+    6px 6px 0 #ddd4c2,
+    8px 8px 0 #efe9dc,
+    10px 10px 0 #d6ccb8;
+}
+.book {
+  position: relative;
+  z-index: 1;
 }
 
-/* ===== 두 쪽 펼침 — 넓고 충분히 높은 화면(BookSample.tsx 의 SPREAD 와 같은 경계) =====
-   도서 목차와 같은 모습: 남색 양장 표지 위에 두 쪽, 가운데 책등으로 표지가 비치고 바깥·아래로 종이 단면 */
-@media (min-width: 1100px) and (min-height: 620px) {
-  .view {
-    display: inline-flex;
-  }
-  .screen:not([data-view='scroll']) .stage {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--fl-space-4);
-    overflow: hidden;
-    padding: var(--fl-space-6) var(--fl-space-5) var(--fl-space-7);
-  }
-  .screen:not([data-view='scroll']) .frame {
-    position: relative;
-    display: block;
-    flex: 0 1 1240px;
-    height: 100%;
-    max-height: 940px;
-    border-radius: 10px;
-    background: linear-gradient(180deg, #13244a, #0b1a3a);
-    box-shadow:
-      0 2px 0 #08132b,
-      0 22px 48px rgba(0, 0, 0, 0.35),
-      0 6px 14px rgba(0, 0, 0, 0.2);
-  }
-  /* 왼쪽 쪽과 오른쪽 쪽 — 표지 안쪽 여백 위 12px, 옆 18px, 아래 26px. 두 쪽 사이 8px 로 책등이 비친다 */
-  .screen:not([data-view='scroll']) .frame::before,
-  .screen:not([data-view='scroll']) .frame::after {
-    content: '';
-    position: absolute;
-    top: 12px;
-    bottom: 26px;
-    width: calc(50% - 22px);
-    background-color: #fbf8f1;
-  }
-  .screen:not([data-view='scroll']) .frame::before {
-    left: 18px;
-    border-radius: 6px 2px 2px 8px;
-    background-image:
-      var(--paper-noise),
-      linear-gradient(90deg, rgba(38, 36, 32, 0.05) 0, rgba(38, 36, 32, 0) 5%, rgba(38, 36, 32, 0) 86%, rgba(38, 36, 32, 0.07) 95%, rgba(38, 36, 32, 0.2) 100%);
-    box-shadow:
-      -1px 1px 0 #e9e2d3,
-      -2px 2px 0 #f6f1e6,
-      -3px 3px 0 #e2dacb,
-      -4px 4px 0 #f3eee3,
-      -5px 5px 0 #ddd4c2,
-      -6px 6px 0 #f1ebdf,
-      -7px 7px 0 #d9d0bd,
-      -8px 8px 0 #efe9dc;
-  }
-  .screen:not([data-view='scroll']) .frame::after {
-    right: 18px;
-    border-radius: 2px 6px 8px 2px;
-    background-image:
-      var(--paper-noise),
-      linear-gradient(270deg, rgba(38, 36, 32, 0.05) 0, rgba(38, 36, 32, 0) 5%, rgba(38, 36, 32, 0) 86%, rgba(38, 36, 32, 0.07) 95%, rgba(38, 36, 32, 0.2) 100%);
-    box-shadow:
-      1px 1px 0 #e9e2d3,
-      2px 2px 0 #f6f1e6,
-      3px 3px 0 #e2dacb,
-      4px 4px 0 #f3eee3,
-      5px 5px 0 #ddd4c2,
-      6px 6px 0 #f1ebdf,
-      7px 7px 0 #d9d0bd,
-      8px 8px 0 #efe9dc;
-  }
-  /* 글이 흐르는 자리 — 왼쪽 쪽 글 시작선부터 오른쪽 쪽 글 끝선까지. 아래는 쪽 번호 자리를 남긴다.
-     이 칸을 가로로 옮겨 넘기므로 넘친 단은 감춘다(스크롤 막대 없음) */
-  .screen:not([data-view='scroll']) .viewport {
-    position: absolute;
-    z-index: 1;
-    display: block;
-    top: calc(12px + var(--spread-pad-y));
-    bottom: calc(26px + var(--spread-pad-y) + 0.75rem);
-    left: calc(18px + var(--spread-pad-x));
-    right: calc(18px + var(--spread-pad-x));
-    overflow: hidden;
-  }
-  /* 쪽 번호 — 각 쪽 아래 가운데 */
-  .screen:not([data-view='scroll']) .folio {
-    position: absolute;
-    z-index: 1;
-    bottom: calc(26px + 1.15rem);
-    display: block;
-    transform: translateX(-50%);
-    font-family: var(--font-book);
-    font-size: var(--fl-text-xs);
-    letter-spacing: 0.05em;
-    font-variant-numeric: tabular-nums;
-    color: #a39d90;
-  }
-  .screen:not([data-view='scroll']) .folioLeft {
-    left: calc(25% + 7px);
-  }
-  .screen:not([data-view='scroll']) .folioRight {
-    left: calc(75% - 7px);
-  }
-  /* ‹ › — 표지 바깥 남색 위 44px 원 */
-  .screen:not([data-view='scroll']) .turn {
-    all: unset;
-    box-sizing: border-box;
-    flex: none;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    font-size: 1.6rem;
-    line-height: 1;
-    color: #f1ebdd;
-    background: rgba(255, 255, 255, 0.06);
-    cursor: pointer;
-    transition: background 0.15s ease;
-  }
-  .screen:not([data-view='scroll']) .turn:hover:not(:disabled) {
+/* 양옆 ‹ › — 양면일 때만. 한 면은 아래 막대에서 넘긴다 */
+.side,
+.turn {
+  all: unset;
+  box-sizing: border-box;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  font-size: 1.6rem;
+  line-height: 1;
+  color: #f1ebdd;
+  background: rgba(255, 255, 255, 0.06);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: background 0.15s ease;
+}
+.side:disabled,
+.turn:disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+.side:focus-visible,
+.turn:focus-visible {
+  outline: 2px solid #f1ebdd;
+  outline-offset: 2px;
+}
+@media (hover: hover) {
+  .side:hover:not(:disabled),
+  .turn:hover:not(:disabled) {
     background: rgba(255, 255, 255, 0.14);
   }
-  .screen:not([data-view='scroll']) .turn:disabled {
-    opacity: 0.25;
-    cursor: default;
-  }
-  .screen:not([data-view='scroll']) .turn:focus-visible {
-    outline: 2px solid #f1ebdd;
-    outline-offset: 2px;
-  }
+}
+.screen[data-layout='single'] .side {
+  display: none;
+}
+.screen[data-layout='single'] .board {
+  padding: 8px 14px 12px 8px;
+  border-radius: 6px;
+}
+.screen[data-layout='single'] .board::before {
+  display: none;
+}
+.screen[data-layout='single'] .board::after {
+  top: 8px;
+  bottom: 12px;
+  right: 14px;
+  width: calc(100% - 22px);
+}
+
+.loading {
+  position: absolute;
+  margin: 0 !important;
+  font-family: var(--fl-font-sans);
+  font-size: var(--fl-text-sm) !important;
+  color: rgba(241, 235, 221, 0.7);
+}
+
+/* 쪽 재기 — 실제 쪽과 같은 크기·글꼴로 화면 밖에 둔다 */
+.sandbox {
+  position: absolute;
+  top: 0;
+  left: -10000px;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* 아래 막대 — 지금 쪽 / 전체. 한 면일 땐 ‹ › 도 여기 */
+.foot {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--fl-space-4);
+  height: 52px;
+  padding-bottom: env(safe-area-inset-bottom);
+  font-family: var(--fl-font-sans);
+}
+.status {
+  min-width: 7rem;
+  text-align: center;
+  font-size: var(--fl-text-sm);
+  font-variant-numeric: tabular-nums;
+  color: rgba(241, 235, 221, 0.75);
+}
+.screen[data-layout='spread'] .turn {
+  display: none;
 }
 
 @media (max-width: 767px) {
-  .screen {
+  .screen[data-view='scroll'] {
     background: #fbf8f1;
   }
   /* 좁은 화면은 장 번호만 남기고 절 제목에 자리를 준다 */
@@ -298,7 +308,8 @@
   .screen {
     animation: none;
   }
-  .progress > span {
+  .progress > span,
+  .board {
     transition: none;
   }
 }

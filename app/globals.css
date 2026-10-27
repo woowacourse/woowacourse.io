@@ -962,12 +962,15 @@ html:has(.book-sample) {
 }
 .book-sample {
   --sample-size: 1.1875rem;
+  --book-step: 1;
 }
 .book-sample[data-size='0'] {
   --sample-size: 1.0625rem;
+  --book-step: 0.9;
 }
 .book-sample[data-size='2'] {
   --sample-size: 1.3125rem;
+  --book-step: 1.12;
 }
 .book-sample-page {
   box-sizing: border-box;
@@ -994,20 +997,40 @@ html:has(.book-sample) {
   overflow-wrap: anywhere;
 }
 
-/* 장 첫머리 — 장 번호, 제목, 집필 중 안내 */
+/* 장 첫머리 — 행성이, 부, 장 번호, 제목, 집필 중 안내(책으로 볼 땐 장 표제지 쪽이 된다, 아래 .bs-page--opener) */
 .book-sample-opener {
+  display: flex;
+  flex-direction: column;
   margin-bottom: 2.4em;
   padding-bottom: 2em;
   border-bottom: 1px solid #e2dacb;
 }
 .book-sample-opener .book-sample-kicker {
-  margin: 0 0 1em !important;
+  margin: 0 0 0.9em !important;
   font-family: var(--fl-font-sans);
   font-size: 0.75em !important;
   font-weight: 600;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.08em;
+  line-height: 1.5 !important;
+  color: #8d877b;
+}
+.book-sample-opener .book-sample-num {
+  margin: 0 0 0.5em !important;
+  font-family: var(--fl-font-sans);
+  font-size: 0.8em !important;
+  font-weight: 700;
+  letter-spacing: 0.1em;
   line-height: 1.5 !important;
   color: var(--accent-text);
+}
+.book-sample-page .book-sample-art {
+  order: -1;
+  display: block;
+  width: 7.5em;
+  height: auto;
+  margin: 0 0 1.4em;
+  border: 0;
+  background: none;
 }
 .book-sample-page h1 {
   margin: 0 !important;
@@ -1056,38 +1079,38 @@ html:has(.book-sample) {
 }
 
 /* 크루가 쓴 문장 그대로 — 원고의 인용 */
-.book-sample-page blockquote {
+:is(.book-sample-page, .bs-body) blockquote {
   margin: 1.8em 0 !important;
   padding: 0.1em 0 0.1em 1.2em !important;
   border-left: 2px solid #c9bea8 !important;
   color: #5d5a52 !important;
   font-style: normal !important; /* 한글은 기울임 글꼴이 없어 억지로 비스듬해진다 */
 }
-.book-sample-page blockquote p {
+:is(.book-sample-page, .bs-body) blockquote p {
   margin: 0 !important;
   color: inherit;
 }
 
 /* 크루가 품게 되는 질문들 */
-.book-sample-page ul {
+:is(.book-sample-page, .bs-body) ul {
   margin: 0 0 1.6em !important;
   padding: 1.1em 1.4em 1.1em 2.6em !important;
   border-radius: 4px;
   background: rgba(38, 36, 32, 0.035);
 }
-.book-sample-page ul li {
+:is(.book-sample-page, .bs-body) ul li {
   margin: 0 0 0.5em !important;
   line-height: 1.75 !important;
 }
-.book-sample-page ul li:last-child {
+:is(.book-sample-page, .bs-body) ul li:last-child {
   margin-bottom: 0 !important;
 }
-.book-sample-page ul li::marker {
+:is(.book-sample-page, .bs-body) ul li::marker {
   color: #a39d90;
 }
 
 /* 장 안에서 독자에게 직접 던지는 질문 하나 */
-.book-sample-page .book-sample-ask {
+:is(.book-sample-page, .bs-body) .book-sample-ask {
   margin: 2em 0 !important;
   padding: 1.1em 0 !important;
   border-top: 1px solid #e2dacb;
@@ -1101,7 +1124,7 @@ html:has(.book-sample) {
 }
 
 /* 예시로 지어낸 고객 피드백 한 줄 — 말풍선처럼 */
-.book-sample-page .book-sample-example {
+:is(.book-sample-page, .bs-body) .book-sample-example {
   margin: 1.6em auto !important;
   max-width: 28em;
   padding: 0.9em 1.2em !important;
@@ -1115,10 +1138,10 @@ html:has(.book-sample) {
 }
 
 /* 그림 — 본문 폭보다 조금 넓게 펼치고, 설명은 아래에 작은 글자로 */
-.book-sample-page figure {
+:is(.book-sample-page, .bs-body) figure {
   margin: 2.4em -1.5rem !important;
 }
-.book-sample-page figure img {
+:is(.book-sample-page, .bs-body) figure img {
   display: block;
   width: 100%;
   height: auto;
@@ -1126,7 +1149,7 @@ html:has(.book-sample) {
   border: 1px solid #ece5d7;
   background: #fff;
 }
-.book-sample-page figcaption {
+:is(.book-sample-page, .bs-body) figcaption {
   margin: 0.9em 1.5rem 0;
   font-family: var(--fl-font-sans);
   font-size: 0.78em;
@@ -1134,7 +1157,15 @@ html:has(.book-sample) {
   color: #8d877b;
 }
 
-/* 장 끝 — 미리 읽기는 여기까지 */
+/* 장 끝 — 미리 읽기는 여기까지. 행성이-걷기(다음 단계로) */
+.book-sample-end .book-sample-art-end {
+  display: block;
+  width: 6.5em;
+  height: auto;
+  margin: 0 auto 1.4em;
+  border: 0;
+  background: none;
+}
 .book-sample-end {
   margin-top: 4em;
   padding-top: 2.5em;
@@ -1197,81 +1228,252 @@ html:has(.book-sample) {
   }
 }
 
-/* 두 쪽 펼침(넓은 데스크톱, BookSample) — 본문을 쪽 높이에 맞춘 두 단으로 흘리고, 넘친 단은 다음 펼침이 된다.
-   종이 두 쪽·쪽 번호는 BookSample.module.css 가 그리고, 여기선 글의 조판만 맡는다.
-   단 사이 = 왼쪽 쪽의 책등 쪽 여백 + 책등(8px) + 오른쪽 쪽의 책등 쪽 여백 → 단 하나가 쪽 하나에 정확히 앉는다 */
-@media (min-width: 1100px) and (min-height: 620px) {
-  .book-sample:not([data-view='scroll']) {
-    --sample-size: 1.125rem;
-  }
-  .book-sample:not([data-view='scroll'])[data-size='0'] {
-    --sample-size: 1rem;
-  }
-  .book-sample:not([data-view='scroll'])[data-size='2'] {
-    --sample-size: 1.25rem;
-  }
-  .book-sample:not([data-view='scroll']) .book-sample-page {
-    height: 100%;
-    max-width: none;
-    margin: 0;
-    padding: 0;
-    border-radius: 0;
-    background: none;
-    box-shadow: none;
-    column-count: 2;
-    column-gap: calc(8px + 2 * var(--spread-pad-x));
-    column-fill: auto;
-  }
-  /* 쪽 수가 홀수면 끝에 빈 쪽 하나(BookSample 이 data-pad 로 켠다) — 마지막 펼침까지 넘길 수 있게 */
-  .book-sample:not([data-view='scroll']) .book-sample-page[data-pad]::after {
-    content: '';
-    display: block;
-    height: 1px;
-    break-before: column;
-  }
-  /* 장 표제지 — 첫 쪽을 혼자 쓰고, 제목은 쪽 위쪽 3분의 1 즈음에 */
-  .book-sample:not([data-view='scroll']) .book-sample-opener {
-    box-sizing: border-box;
-    min-height: 100%;
-    margin: 0;
-    padding: 28% 0 0;
-    border: 0;
-    break-after: column;
-  }
-  .book-sample:not([data-view='scroll']) .book-sample-opener .book-sample-note {
-    margin-top: 2em !important;
-    padding-top: 1.4em;
-    border-top: 1px solid #e2dacb;
-  }
-  /* 제목은 쪽 끝에 홀로 남지 않게, 블록은 두 쪽에 걸쳐 끊기지 않게 */
-  .book-sample:not([data-view='scroll']) .book-sample-page h2 {
-    break-after: avoid;
-    break-inside: avoid;
-  }
-  .book-sample:not([data-view='scroll']) .book-sample-page p {
-    orphans: 2;
-    widows: 2;
-  }
-  .book-sample:not([data-view='scroll']) .book-sample-page :is(figure, blockquote, ul, .book-sample-ask, .book-sample-example, .book-sample-end) {
-    break-inside: avoid;
-  }
-  /* 그림은 쪽 폭 안에서, 설명까지 한 쪽에 들어오는 높이로 */
-  .book-sample:not([data-view='scroll']) .book-sample-page figure {
-    margin: 0.4em 0 1.6em !important;
-  }
-  .book-sample:not([data-view='scroll']) .book-sample-page figure img {
-    width: auto;
-    max-width: 100%;
-    max-height: calc((100dvh - 14rem) * 0.55); /* 쪽 높이의 절반 남짓 — 크면 남은 자리에 안 들어가 다음 쪽으로 밀리며 큰 빈칸을 남긴다 */
-    margin: 0 auto;
-  }
-  .book-sample:not([data-view='scroll']) .book-sample-page figcaption {
-    margin: 0.7em 0 0;
-  }
-  .book-sample:not([data-view='scroll']) .book-sample-end {
-    margin-top: 2.5em;
-  }
+/* ===== 책으로 보기 — page-flip 이 넘기는 쪽(.bs-page, bookPaginate 가 원본을 복제해 짠다) =====
+   쪽 크기(--pg-w·--pg-h)는 BookSample 이 화면에 맞춰 정한다. 여백·글자 크기는 쪽 크기에 비례한다.
+   - 여백: 위 5% · 아래 4% · 바깥 8.5% · 책등 쪽 10%(제본에 먹히는 만큼 안쪽을 조금 더)
+   - 글자: 쪽 너비의 3.4%(한 줄 22~25자), 16~19px. 글자 크기 단계는 --book-step(0.9·1·1.12)
+   - 문단은 책처럼 첫 줄 들여쓰기 + 좁은 문단 사이. 절 제목 바로 뒤·쪽을 넘어 이어지는 문단은 들여쓰지 않는다
+   - 머리글: 왼쪽 쪽은 장, 오른쪽 쪽은 절(바깥 모서리 쪽). 쪽 번호는 아래 바깥 모서리
+   Nextra 가 아티클 안 p·h2·figure 에 거는 여백·줄 높이를 이겨야 해 !important 가 많다 */
+.book-sample[data-view='book'] .book-sample-page {
+  display: none; /* 원본은 쪽을 짜는 데만 쓴다 */
 }
+.bs-host {
+  margin: 0 auto;
+}
+.bs-page {
+  --pg-top: clamp(18px, calc(var(--pg-h) * 0.05), 46px);
+  --pg-bottom: clamp(14px, calc(var(--pg-h) * 0.04), 38px);
+  --pg-outer: clamp(20px, calc(var(--pg-w) * 0.085), 54px);
+  --pg-inner: clamp(22px, calc(var(--pg-w) * 0.1), 62px);
+  position: relative;
+  box-sizing: border-box;
+  width: var(--pg-w);
+  height: var(--pg-h);
+  overflow: hidden;
+  background-color: #fbf8f1;
+  font-family: var(--font-book);
+  font-size: calc(clamp(16px, calc(var(--pg-w) * 0.034), 19px) * var(--book-step, 1));
+  color: #37352f;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+/* 종이 결과 제본 그늘 — 왼쪽 쪽은 오른쪽(책등)으로, 오른쪽 쪽·한 면은 왼쪽으로 어두워진다 */
+.bs-page--left {
+  background-image:
+    var(--paper-noise),
+    linear-gradient(90deg, rgba(38, 36, 32, 0.04) 0, rgba(38, 36, 32, 0) 6%, rgba(38, 36, 32, 0) 84%, rgba(38, 36, 32, 0.07) 94%, rgba(38, 36, 32, 0.2) 100%);
+}
+.bs-page--right,
+.bs-page--single {
+  background-image:
+    var(--paper-noise),
+    linear-gradient(270deg, rgba(38, 36, 32, 0.04) 0, rgba(38, 36, 32, 0) 6%, rgba(38, 36, 32, 0) 84%, rgba(38, 36, 32, 0.07) 94%, rgba(38, 36, 32, 0.2) 100%);
+}
+.bs-sheet {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  padding: var(--pg-top) var(--pg-outer) var(--pg-bottom) var(--pg-inner);
+}
+.bs-page--left .bs-sheet {
+  padding-left: var(--pg-outer);
+  padding-right: var(--pg-inner);
+}
+.bs-head,
+.bs-folio {
+  flex: none;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-family: var(--fl-font-sans);
+  font-size: 0.66em;
+  letter-spacing: 0.04em;
+  color: #a39d90;
+}
+.bs-head {
+  height: 1.6em;
+  margin-bottom: 2.1em;
+  line-height: 1.6;
+}
+.bs-folio {
+  height: 1.6em;
+  margin-top: 1.2em;
+  line-height: 1.6;
+  font-variant-numeric: tabular-nums;
+}
+.bs-page--right .bs-head,
+.bs-page--right .bs-folio,
+.bs-page--single .bs-head,
+.bs-page--single .bs-folio {
+  text-align: right;
+}
+.bs-body {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  line-height: 1.8;
+}
+
+.bs-body p,
+.bs-body li {
+  margin: 0 !important;
+  font-size: 1em !important;
+  line-height: 1.8 !important;
+  color: #37352f;
+}
+.bs-body > p {
+  margin-bottom: 0.55em !important;
+  text-indent: 1em;
+}
+.bs-body > p.bs-cont,
+.bs-body > h2 + p,
+.bs-body > p:first-child {
+  text-indent: 0;
+}
+.bs-body h2 {
+  margin: 1.9em 0 0.9em !important;
+  padding: 0 !important;
+  border: 0 !important;
+  font-family: var(--font-book) !important;
+  font-size: 1.14em !important;
+  font-weight: 700 !important;
+  line-height: 1.5 !important;
+  letter-spacing: -0.01em !important;
+  color: #262420 !important;
+  text-wrap: balance;
+}
+.bs-body > h2:first-child {
+  margin-top: 0.2em !important;
+}
+.bs-body :is(blockquote, ul, .book-sample-ask, .book-sample-example) {
+  text-indent: 0;
+}
+.bs-body blockquote {
+  margin: 1em 0 !important;
+}
+.bs-body ul {
+  margin: 0.6em 0 1em !important;
+  padding: 0.8em 1em 0.8em 2.2em !important;
+}
+.bs-body ul li {
+  margin-bottom: 0.3em !important;
+  line-height: 1.7 !important;
+}
+.bs-body .book-sample-ask {
+  margin: 1.2em 0 !important;
+  padding: 0.8em 0 !important;
+}
+.bs-body .book-sample-example {
+  margin: 1em auto !important;
+}
+.bs-body figure {
+  margin: 0.6em 0 1em !important;
+}
+.bs-body figure img {
+  margin: 0 auto;
+  border-radius: 4px;
+}
+.bs-body figcaption {
+  margin: 0.6em 0 0 !important;
+  font-size: 0.74em;
+  line-height: 1.55;
+}
+.bs-body .book-sample-end {
+  margin-top: 2.4em;
+  padding-top: 1.8em;
+}
+/* 마지막 쪽 혼자 남은 '여기까지' — 쪽 가운데쯤으로 내리고 선은 걷는다 */
+.bs-body > .book-sample-end:first-child {
+  margin-top: 26%;
+  padding-top: 0;
+  border-top: 0;
+}
+.bs-body .book-sample-end p {
+  margin: 0 0 1.3em !important;
+  font-size: 0.82em !important;
+  line-height: 1.7 !important;
+  color: #8d877b;
+}
+
+/* 장 표제지 — 부·장 번호, 제목, 안내, 아래쪽에 행성이. 머리글·쪽 번호는 없다 */
+.bs-page--opener .bs-head,
+.bs-page--opener .bs-folio {
+  visibility: hidden;
+}
+.bs-page--opener .book-sample-opener {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  margin: 0;
+  padding: 6% 0 0;
+  border: 0;
+}
+.bs-page--opener .book-sample-kicker {
+  margin: 0 0 1.6em !important;
+  padding-bottom: 0.9em;
+  border-bottom: 1px solid #e2dacb;
+  font-size: 0.7em !important;
+}
+.bs-page--opener .book-sample-num {
+  display: block;
+  margin: 0 0 0.25em !important;
+  font-family: var(--font-book);
+  font-size: 4.2em !important;
+  font-weight: 600;
+  line-height: 1 !important;
+  letter-spacing: -0.03em;
+  color: var(--accent-text) !important;
+}
+.bs-page--opener .book-sample-num span {
+  margin-left: 0.08em;
+  font-size: 0.32em;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: #8d877b;
+}
+.bs-page--opener h1 {
+  margin: 0 !important;
+  font-family: var(--font-book) !important;
+  font-size: 1.62em !important;
+  font-weight: 700 !important;
+  line-height: 1.4 !important;
+  letter-spacing: -0.02em !important;
+  color: #262420 !important;
+  text-wrap: balance;
+}
+.bs-page--opener h1 a {
+  display: none;
+}
+.bs-page--opener .book-sample-note {
+  margin: 1.1em 0 0 !important;
+  font-family: var(--fl-font-sans);
+  font-size: 0.72em !important;
+  line-height: 1.6 !important;
+  color: #8d877b;
+}
+/* 행성이 — 쪽 아래쪽, 옅은 주황 해 위에서 아령을 든다(익힐 습: 거듭 해 보기).
+   높이를 쪽에 비례시켜(40%) 작은 쪽·큰 글자에서도 표제지가 넘치지 않게 한다 */
+.bs-page--opener .book-sample-art {
+  align-self: center;
+  flex: 0 1 auto;
+  min-height: 0;
+  height: 40%;
+  max-height: 17em;
+  width: auto;
+  max-width: 100%;
+  aspect-ratio: 692 / 652;
+  box-sizing: border-box;
+  margin: auto 0 2%;
+  padding: 6%;
+  object-fit: contain;
+  background: radial-gradient(closest-side, rgba(240, 165, 112, 0.28), rgba(240, 165, 112, 0.12) 70%, rgba(240, 165, 112, 0) 100%);
+  border: 0;
+}
+
 
 /* 사이트 상단 모집 안내 배너: 한국어는 단어 단위로 줄바꿈 */
 .site-banner-text {
