@@ -1,8 +1,11 @@
-/* BookSample 의 화면 틀 — 사이트 위를 덮는 전체 화면, 위 막대, 스크롤 영역.
+/* BookSample 의 화면 틀 — 사이트 위를 덮는 전체 화면, 위 막대, 읽는 자리(내려 읽기 한 장 / 두 쪽 펼침).
    종이 쪽과 본문 서식은 globals.css 의 .book-sample-* (MDX 요소라 전역에서 잡는다) */
 
-/* 사이트 머리·배너보다 위. 데스크톱은 남색 표지 위에 종이 한 장, 모바일은 종이가 화면 가득 */
+/* 사이트 머리·배너보다 위. 데스크톱은 남색 표지 위에 종이, 모바일은 종이가 화면 가득 */
 .screen {
+  /* 펼친 두 쪽의 안쪽 여백 — globals.css 의 단 사이(column-gap)도 이 값으로 계산한다 */
+  --spread-pad-x: 3rem;
+  --spread-pad-y: 2.75rem;
   position: fixed;
   inset: 0;
   z-index: 100;
@@ -30,7 +33,7 @@
   flex: none;
   display: flex;
   align-items: center;
-  gap: var(--fl-space-3);
+  gap: var(--fl-space-2);
   height: 52px;
   padding: 0 max(var(--fl-space-3), env(safe-area-inset-right)) 0 max(var(--fl-space-3), env(safe-area-inset-left));
   padding-top: env(safe-area-inset-top);
@@ -41,7 +44,7 @@
 }
 
 .back,
-.size {
+.tool {
   all: unset;
   box-sizing: border-box;
   flex: none;
@@ -59,13 +62,13 @@
   text-decoration: none !important; /* Nextra 가 아티클 안 링크에 호버 밑줄을 강제한다 */
 }
 .back:focus-visible,
-.size:focus-visible {
+.tool:focus-visible {
   outline: 2px solid #262420;
   outline-offset: 1px;
 }
 @media (hover: hover) {
   .back:hover,
-  .size:hover {
+  .tool:hover {
     background: #f1ebdf;
   }
 }
@@ -97,7 +100,7 @@
 .sizeBig {
   font-size: 1.2em;
 }
-.sizeLabel {
+.toolLabel {
   font-size: var(--fl-text-xs);
   font-weight: 500;
   color: #8d877b;
@@ -116,14 +119,165 @@
   inset: 0;
   background: var(--accent);
   transform-origin: left center;
+  transition: transform 0.3s ease;
 }
 
-.scroll {
+/* 읽는 자리 — 내려 읽기에선 이 칸이 세로로 스크롤되고, 펼침 틀(frame·viewport)은 없는 것처럼 둔다 */
+.stage {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
   outline: none;
   -webkit-overflow-scrolling: touch;
+}
+.frame,
+.viewport {
+  display: contents;
+}
+.turn,
+.folio,
+.view {
+  display: none;
+}
+.srStatus {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ===== 두 쪽 펼침 — 넓고 충분히 높은 화면(BookSample.tsx 의 SPREAD 와 같은 경계) =====
+   도서 목차와 같은 모습: 남색 양장 표지 위에 두 쪽, 가운데 책등으로 표지가 비치고 바깥·아래로 종이 단면 */
+@media (min-width: 1100px) and (min-height: 620px) {
+  .view {
+    display: inline-flex;
+  }
+  .screen:not([data-view='scroll']) .stage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--fl-space-4);
+    overflow: hidden;
+    padding: var(--fl-space-6) var(--fl-space-5) var(--fl-space-7);
+  }
+  .screen:not([data-view='scroll']) .frame {
+    position: relative;
+    display: block;
+    flex: 0 1 1240px;
+    height: 100%;
+    max-height: 940px;
+    border-radius: 10px;
+    background: linear-gradient(180deg, #13244a, #0b1a3a);
+    box-shadow:
+      0 2px 0 #08132b,
+      0 22px 48px rgba(0, 0, 0, 0.35),
+      0 6px 14px rgba(0, 0, 0, 0.2);
+  }
+  /* 왼쪽 쪽과 오른쪽 쪽 — 표지 안쪽 여백 위 12px, 옆 18px, 아래 26px. 두 쪽 사이 8px 로 책등이 비친다 */
+  .screen:not([data-view='scroll']) .frame::before,
+  .screen:not([data-view='scroll']) .frame::after {
+    content: '';
+    position: absolute;
+    top: 12px;
+    bottom: 26px;
+    width: calc(50% - 22px);
+    background-color: #fbf8f1;
+  }
+  .screen:not([data-view='scroll']) .frame::before {
+    left: 18px;
+    border-radius: 6px 2px 2px 8px;
+    background-image:
+      var(--paper-noise),
+      linear-gradient(90deg, rgba(38, 36, 32, 0.05) 0, rgba(38, 36, 32, 0) 5%, rgba(38, 36, 32, 0) 86%, rgba(38, 36, 32, 0.07) 95%, rgba(38, 36, 32, 0.2) 100%);
+    box-shadow:
+      -1px 1px 0 #e9e2d3,
+      -2px 2px 0 #f6f1e6,
+      -3px 3px 0 #e2dacb,
+      -4px 4px 0 #f3eee3,
+      -5px 5px 0 #ddd4c2,
+      -6px 6px 0 #f1ebdf,
+      -7px 7px 0 #d9d0bd,
+      -8px 8px 0 #efe9dc;
+  }
+  .screen:not([data-view='scroll']) .frame::after {
+    right: 18px;
+    border-radius: 2px 6px 8px 2px;
+    background-image:
+      var(--paper-noise),
+      linear-gradient(270deg, rgba(38, 36, 32, 0.05) 0, rgba(38, 36, 32, 0) 5%, rgba(38, 36, 32, 0) 86%, rgba(38, 36, 32, 0.07) 95%, rgba(38, 36, 32, 0.2) 100%);
+    box-shadow:
+      1px 1px 0 #e9e2d3,
+      2px 2px 0 #f6f1e6,
+      3px 3px 0 #e2dacb,
+      4px 4px 0 #f3eee3,
+      5px 5px 0 #ddd4c2,
+      6px 6px 0 #f1ebdf,
+      7px 7px 0 #d9d0bd,
+      8px 8px 0 #efe9dc;
+  }
+  /* 글이 흐르는 자리 — 왼쪽 쪽 글 시작선부터 오른쪽 쪽 글 끝선까지. 아래는 쪽 번호 자리를 남긴다.
+     이 칸을 가로로 옮겨 넘기므로 넘친 단은 감춘다(스크롤 막대 없음) */
+  .screen:not([data-view='scroll']) .viewport {
+    position: absolute;
+    z-index: 1;
+    display: block;
+    top: calc(12px + var(--spread-pad-y));
+    bottom: calc(26px + var(--spread-pad-y) + 0.75rem);
+    left: calc(18px + var(--spread-pad-x));
+    right: calc(18px + var(--spread-pad-x));
+    overflow: hidden;
+  }
+  /* 쪽 번호 — 각 쪽 아래 가운데 */
+  .screen:not([data-view='scroll']) .folio {
+    position: absolute;
+    z-index: 1;
+    bottom: calc(26px + 1.15rem);
+    display: block;
+    transform: translateX(-50%);
+    font-family: var(--font-book);
+    font-size: var(--fl-text-xs);
+    letter-spacing: 0.05em;
+    font-variant-numeric: tabular-nums;
+    color: #a39d90;
+  }
+  .screen:not([data-view='scroll']) .folioLeft {
+    left: calc(25% + 7px);
+  }
+  .screen:not([data-view='scroll']) .folioRight {
+    left: calc(75% - 7px);
+  }
+  /* ‹ › — 표지 바깥 남색 위 44px 원 */
+  .screen:not([data-view='scroll']) .turn {
+    all: unset;
+    box-sizing: border-box;
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    font-size: 1.6rem;
+    line-height: 1;
+    color: #f1ebdd;
+    background: rgba(255, 255, 255, 0.06);
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  .screen:not([data-view='scroll']) .turn:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.14);
+  }
+  .screen:not([data-view='scroll']) .turn:disabled {
+    opacity: 0.25;
+    cursor: default;
+  }
+  .screen:not([data-view='scroll']) .turn:focus-visible {
+    outline: 2px solid #f1ebdd;
+    outline-offset: 2px;
+  }
 }
 
 @media (max-width: 767px) {
@@ -131,11 +285,11 @@
     background: #fbf8f1;
   }
   /* 좁은 화면은 장 번호만 남기고 절 제목에 자리를 준다 */
-  .sizeLabel {
+  .toolLabel {
     display: none;
   }
   .back,
-  .size {
+  .tool {
     padding: 0 var(--fl-space-2);
   }
 }
@@ -143,5 +297,8 @@
 @media (prefers-reduced-motion: reduce) {
   .screen {
     animation: none;
+  }
+  .progress > span {
+    transition: none;
   }
 }
