@@ -31,6 +31,11 @@ declare module 'page-flip' {
     turnToPage(page: number): void
     getCurrentPageIndex(): number
     getPageCount(): number
+    getUI(): { getDistElement(): HTMLElement }
+    // 손으로 잡아 넘기기 — pos 는 getUI().getDistElement() 기준 좌표
+    startUserTouch(pos: { x: number; y: number }): void
+    userMove(pos: { x: number; y: number }, isTouch: boolean): void
+    userStop(pos: { x: number; y: number }, isSwipe?: boolean): void
     on(event: 'flip' | 'changeOrientation' | 'changeState' | 'init' | 'update', callback: (e: { data: unknown }) => void): PageFlip
   }
 }

@@ -8,10 +8,12 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { paginate } from './bookPaginate'
 import styles from './BookSample.module.css'
 
-// 글자 크기 단계. 고른 단계와 보기 방식은 다음에 다시 열어도 그대로다(이 브라우저에만 남는다)
+// 글자 크기 단계. 고른 단계·보기 방식·읽던 자리는 다음에 다시 열어도 그대로다(이 브라우저에만 남는다)
 const SIZES = ['작게', '보통', '크게'] as const
 const SIZE_KEY = 'book-sample-size'
 const VIEW_KEY = 'book-sample-view'
+// 읽던 자리는 장마다 따로, 쪽 번호가 아니라 읽은 비율(0~1)로 — 화면·글자 크기가 달라도 같은 대목으로 돌아온다
+const placeKey = (chapter: string) => `book-sample-place-${chapter}`
 
 type View = 'book' | 'scroll'
 
@@ -49,6 +51,15 @@ function geometry(stageW: number, stageH: number) {
   const w = Math.min(stageW - 22, 640)
   const h = Math.min(stageH - 20, Math.round(w / 0.56))
   return { spread, w, h }
+}
+
+/**
+ * 터치로 쪽을 톡 쳤을 때 넘길 방향(-1 앞 쪽, 1 다음 쪽). x 는 책 왼쪽 끝에서 잰 자리, width 는 책 너비.
+ * 양면은 마우스로 누를 때처럼 왼쪽 쪽 = 앞, 오른쪽 쪽 = 다음.
+ * 한 면은 전자책처럼 왼쪽 가장자리만 앞으로 — 엄지가 닿는 오른쪽·가운데는 모두 다음 쪽
+ */
+function tapDirection(x: number, width: number, spread: boolean): -1 | 1 {
+  return x < width * (spread ? 0.5 : 0.3) ? -1 : 1
 }
 
 /**
@@ -95,6 +106,9 @@ export function BookSample({ chapter, title, children }: { chapter: string; titl
     const i = saved === null ? -1 : Number(saved)
     if (Number.isInteger(i) && i >= 0 && i < SIZES.length) setSize(i)
     if (load(VIEW_KEY) === 'scroll') setView('scroll')
+    // 읽던 자리에서 다시 연다. 끝까지 읽었으면 처음부터
+    const place = Number(load(placeKey(chapter)) ?? NaN)
+    if (place > 0 && place < 1) keepRef.current = place
     let timer: ReturnType<typeof setTimeout>
     const onResize = () => {
       clearTimeout(timer)
@@ -177,6 +191,9 @@ export function BookSample({ chapter, title, children }: { chapter: string; titl
       flip.on('flip', (e) => {
         pageRef.current = Number(e.data)
         setPage(pageRef.current)
+        // 마지막 쪽이 보이면 다 읽은 것(1) — 양면은 왼쪽 쪽 번호로 재면 1에 닿지 않는다
+        const done = pageRef.current + (geo.spread ? 2 : 1) >= pages.length
+        save(placeKey(chapter), String(done ? 1 : bookRatio()))
       })
       flipRef.current = flip
       pageRef.current = start
@@ -243,6 +260,97 @@ export function BookSample({ chapter, title, children }: { chapter: string; titl
     return () => el.removeEventListener('wheel', onWheel)
   }, [view, turn])
 
+  // 책: 터치는 page-flip 에 맡기지 않고 여기서 받는다. page-flip 은 손가락을 대고 0.25초가 지나야 잡은 것으로 치고
+  // 방향도 그때 손가락 자리로 정해서, 톡 치면 안 넘어가고 천천히 밀면 거꾸로 넘어갔다.
+  // 톡 = 친 자리 쪽으로 넘기기(tapDirection), 휙 밀기 = 민 방향으로 넘기기, 가로로 끌기 = 종이를 손가락으로 잡아 넘기기
+  useEffect(() => {
+    const el = bookRef.current
+    if (view !== 'book' || !el) return
+    let start: { x: number; y: number; time: number } | null = null
+    let dragging = false
+    // page-flip 좌표(쪽을 담는 .stf__block 기준)
+    const local = (t: Touch) => {
+      const r = flipRef.current?.getUI().getDistElement().getBoundingClientRect()
+      return r ? { x: t.clientX - r.left, y: t.clientY - r.top } : null
+    }
+    const onStart = (e: TouchEvent) => {
+      // 쪽 안 링크(끝 쪽 '목차로 돌아가기')는 그대로 누르게 둔다
+      if ((e.target as HTMLElement).closest?.('a, button')) return
+      e.stopPropagation() // page-flip 이 쪽에 단 터치 처리까지 내려가지 않게
+      if (e.touches.length > 1) {
+        // 두 손가락은 확대 — 잡고 있던 종이는 놓는다
+        if (dragging && start) flipRef.current?.userStop(start)
+        start = null
+        return
+      }
+      const pos = local(e.touches[0])
+      if (!pos) return
+      e.preventDefault() // 터치 뒤 따라오는 마우스 이벤트로 한 번 더 넘기지 않게
+      start = { ...pos, time: Date.now() }
+      dragging = false
+    }
+    const onMove = (e: TouchEvent) => {
+      const flip = flipRef.current
+      if (!start || !flip) return
+      e.stopPropagation()
+      const pos = local(e.touches[0])
+      if (!pos) return
+      const dx = pos.x - start.x
+      const dy = pos.y - start.y
+      // 처음 8px 로 가로인지 세로인지 가른다. 세로로 그은 건 넘기려던 게 아니다
+      if (!dragging && Math.hypot(dx, dy) > 8) {
+        if (Math.abs(dx) < Math.abs(dy)) {
+          start = null
+          return
+        }
+        dragging = true
+        flip.startUserTouch(start) // 손가락을 댄 자리로 방향이 정해진다
+      }
+      if (dragging) flip.userMove(pos, true)
+    }
+    const onEnd = (e: TouchEvent) => {
+      const flip = flipRef.current
+      if (!start || !flip) return
+      e.stopPropagation()
+      const pos = local(e.changedTouches[0]) ?? start
+      const dx = pos.x - start.x
+      const quick = Date.now() - start.time < 350
+      if (!dragging) {
+        if (Math.hypot(dx, pos.y - start.y) <= 8) {
+          const host = el.querySelector('.bs-host')?.getBoundingClientRect()
+          const t = e.changedTouches[0]
+          const spread = screenRef.current?.dataset.layout === 'spread'
+          if (host) turn(tapDirection(t.clientX - host.left, host.width, spread))
+        }
+      } else if (quick && Math.abs(dx) > 30) {
+        const corner = start.y < flip.getUI().getDistElement().clientHeight / 2 ? 'top' : 'bottom'
+        if (dx < 0) flip.flipNext(corner)
+        else flip.flipPrev(corner)
+        flip.userStop(pos, true)
+      } else {
+        flip.userStop(pos) // 끌다 놓으면 책등을 넘었는지로 page-flip 이 마저 넘기거나 되돌린다
+      }
+      start = null
+      dragging = false
+    }
+    // 알림 등으로 터치가 끊기면 넘기지 않고 종이만 놓는다
+    const onCancel = () => {
+      if (dragging && start) flipRef.current?.userStop(start)
+      start = null
+      dragging = false
+    }
+    el.addEventListener('touchstart', onStart, { capture: true, passive: false })
+    el.addEventListener('touchmove', onMove, { capture: true, passive: false })
+    el.addEventListener('touchend', onEnd, { capture: true })
+    el.addEventListener('touchcancel', onCancel, { capture: true })
+    return () => {
+      el.removeEventListener('touchstart', onStart, { capture: true })
+      el.removeEventListener('touchmove', onMove, { capture: true })
+      el.removeEventListener('touchend', onEnd, { capture: true })
+      el.removeEventListener('touchcancel', onCancel, { capture: true })
+    }
+  }, [view, turn])
+
   // 스크롤로 보기: 진행과 절 제목
   useEffect(() => {
     if (view !== 'scroll') return
@@ -251,9 +359,14 @@ export function BookSample({ chapter, title, children }: { chapter: string; titl
     const keep = keepRef.current
     keepRef.current = null
     if (keep !== null) el.scrollTop = keep * (el.scrollHeight - el.clientHeight)
+    let saveTimer: ReturnType<typeof setTimeout> | undefined
     const onScroll = () => {
       const max = el.scrollHeight - el.clientHeight
-      setProgress(max > 0 ? Math.min(1, el.scrollTop / max) : 0)
+      const ratio = max > 0 ? Math.min(1, el.scrollTop / max) : 0
+      setProgress(ratio)
+      // 읽던 자리 — 멈췄을 때 한 번만 적는다
+      clearTimeout(saveTimer)
+      saveTimer = setTimeout(() => save(placeKey(chapter), String(ratio)), 400)
       // 막대 바로 아래를 지난 마지막 절 제목이 지금 읽는 절이다
       const top = el.getBoundingClientRect().top + 96
       let current = ''
@@ -265,7 +378,7 @@ export function BookSample({ chapter, title, children }: { chapter: string; titl
     onScroll()
     el.addEventListener('scroll', onScroll, { passive: true })
     return () => el.removeEventListener('scroll', onScroll)
-  }, [view, size])
+  }, [view, size, chapter])
 
   useEffect(() => {
     // 열리면 바로 읽을 수 있게 초점을 둔다(스크롤로 보기는 ↑↓·스페이스)
@@ -277,6 +390,8 @@ export function BookSample({ chapter, title, children }: { chapter: string; titl
       }
       if (view !== 'book' || e.metaKey || e.ctrlKey || e.altKey) return
       if ((e.target as HTMLElement).closest?.('input, textarea, [contenteditable]')) return
+      // 위·아래 막대의 단추에 초점이 있을 때 스페이스는 그 단추를 누르는 키다
+      if (e.key === ' ' && (e.target as HTMLElement).closest?.('a, button')) return
       const next = e.key === 'ArrowRight' || e.key === 'PageDown' || (e.key === ' ' && !e.shiftKey)
       const prev = e.key === 'ArrowLeft' || e.key === 'PageUp' || (e.key === ' ' && e.shiftKey)
       if (next || prev) {
