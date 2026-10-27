@@ -910,36 +910,61 @@ div:has(> .site-footer) > hr.nextra-border {
   }
 }
 
-/* 목차에서 미리 읽을 수 있는 장 — 장 제목 전체가 링크, 뒤에 '미리 읽기' 딱지 */
+/* 목차에서 미리 읽을 수 있는 장 — 다른 장과 같은 글자·무게로 두고, 뒤에 책갈피 끈과 '미리 읽기'만 작게 단다.
+   채운 딱지는 먹색·명조로 맞춘 종이 위에서 혼자 튀었다. 끈과 글씨는 종이 위 먹색 계열의 붉은 갈색 하나로 */
 .book-spread-page a.book-sample-link {
-  display: inline;
-  color: #262420 !important;
-  font-weight: 600;
-  text-decoration: underline !important;
-  text-decoration-color: rgba(38, 36, 32, 0.3) !important;
-  text-decoration-thickness: 1px !important;
-  text-underline-offset: 4px !important;
+  color: inherit !important;
+  text-decoration: none !important; /* Nextra 가 아티클 안 링크에 밑줄을 강제한다 */
   -webkit-tap-highlight-color: transparent;
-}
-.book-spread-page a.book-sample-link:hover {
-  text-decoration-color: #262420 !important;
 }
 .book-spread-page a.book-sample-link > svg {
   display: none; /* Nextra 가 붙이는 외부 링크 표시 */
 }
-.book-sample-tag {
-  display: inline-block;
-  margin-left: 0.5em;
-  padding: 0.1em 0.55em 0.15em;
-  border-radius: 999px;
-  background: var(--accent-fill);
-  color: var(--accent-on);
-  font-family: var(--fl-font-sans);
-  font-size: 0.72em;
-  font-weight: 600;
-  line-height: 1.5;
-  vertical-align: 0.12em;
+.book-spread-page a.book-sample-link:focus-visible {
+  outline: 2px solid #262420;
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+.book-sample-title {
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  transition: text-decoration-color 0.15s ease;
+}
+.book-sample-mark {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.3em;
+  margin-left: 0.6em;
+  font-size: 0.8em;
+  letter-spacing: 0.02em;
+  color: #a1462a; /* 종이(#fbf8f1) 위 5.6:1 */
   white-space: nowrap;
+  transition: color 0.15s ease;
+}
+/* 책갈피 끈 — 아래 끝을 제비꼬리로 자른 작은 띠 */
+.book-sample-ribbon {
+  display: inline-block;
+  width: 0.5em;
+  height: 0.9em;
+  margin: 0 0.15em;
+  vertical-align: -0.12em;
+  background: #a1462a;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 76%, 0 100%);
+}
+.book-sample-mark .book-sample-ribbon {
+  margin: 0;
+  vertical-align: baseline;
+  transform: translateY(0.1em);
+}
+@media (hover: hover) {
+  .book-spread-page a.book-sample-link:hover .book-sample-title {
+    text-decoration-color: rgba(38, 36, 32, 0.45);
+  }
+  .book-spread-page a.book-sample-link:hover .book-sample-mark {
+    color: #7f3219;
+  }
 }
 
 /* ===== 원고 미리 읽기 — 화면을 채운 책의 한 쪽(BookSample) =====

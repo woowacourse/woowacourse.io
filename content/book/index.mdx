@@ -33,7 +33,7 @@ asIndexPage: true
 <div className="book-leaf">
 <div className="book-spread-head">
   <h2 className="book-spread-title" id="목차">목차</h2>
-  <p className="book-spread-note">현재 집필 중이며 제목과 구성은 바뀔 수 있습니다. <span className="book-sample-tag">미리 읽기</span> 표시한 장은 눌러서 원고를 읽을 수 있습니다.</p>
+  <p className="book-spread-note">현재 집필 중이며 제목과 구성은 바뀔 수 있습니다. 책갈피<span className="book-sample-ribbon" aria-hidden="true"></span>를 끼운 장은 원고를 미리 읽을 수 있습니다.</p>
 </div>
 
 ### 1부. 우테코 설계의 출발점
@@ -48,7 +48,7 @@ asIndexPage: true
 
 - 3장. 선발도 교육이다, 프리코스
 - 4장. 왜 심리적 안전감을 강조하는가
-- <a href="/book/chapter-5" className="book-sample-link">5장. 강의가 없다면 무슨 일이 벌어질까<span className="book-sample-tag">미리 읽기</span></a>
+- <a href="/book/chapter-5" className="book-sample-link"><span className="book-sample-title">5장. 강의가 없다면 무슨 일이 벌어질까</span><span className="book-sample-mark"><span className="book-sample-ribbon" aria-hidden="true"></span>미리 읽기</span></a>
 - 6장. 페어 프로그래밍은 생각을 밖으로 꺼내는 훈련이다
 - 7장. 경험이 지식이 되는 순간은 언제인가
 - 8장. 리뷰로 배우기
@@ -77,6 +77,6 @@ asIndexPage: true
 </div>
 </BookReader>
 
-{/* 원고 미리 읽기: 목차의 장 제목을 a.book-sample-link 로 감싸고 뒤에 '미리 읽기' 딱지를 붙인다. 원고는 content/book/chapter-N.mdx
+{/* 원고 미리 읽기: 목차의 장 제목을 a.book-sample-link 로 감싸고 뒤에 책갈피 표시(.book-sample-mark)를 붙인다. 원고는 content/book/chapter-N.mdx
     (<BookSample> 로 감싸 화면을 채워 읽는다)에 두고 content/book/_meta.ts 에 hidden 으로 등록한다. 지금 열린 장: 5장.
     목차 출처: woowacourse-book 통합본(2026-09-29) 번호 목차. 목차가 바뀌면 이 목록도 고칩니다. */}
