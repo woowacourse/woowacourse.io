@@ -910,10 +910,16 @@ div:has(> .site-footer) > hr.nextra-border {
   }
 }
 
-/* 목차에서 미리 읽을 수 있는 장 — 다른 장과 같은 글자·무게로 두고, 뒤에 책갈피 끈과 '미리 읽기'만 작게 단다.
-   채운 딱지는 먹색·명조로 맞춘 종이 위에서 혼자 튀었다. 끈과 글씨는 종이 위 먹색 계열의 붉은 갈색 하나로 */
+/* 목차에서 미리 읽을 수 있는 장 — 표시는 글자 줄 바깥에 둬서 제목 줄바꿈이 다른 장과 같다.
+   - 왼쪽: 쪽 안쪽 여백에 걸친 책갈피 끈(글자 시작선은 그대로)
+   - 오른쪽: 첫 줄 끝, 책 목차의 쪽 번호 자리에 '미리 읽기'(float 라 둘째 줄부터는 폭을 다 쓴다)
+   - 제목은 굵게. 색은 종이 위 먹색 계열의 붉은 갈색 하나로(채운 딱지는 명조·먹색 종이 위에서 혼자 튀었다) */
+.book-spread-page li:has(> a.book-sample-link) {
+  position: relative;
+}
 .book-spread-page a.book-sample-link {
-  color: inherit !important;
+  color: #262420 !important;
+  font-weight: 600;
   text-decoration: none !important; /* Nextra 가 아티클 안 링크에 밑줄을 강제한다 */
   -webkit-tap-highlight-color: transparent;
 }
@@ -933,17 +939,17 @@ div:has(> .site-footer) > hr.nextra-border {
   transition: text-decoration-color 0.15s ease;
 }
 .book-sample-mark {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 0.3em;
-  margin-left: 0.6em;
-  font-size: 0.8em;
+  float: right;
+  margin: 0.3em 0 0 0.9em;
+  font-size: 0.78em;
+  font-weight: 400;
+  line-height: 1.6;
   letter-spacing: 0.02em;
   color: #a1462a; /* 종이(#fbf8f1) 위 5.6:1 */
   white-space: nowrap;
   transition: color 0.15s ease;
 }
-/* 책갈피 끈 — 아래 끝을 제비꼬리로 자른 작은 띠 */
+/* 책갈피 끈 — 아래 끝을 제비꼬리로 자른 띠 */
 .book-sample-ribbon {
   display: inline-block;
   width: 0.5em;
@@ -953,10 +959,14 @@ div:has(> .site-footer) > hr.nextra-border {
   background: #a1462a;
   clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 76%, 0 100%);
 }
-.book-sample-mark .book-sample-ribbon {
+/* 목차 안의 끈은 글자 왼쪽 여백에 걸어 둔다(쪽 안쪽 여백 안이라 모바일 쪽 스크롤에도 잘리지 않는다) */
+.book-sample-link .book-sample-ribbon {
+  position: absolute;
+  top: 0.45rem;
+  left: -1.15em;
+  width: 0.55em;
+  height: 1.35em;
   margin: 0;
-  vertical-align: baseline;
-  transform: translateY(0.1em);
 }
 @media (hover: hover) {
   .book-spread-page a.book-sample-link:hover .book-sample-title {
