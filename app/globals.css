@@ -1048,6 +1048,12 @@ html:has(.book-sample) {
   font-size: 0.8em !important;
   line-height: 1.6 !important;
   color: #8d877b;
+  word-break: keep-all;
+}
+.book-sample-opener .book-sample-note span {
+  margin-right: 0.6em;
+  font-weight: 700;
+  color: #6b665c;
 }
 
 .book-sample-page h2 {
@@ -1397,7 +1403,7 @@ html:has(.book-sample) {
   color: #8d877b;
 }
 
-/* 장 표제지 — 부·장 번호, 제목, 안내, 아래쪽에 행성이. 머리글·쪽 번호는 없다 */
+/* 장 표제지 — 부·장 번호, 제목, 아래쪽에 행성이, 맨 아래 초안 안내. 머리글·쪽 번호는 없다 */
 .bs-page--opener .bs-head,
 .bs-page--opener .bs-folio {
   visibility: hidden;
@@ -1448,11 +1454,20 @@ html:has(.book-sample) {
 .bs-page--opener h1 a {
   display: none;
 }
+/* 초안 안내 — 쪽 맨 아래, 판권면의 작은 글씨처럼. 위쪽 부 이름의 줄과 짝이 되게 가는 줄을 위에 긋는다 */
 .bs-page--opener .book-sample-note {
-  margin: 1.1em 0 0 !important;
-  font-family: var(--fl-font-sans);
-  font-size: 0.72em !important;
-  line-height: 1.6 !important;
+  flex: none;
+  margin: 0 !important;
+  padding-top: 0.9em;
+  border-top: 1px solid #e2dacb;
+  font-size: 0.66em !important;
+  line-height: 1.65 !important;
+  color: #a39d90;
+}
+.bs-page--opener .book-sample-note span {
+  display: block;
+  margin: 0 0 0.2em;
+  letter-spacing: 0.08em;
   color: #8d877b;
 }
 /* 행성이 — 쪽 아래쪽, 옅은 주황 해 위에서 아령을 든다(익힐 습: 거듭 해 보기).
@@ -1467,7 +1482,7 @@ html:has(.book-sample) {
   max-width: 100%;
   aspect-ratio: 692 / 652;
   box-sizing: border-box;
-  margin: auto 0 2%;
+  margin: auto 0 4%;
   padding: 6%;
   object-fit: contain;
   background: radial-gradient(closest-side, rgba(240, 165, 112, 0.28), rgba(240, 165, 112, 0.12) 70%, rgba(240, 165, 112, 0) 100%);
