@@ -911,8 +911,7 @@ div:has(> .site-footer) > hr.nextra-border {
 }
 
 /* 목차에서 미리 읽을 수 있는 장 — 표시는 글자 줄 바깥에 둬서 제목 줄바꿈이 다른 장과 같다.
-   - 왼쪽: 쪽 안쪽 여백에 걸친 책갈피 끈(글자 시작선은 그대로)
-   - 오른쪽: 첫 줄 끝, 책 목차의 쪽 번호 자리에 '미리 읽기'(float 라 둘째 줄부터는 폭을 다 쓴다)
+   - 왼쪽: 쪽 안쪽 여백에 걸친 책갈피 끈(글자 시작선은 그대로). 끈의 뜻은 목차 머리 안내문이 알려 준다
    - 제목은 굵게. 색은 종이 위 먹색 계열의 붉은 갈색 하나로(채운 딱지는 명조·먹색 종이 위에서 혼자 튀었다) */
 .book-spread-page li:has(> a.book-sample-link) {
   position: relative;
@@ -938,16 +937,17 @@ div:has(> .site-footer) > hr.nextra-border {
   text-underline-offset: 4px;
   transition: text-decoration-color 0.15s ease;
 }
+/* '미리 읽기'는 눈에 보이지 않게 — 끈 모양을 읽지 못하는 화면 읽기 프로그램이 링크를 '5장 …, 미리 읽기'로 읽는다 */
 .book-sample-mark {
-  float: right;
-  margin: 0.3em 0 0 0.9em;
-  font-size: 0.78em;
-  font-weight: 400;
-  line-height: 1.6;
-  letter-spacing: 0.02em;
-  color: #a1462a; /* 종이(#fbf8f1) 위 5.6:1 */
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
   white-space: nowrap;
-  transition: color 0.15s ease;
+  border: 0;
 }
 /* 책갈피 끈 — 아래 끝을 제비꼬리로 자른 띠 */
 .book-sample-ribbon {
@@ -971,9 +971,6 @@ div:has(> .site-footer) > hr.nextra-border {
 @media (hover: hover) {
   .book-spread-page a.book-sample-link:hover .book-sample-title {
     text-decoration-color: rgba(38, 36, 32, 0.45);
-  }
-  .book-spread-page a.book-sample-link:hover .book-sample-mark {
-    color: #7f3219;
   }
 }
 
