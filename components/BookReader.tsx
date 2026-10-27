@@ -56,6 +56,8 @@ export function BookReader({ children }: { children: ReactNode }) {
   // 이북처럼 화면 왼쪽 28%를 누르면 앞 쪽, 오른쪽 28%를 누르면 다음 쪽. 가운데와 글자를 고르는 중일 땐 넘기지 않는다
   const onTap = (e: MouseEvent<HTMLDivElement>) => {
     if (!window.matchMedia(MOBILE).matches) return
+    // 미리 읽기 장 링크를 누른 것은 쪽 넘김이 아니다
+    if ((e.target as HTMLElement).closest('a')) return
     const selection = window.getSelection()
     if (selection && !selection.isCollapsed) return
     const rect = e.currentTarget.getBoundingClientRect()

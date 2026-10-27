@@ -16,6 +16,7 @@ import { CrewThemes } from './components/CrewThemes'
 import { BookNote } from './components/BookNote'
 import { BookCover } from './components/BookCover'
 import { BookReader } from './components/BookReader'
+import { BookSample } from './components/BookSample'
 import { EnterDocs } from './components/EnterDocs'
 import { Reveal } from './components/Reveal'
 import { InView } from './components/InView'
@@ -59,6 +60,7 @@ export function useMDXComponents(components?: Record<string, React.FC>) {
     BookNote,
     BookCover,
     BookReader,
+    BookSample,
     EnterDocs,
     Reveal,
     InView,

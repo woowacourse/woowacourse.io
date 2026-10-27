@@ -910,6 +910,281 @@ div:has(> .site-footer) > hr.nextra-border {
   }
 }
 
+/* 목차에서 미리 읽을 수 있는 장 — 장 제목 전체가 링크, 뒤에 '미리 읽기' 딱지 */
+.book-spread-page a.book-sample-link {
+  display: inline;
+  color: #262420 !important;
+  font-weight: 600;
+  text-decoration: underline !important;
+  text-decoration-color: rgba(38, 36, 32, 0.3) !important;
+  text-decoration-thickness: 1px !important;
+  text-underline-offset: 4px !important;
+  -webkit-tap-highlight-color: transparent;
+}
+.book-spread-page a.book-sample-link:hover {
+  text-decoration-color: #262420 !important;
+}
+.book-spread-page a.book-sample-link > svg {
+  display: none; /* Nextra 가 붙이는 외부 링크 표시 */
+}
+.book-sample-tag {
+  display: inline-block;
+  margin-left: 0.5em;
+  padding: 0.1em 0.55em 0.15em;
+  border-radius: 999px;
+  background: var(--accent-fill);
+  color: var(--accent-on);
+  font-family: var(--fl-font-sans);
+  font-size: 0.72em;
+  font-weight: 600;
+  line-height: 1.5;
+  vertical-align: 0.12em;
+  white-space: nowrap;
+}
+
+/* ===== 원고 미리 읽기 — 화면을 채운 책의 한 쪽(BookSample) =====
+   읽기 좋은 폭(한 줄 34자 안팎)과 줄 간격을 먼저 정하고, 나머지는 책 조판을 따른다.
+   종이 위 글자는 목차와 같이 테마와 상관없이 먹색. 글자 크기는 BookSample 의 data-size(0·1·2) */
+html:has(.book-sample) {
+  overflow: hidden; /* 뒤 페이지는 멈추고 책 안에서만 내려 읽는다 */
+}
+.book-sample {
+  --sample-size: 1.1875rem;
+}
+.book-sample[data-size='0'] {
+  --sample-size: 1.0625rem;
+}
+.book-sample[data-size='2'] {
+  --sample-size: 1.3125rem;
+}
+.book-sample-page {
+  box-sizing: border-box;
+  max-width: 46rem;
+  margin: var(--fl-space-9) auto var(--fl-space-11);
+  padding: 4.5rem 4.75rem 4rem;
+  border-radius: 3px 6px 6px 3px;
+  background-color: #fbf8f1;
+  background-image:
+    var(--paper-noise),
+    linear-gradient(90deg, rgba(38, 36, 32, 0.1) 0, rgba(38, 36, 32, 0.03) 3%, rgba(38, 36, 32, 0) 8%);
+  box-shadow:
+    1px 1px 0 #e9e2d3,
+    2px 2px 0 #f6f1e6,
+    3px 3px 0 #e2dacb,
+    4px 4px 0 #f3eee3,
+    5px 5px 0 #ddd4c2,
+    6px 6px 0 #efe9dc,
+    0 24px 56px rgba(0, 0, 0, 0.35);
+  font-family: var(--font-book);
+  font-size: var(--sample-size);
+  color: #37352f;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+/* 장 첫머리 — 장 번호, 제목, 집필 중 안내 */
+.book-sample-opener {
+  margin-bottom: 2.4em;
+  padding-bottom: 2em;
+  border-bottom: 1px solid #e2dacb;
+}
+.book-sample-opener .book-sample-kicker {
+  margin: 0 0 1em !important;
+  font-family: var(--fl-font-sans);
+  font-size: 0.75em !important;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  line-height: 1.5 !important;
+  color: var(--accent-text);
+}
+.book-sample-page h1 {
+  margin: 0 !important;
+  font-family: var(--font-book) !important;
+  font-size: 1.9em !important;
+  font-weight: 700 !important;
+  line-height: 1.35 !important;
+  letter-spacing: -0.02em !important;
+  color: #262420 !important;
+  text-wrap: balance;
+}
+.book-sample-opener .book-sample-note {
+  margin: 1.4em 0 0 !important;
+  font-family: var(--fl-font-sans);
+  font-size: 0.8em !important;
+  line-height: 1.6 !important;
+  color: #8d877b;
+}
+
+.book-sample-page h2 {
+  margin: 3.2em 0 1.2em !important;
+  padding: 0 !important;
+  border: 0 !important;
+  font-family: var(--font-book) !important;
+  font-size: 1.22em !important;
+  font-weight: 700 !important;
+  line-height: 1.5 !important;
+  letter-spacing: -0.01em !important;
+  color: #262420 !important;
+  text-wrap: balance;
+  scroll-margin-top: 1.5rem;
+}
+/* 제목 옆 링크 표시(#)는 종이 위에서 감춘다 */
+.book-sample-page h1 a,
+.book-sample-page h2 a {
+  display: none;
+}
+
+/* 본문 — Nextra 가 article p 의 줄 높이를 2rem 으로 고정하므로 !important 로 글자 크기에 맞춘다 */
+.book-sample-page p,
+.book-sample-page li {
+  margin: 0 0 1.2em !important;
+  font-size: 1em !important;
+  line-height: 1.9 !important;
+  color: #37352f;
+}
+
+/* 크루가 쓴 문장 그대로 — 원고의 인용 */
+.book-sample-page blockquote {
+  margin: 1.8em 0 !important;
+  padding: 0.1em 0 0.1em 1.2em !important;
+  border-left: 2px solid #c9bea8 !important;
+  color: #5d5a52 !important;
+  font-style: normal !important; /* 한글은 기울임 글꼴이 없어 억지로 비스듬해진다 */
+}
+.book-sample-page blockquote p {
+  margin: 0 !important;
+  color: inherit;
+}
+
+/* 크루가 품게 되는 질문들 */
+.book-sample-page ul {
+  margin: 0 0 1.6em !important;
+  padding: 1.1em 1.4em 1.1em 2.6em !important;
+  border-radius: 4px;
+  background: rgba(38, 36, 32, 0.035);
+}
+.book-sample-page ul li {
+  margin: 0 0 0.5em !important;
+  line-height: 1.75 !important;
+}
+.book-sample-page ul li:last-child {
+  margin-bottom: 0 !important;
+}
+.book-sample-page ul li::marker {
+  color: #a39d90;
+}
+
+/* 장 안에서 독자에게 직접 던지는 질문 하나 */
+.book-sample-page .book-sample-ask {
+  margin: 2em 0 !important;
+  padding: 1.1em 0 !important;
+  border-top: 1px solid #e2dacb;
+  border-bottom: 1px solid #e2dacb;
+  text-align: center;
+  font-size: 1.08em !important;
+  font-weight: 600;
+  line-height: 1.7 !important;
+  color: #262420;
+  text-wrap: balance;
+}
+
+/* 예시로 지어낸 고객 피드백 한 줄 — 말풍선처럼 */
+.book-sample-page .book-sample-example {
+  margin: 1.6em auto !important;
+  max-width: 28em;
+  padding: 0.9em 1.2em !important;
+  border-radius: 14px 14px 14px 4px;
+  background: #fff;
+  box-shadow: 0 1px 0 #e2dacb, 0 4px 14px rgba(38, 36, 32, 0.06);
+  font-family: var(--fl-font-sans);
+  font-size: 0.92em !important;
+  line-height: 1.7 !important;
+  color: #37352f;
+}
+
+/* 그림 — 본문 폭보다 조금 넓게 펼치고, 설명은 아래에 작은 글자로 */
+.book-sample-page figure {
+  margin: 2.4em -1.5rem !important;
+}
+.book-sample-page figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+  border: 1px solid #ece5d7;
+  background: #fff;
+}
+.book-sample-page figcaption {
+  margin: 0.9em 1.5rem 0;
+  font-family: var(--fl-font-sans);
+  font-size: 0.78em;
+  line-height: 1.65;
+  color: #8d877b;
+}
+
+/* 장 끝 — 미리 읽기는 여기까지 */
+.book-sample-end {
+  margin-top: 4em;
+  padding-top: 2.5em;
+  border-top: 1px solid #e2dacb;
+  text-align: center;
+  font-family: var(--fl-font-sans);
+}
+.book-sample-end p {
+  margin: 0 0 1.4em !important;
+  font-size: 0.85em !important;
+  line-height: 1.7 !important;
+  color: #8d877b;
+}
+.book-sample-end a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 1.4em;
+  border-radius: 999px;
+  background: #262420;
+  color: #fbf8f1 !important;
+  font-size: 0.85em;
+  font-weight: 600;
+  text-decoration: none !important;
+}
+.book-sample-end a > svg {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .book-sample {
+    --sample-size: 1.0625rem;
+  }
+  .book-sample[data-size='0'] {
+    --sample-size: 0.96875rem;
+  }
+  .book-sample[data-size='2'] {
+    --sample-size: 1.1875rem;
+  }
+  /* 모바일은 종이가 화면 가득 — 책 가장자리·그늘 없이 */
+  .book-sample-page {
+    max-width: none;
+    margin: 0;
+    padding: 2.5rem 1.375rem calc(3rem + env(safe-area-inset-bottom));
+    border-radius: 0;
+    box-shadow: none;
+    background-image: var(--paper-noise);
+  }
+  .book-sample-page h1 {
+    font-size: 1.6em !important;
+  }
+  .book-sample-page figure {
+    margin: 2em -0.5rem !important;
+  }
+  .book-sample-page figcaption {
+    margin: 0.8em 0.5rem 0;
+  }
+  .book-sample-page ul {
+    padding: 1em 1em 1em 2.2em !important;
+  }
+}
+
 /* 사이트 상단 모집 안내 배너: 한국어는 단어 단위로 줄바꿈 */
 .site-banner-text {
   word-break: keep-all;

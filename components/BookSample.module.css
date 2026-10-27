@@ -1,0 +1,147 @@
+/* BookSample 의 화면 틀 — 사이트 위를 덮는 전체 화면, 위 막대, 스크롤 영역.
+   종이 쪽과 본문 서식은 globals.css 의 .book-sample-* (MDX 요소라 전역에서 잡는다) */
+
+/* 사이트 머리·배너보다 위. 데스크톱은 남색 표지 위에 종이 한 장, 모바일은 종이가 화면 가득 */
+.screen {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, #13244a, #0b1a3a);
+  color: #37352f;
+  animation: open 0.42s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+/* 목차에서 누른 책이 화면 크기로 펼쳐지는 느낌 — 살짝 작게, 흐리게 시작한다 */
+@keyframes open {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.bar {
+  position: relative;
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: var(--fl-space-3);
+  height: 52px;
+  padding: 0 max(var(--fl-space-3), env(safe-area-inset-right)) 0 max(var(--fl-space-3), env(safe-area-inset-left));
+  padding-top: env(safe-area-inset-top);
+  box-sizing: content-box;
+  background: #fbf8f1;
+  border-bottom: 1px solid #e9e2d3;
+  font-family: var(--fl-font-sans);
+}
+
+.back,
+.size {
+  all: unset;
+  box-sizing: border-box;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 var(--fl-space-3);
+  border-radius: 8px;
+  font-size: var(--fl-text-sm);
+  font-weight: 600;
+  color: #4a473f;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  text-decoration: none !important; /* Nextra 가 아티클 안 링크에 호버 밑줄을 강제한다 */
+}
+.back:focus-visible,
+.size:focus-visible {
+  outline: 2px solid #262420;
+  outline-offset: 1px;
+}
+@media (hover: hover) {
+  .back:hover,
+  .size:hover {
+    background: #f1ebdf;
+  }
+}
+
+/* 가운데 — 몇 장, 지금 읽는 절 */
+.where {
+  flex: 1;
+  min-width: 0;
+  margin: 0 !important;
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  gap: var(--fl-space-2);
+  font-size: var(--fl-text-sm) !important;
+  line-height: 1.4 !important;
+  color: #8d877b;
+}
+.chapter {
+  flex: none;
+  font-weight: 700;
+  color: #4a473f;
+}
+.section {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.sizeBig {
+  font-size: 1.2em;
+}
+.sizeLabel {
+  font-size: var(--fl-text-xs);
+  font-weight: 500;
+  color: #8d877b;
+}
+
+/* 읽은 만큼 차는 막대 — 막대 아래 테두리에 겹쳐 둔다. 폭 대신 scaleX 로 늘려 다시 그리지 않는다 */
+.progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+}
+.progress > span {
+  position: absolute;
+  inset: 0;
+  background: var(--accent);
+  transform-origin: left center;
+}
+
+.scroll {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  outline: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 767px) {
+  .screen {
+    background: #fbf8f1;
+  }
+  /* 좁은 화면은 장 번호만 남기고 절 제목에 자리를 준다 */
+  .sizeLabel {
+    display: none;
+  }
+  .back,
+  .size {
+    padding: 0 var(--fl-space-2);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .screen {
+    animation: none;
+  }
+}
