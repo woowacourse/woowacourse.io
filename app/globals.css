@@ -1215,6 +1215,11 @@ html:has(.book-sample) {
   color: #262420 !important;
 }
 
+/* 뒤에 다른 장 종이가 이어지면 이 장의 끝 인사는 접는다(BookSample 이 data-more 를 단다) */
+.book-sample-page[data-more] .book-sample-end {
+  display: none;
+}
+
 /* 장 끝 — 미리 읽기는 여기까지. 행성이-걷기(다음 단계로) */
 .book-sample-end .book-sample-art-end {
   display: block;

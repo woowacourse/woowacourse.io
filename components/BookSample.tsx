@@ -5,17 +5,31 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import type { PageFlip } from 'page-flip'
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
-import { paginate } from './bookPaginate'
+import { paginate, type Sheet } from './bookPaginate'
 import styles from './BookSample.module.css'
 
 // 글자 크기 단계. 고른 단계·보기 방식·읽던 자리는 다음에 다시 열어도 그대로다(이 브라우저에만 남는다)
 const SIZES = ['작게', '보통', '크게'] as const
 const SIZE_KEY = 'book-sample-size'
 const VIEW_KEY = 'book-sample-view'
-// 읽던 자리는 장마다 따로, 쪽 번호가 아니라 읽은 비율(0~1)로 — 화면·글자 크기가 달라도 같은 대목으로 돌아온다
+// 읽던 자리는 장마다 따로, 쪽 번호가 아니라 그 장을 읽은 비율(0~1)로 — 화면·글자 크기가 달라도 같은 대목으로 돌아온다
 const placeKey = (chapter: string) => `book-sample-place-${chapter}`
 
+// 미리 읽기로 연 장, 차례대로. 어느 장으로 들어와도 이 장들이 한 권으로 이어진다(장을 새로 열면 여기에 더한다)
+const PREVIEW = [
+  { chapter: '4장', href: '/book/chapter-4' },
+  { chapter: '5장', href: '/book/chapter-5' },
+]
+
 type View = 'book' | 'scroll'
+/** 읽는 자리 — 어느 장의 어디쯤(0 = 장 첫머리, 1 = 장 끝) */
+type Place = { chapter: string; ratio: number }
+
+// 장이 바뀌면 주소도 그 장으로 — 새로고침·공유하면 읽던 장이 열린다(Next 라우터가 history.replaceState 를 따라간다)
+const showChapter = (chapter: string) => {
+  const href = PREVIEW.find((p) => p.chapter === chapter)?.href
+  if (href && window.location.pathname.replace(/\/$/, '') !== href) window.history.replaceState(null, '', href)
+}
 
 const load = (key: string) => {
   try {
@@ -70,7 +84,9 @@ function tapZone(x: number, width: number): -1 | 0 | 1 {
  * - 책으로 보기(기본): 본문을 쪽 크기에 맞춰 나눈 뒤(bookPaginate) page-flip(StPageFlip) 으로 종이가 휘며 넘어가게 한다.
  *   넓은 화면은 도서 목차처럼 두 쪽 펼침, 휴대폰은 한 쪽. 첫 쪽은 장 표제지(행성이 일러스트), 쪽마다 머리글·쪽 번호.
  *   넘기기: 쪽 모서리를 잡아 끌기·쪽 누르기(라이브러리), ‹ › 버튼, ←/→·PageUp/PageDown·스페이스, 휠·트랙패드, 터치로 밀기
- * - 스크롤로 보기: 종이 한 장을 내려 읽는다(위 막대에서 바꾼다)
+ * - 스크롤로 보기: 종이를 내려 읽는다(위 막대에서 바꾼다). 장마다 종이 한 장
+ * - 미리 읽기로 연 장(PREVIEW)은 한 권이다: 들어온 장의 원고는 서버가 그리고, 나머지 장은 열린 뒤 그 장 주소에서 원고를 가져와
+ *   앞뒤에 잇는다. 4장 끝에서 넘기면 5장 표제지가 나온다
  * - 위 막대: 목차로 돌아가기, 지금 읽는 절 제목, 보기 방식, 글자 크기, 읽은 만큼 차는 진행 막대. Esc 로도 목차로
  * - 본문은 MDX 그대로 children 으로 받는다(서버 HTML·검색·llms-full.txt 에 남는다). 책으로 볼 땐 이 원본을 감추고 복제본으로 쪽을 짠다.
  *   본문 서식은 globals.css 의 .book-sample-*, 쪽 서식은 .bs-page
@@ -80,6 +96,9 @@ export function BookSample({ chapter, title, children }: { chapter: string; titl
   const screenRef = useRef<HTMLDivElement>(null)
   const stageRef = useRef<HTMLDivElement>(null)
   const sourceRef = useRef<HTMLDivElement>(null)
+  // 다른 장의 원고(종이)를 이 장 앞·뒤에 붙이는 자리
+  const beforeRef = useRef<HTMLDivElement>(null)
+  const afterRef = useRef<HTMLDivElement>(null)
   const sandboxRef = useRef<HTMLDivElement>(null)
   const bookRef = useRef<HTMLDivElement>(null)
   const flipRef = useRef<PageFlip | null>(null)
@@ -91,8 +110,13 @@ export function BookSample({ chapter, title, children }: { chapter: string; titl
   const [page, setPage] = useState(0)
   const [total, setTotal] = useState(0)
   const [sections, setSections] = useState<string[]>([])
+  const [chapters, setChapters] = useState<string[]>([])
   const [progress, setProgress] = useState(0)
   const [scrollSection, setScrollSection] = useState('')
+  const [scrollChapter, setScrollChapter] = useState(chapter)
+  // 다른 장 원고를 다 붙였는지(못 가져오면 이 장만으로 짠다). 붙인 뒤에 쪽을 짠다
+  const [joined, setJoined] = useState(false)
+  const [titles, setTitles] = useState<Record<string, string>>({ [chapter]: title })
   // 창 크기가 바뀌면 다시 짠다
   const [resizeTick, setResizeTick] = useState(0)
   // 위아래 막대 — 책 가운데를 톡 치면 숨겼다 보인다(책으로 볼 때만). 자리는 그대로 두고 감춰서 쪽을 다시 짜지 않는다
@@ -100,8 +124,11 @@ export function BookSample({ chapter, title, children }: { chapter: string; titl
 
   const pageRef = useRef(0)
   const totalRef = useRef(0)
-  // 글자 크기·보기 방식·창 크기가 바뀌면 다시 짠 뒤 같은 비율 위치로 돌아간다
-  const keepRef = useRef<number | null>(null)
+  const chaptersRef = useRef<string[]>([])
+  const viewRef = useRef<View>('book')
+  viewRef.current = view
+  // 처음 열 때·글자 크기·보기 방식·창 크기가 바뀌어 다시 짠 뒤 돌아갈 자리. 처음엔 들어온 장의 첫머리
+  const keepRef = useRef<Place | null>({ chapter, ratio: 0 })
   const wheel = useRef({ acc: 0, locked: false, timer: undefined as ReturnType<typeof setTimeout> | undefined })
 
   useEffect(() => {
@@ -109,15 +136,15 @@ export function BookSample({ chapter, title, children }: { chapter: string; titl
     const i = saved === null ? -1 : Number(saved)
     if (Number.isInteger(i) && i >= 0 && i < SIZES.length) setSize(i)
     if (load(VIEW_KEY) === 'scroll') setView('scroll')
-    // 읽던 자리에서 다시 연다. 끝까지 읽었으면 처음부터
+    // 이 장을 읽던 자리에서 다시 연다. 끝까지 읽었으면 장 첫머리부터
     const place = Number(load(placeKey(chapter)) ?? NaN)
-    if (place > 0 && place < 1) keepRef.current = place
+    if (place > 0 && place < 1) keepRef.current = { chapter, ratio: place }
     let timer: ReturnType<typeof setTimeout>
     const onResize = () => {
       clearTimeout(timer)
       timer = setTimeout(() => {
-        // 쪽 수가 달라지므로 쪽 번호가 아니라 읽은 비율로 돌아간다
-        if (keepRef.current === null && totalRef.current > 1) keepRef.current = pageRef.current / (totalRef.current - 1)
+        // 쪽 수가 달라지므로 쪽 번호가 아니라 장 안의 비율로 돌아간다
+        if (keepRef.current === null && viewRef.current === 'book') keepRef.current = bookPlace()
         setResizeTick((t) => t + 1)
       }, 220)
     }
@@ -128,11 +155,77 @@ export function BookSample({ chapter, title, children }: { chapter: string; titl
     }
   }, [])
 
-  const bookRatio = () => (totalRef.current > 1 ? pageRef.current / (totalRef.current - 1) : 0)
+  // 책: 쪽 ↔ 읽는 자리. 장의 첫 쪽(표제지)이 0, 마지막 쪽이 1
+  const chapterRange = (c: string) => {
+    const list = chaptersRef.current
+    return { start: list.indexOf(c), end: list.lastIndexOf(c) }
+  }
+  const bookPlace = (): Place | null => {
+    const c = chaptersRef.current[pageRef.current]
+    if (!c) return null
+    const { start, end } = chapterRange(c)
+    return { chapter: c, ratio: end > start ? (pageRef.current - start) / (end - start) : 0 }
+  }
+
+  // 스크롤: 막대 바로 아래 줄이 지나는 종이(장)와 그 종이 안의 비율
+  const READ_LINE = 96
+  const scrollSheets = () => Array.from(stageRef.current?.querySelectorAll<HTMLElement>('.book-sample-page') ?? [])
+  const scrollPlace = (): Place | null => {
+    const el = stageRef.current
+    if (!el) return null
+    const line = el.scrollTop + READ_LINE
+    const sheet = scrollSheets().filter((s) => s.offsetTop <= line).pop() ?? scrollSheets()[0]
+    if (!sheet?.dataset.chapter) return null
+    return { chapter: sheet.dataset.chapter, ratio: Math.min(1, Math.max(0, (line - sheet.offsetTop) / sheet.offsetHeight)) }
+  }
+
+  // 다른 장 원고를 가져와 붙인다 — 그 장 주소의 서버 HTML 에서 종이(.book-sample-page)만 떼어 온다
+  useEffect(() => {
+    const before = beforeRef.current
+    const after = afterRef.current
+    const own = PREVIEW.findIndex((p) => p.chapter === chapter)
+    if (own < 0 || !before || !after) {
+      setJoined(true)
+      return
+    }
+    let cancelled = false
+    Promise.all(
+      PREVIEW.map((p, i) =>
+        i === own
+          ? null
+          : fetch(p.href)
+              .then((r) => (r.ok ? r.text() : Promise.reject(r.status)))
+              .then((html) => new DOMParser().parseFromString(html, 'text/html').querySelector<HTMLElement>('.book-sample-page'))
+              .catch(() => null)
+      )
+    ).then((found) => {
+      if (cancelled) return
+      // 스크롤로 읽는 중이면 앞에 장이 끼어들어도 보던 자리를 지킨다
+      if (viewRef.current === 'scroll' && keepRef.current === null) keepRef.current = scrollPlace()
+      before.replaceChildren()
+      after.replaceChildren()
+      const names: Record<string, string> = {}
+      found.forEach((sheet, i) => {
+        if (!sheet) return
+        const copy = document.importNode(sheet, true)
+        copy.querySelectorAll('[id]').forEach((n) => n.removeAttribute('id')) // 그 장 주소에서 쓰던 제목 앵커
+        ;(i < own ? before : after).append(copy)
+        if (copy.dataset.chapter) names[copy.dataset.chapter] = copy.dataset.title ?? ''
+      })
+      // 장 끝 인사('미리 읽기는 여기까지')는 마지막 종이에만
+      const sheets = scrollSheets()
+      sheets.forEach((s, i) => (i < sheets.length - 1 ? s.setAttribute('data-more', '') : s.removeAttribute('data-more')))
+      setTitles((t) => ({ ...t, ...names }))
+      setJoined(true)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [chapter])
 
   // 책으로 보기: 쪽을 짜고 page-flip 을 올린다
   useEffect(() => {
-    if (view !== 'book') return
+    if (view !== 'book' || !joined) return
     let cancelled = false
     const screen = screenRef.current
     const stage = stageRef.current
@@ -142,8 +235,9 @@ export function BookSample({ chapter, title, children }: { chapter: string; titl
     if (!screen || !stage || !source || !sandbox || !book) return
 
     const build = async () => {
+      const sheets: Sheet[] = scrollSheets().map((s) => ({ source: s, chapter: s.dataset.chapter ?? chapter, title: s.dataset.title ?? title }))
       // 쪽 나누기는 글꼴 너비에 달려 있다 — 본문에 쓰는 글자의 명조 글꼴이 다 도착한 뒤에 잰다
-      const text = source.textContent ?? ''
+      const text = sheets.map((s) => s.source.textContent).join('')
       await Promise.all(
         ['400', '600', '700'].map((w) => document.fonts?.load(`${w} 18px "Noto Serif KR"`, text).catch(() => undefined))
       )
@@ -156,12 +250,17 @@ export function BookSample({ chapter, title, children }: { chapter: string; titl
       screen.style.setProperty('--pg-w', `${geo.w}px`)
       screen.style.setProperty('--pg-h', `${geo.h}px`)
 
-      const { pages, sections: secs } = paginate({ source, sandbox, spread: geo.spread, chapter, title })
+      const { pages, sections: secs, chapters: owners } = paginate({ sheets, sandbox, spread: geo.spread })
       if (cancelled) return
+      chaptersRef.current = owners
 
       const keep = keepRef.current
       keepRef.current = null
-      let start = keep === null ? pageRef.current : Math.round(keep * (pages.length - 1))
+      let start = pageRef.current
+      if (keep) {
+        const { start: from, end } = chapterRange(keep.chapter)
+        start = from < 0 ? 0 : from + Math.round(keep.ratio * (end - from))
+      }
       start = Math.max(0, Math.min(pages.length - 1, start))
       if (geo.spread) start -= start % 2
 
@@ -194,9 +293,12 @@ export function BookSample({ chapter, title, children }: { chapter: string; titl
       flip.on('flip', (e) => {
         pageRef.current = Number(e.data)
         setPage(pageRef.current)
-        // 마지막 쪽이 보이면 다 읽은 것(1) — 양면은 왼쪽 쪽 번호로 재면 1에 닿지 않는다
-        const done = pageRef.current + (geo.spread ? 2 : 1) >= pages.length
-        save(placeKey(chapter), String(done ? 1 : bookRatio()))
+        const place = bookPlace()
+        if (!place) return
+        // 장의 마지막 쪽이 보이면 그 장은 다 읽은 것(1) — 양면은 왼쪽 쪽 번호로 재면 1에 닿지 않는다
+        const done = pageRef.current + (geo.spread ? 1 : 0) >= chapterRange(place.chapter).end
+        save(placeKey(place.chapter), String(done ? 1 : place.ratio))
+        showChapter(place.chapter)
       })
       flipRef.current = flip
       pageRef.current = start
@@ -204,6 +306,7 @@ export function BookSample({ chapter, title, children }: { chapter: string; titl
       setPage(start)
       setTotal(pages.length)
       setSections(secs)
+      setChapters(owners)
       setSpread(geo.spread)
       setReady(true)
     }
@@ -212,7 +315,7 @@ export function BookSample({ chapter, title, children }: { chapter: string; titl
     return () => {
       cancelled = true
     }
-  }, [view, size, resizeTick, chapter, title])
+  }, [view, size, resizeTick, joined, chapter, title])
 
   // 화면을 떠날 때 page-flip 을 걷는다(자기가 만든 host 째로 지운다)
   useEffect(
@@ -361,27 +464,36 @@ export function BookSample({ chapter, title, children }: { chapter: string; titl
     if (!el) return
     const keep = keepRef.current
     keepRef.current = null
-    if (keep !== null) el.scrollTop = keep * (el.scrollHeight - el.clientHeight)
+    const target = keep && scrollSheets().find((s) => s.dataset.chapter === keep.chapter)
+    if (keep && target) el.scrollTop = target.offsetTop + keep.ratio * target.offsetHeight - READ_LINE
     let saveTimer: ReturnType<typeof setTimeout> | undefined
     const onScroll = () => {
       const max = el.scrollHeight - el.clientHeight
-      const ratio = max > 0 ? Math.min(1, el.scrollTop / max) : 0
-      setProgress(ratio)
+      setProgress(max > 0 ? Math.min(1, el.scrollTop / max) : 0)
+      const place = scrollPlace()
+      if (!place) return
+      setScrollChapter(place.chapter)
       // 읽던 자리 — 멈췄을 때 한 번만 적는다
       clearTimeout(saveTimer)
-      saveTimer = setTimeout(() => save(placeKey(chapter), String(ratio)), 400)
-      // 막대 바로 아래를 지난 마지막 절 제목이 지금 읽는 절이다
-      const top = el.getBoundingClientRect().top + 96
+      saveTimer = setTimeout(() => {
+        save(placeKey(place.chapter), String(place.ratio))
+        showChapter(place.chapter)
+      }, 400)
+      // 막대 바로 아래를 지난, 지금 종이의 마지막 절 제목이 지금 읽는 절이다
+      const top = el.getBoundingClientRect().top + READ_LINE
       let current = ''
-      el.querySelectorAll('.book-sample-page h2').forEach((h) => {
-        if (h.getBoundingClientRect().top < top) current = h.textContent ?? ''
-      })
+      scrollSheets()
+        .find((s) => s.dataset.chapter === place.chapter)
+        ?.querySelectorAll('h2')
+        .forEach((h) => {
+          if (h.getBoundingClientRect().top < top) current = h.textContent ?? ''
+        })
       setScrollSection(current)
     }
     onScroll()
     el.addEventListener('scroll', onScroll, { passive: true })
     return () => el.removeEventListener('scroll', onScroll)
-  }, [view, size, chapter])
+  }, [view, size, joined])
 
   useEffect(() => {
     // 열리면 바로 읽을 수 있게 초점을 둔다(스크롤로 보기는 ↑↓·스페이스)
@@ -410,11 +522,7 @@ export function BookSample({ chapter, title, children }: { chapter: string; titl
   }, [router, view, turn])
 
   const keepPlace = () => {
-    if (view === 'book') keepRef.current = bookRatio()
-    else {
-      const el = stageRef.current
-      keepRef.current = el && el.scrollHeight > el.clientHeight ? el.scrollTop / (el.scrollHeight - el.clientHeight) : 0
-    }
+    keepRef.current = view === 'book' ? bookPlace() : scrollPlace()
   }
   const changeSize = () => {
     keepPlace()
@@ -435,6 +543,8 @@ export function BookSample({ chapter, title, children }: { chapter: string; titl
   const pageLabel = total ? (last > first ? `${first}–${last}` : `${first}`) : ''
   const bookProgress = total > 1 ? Math.min(1, (last - 1) / (total - 1)) : 0
   const section = view === 'book' ? (sections[last - 1] ?? '') : scrollSection
+  // 지금 읽는 장 — 책은 보이는 쪽, 스크롤은 지나는 종이
+  const where = (view === 'book' ? chapters[last - 1] : scrollChapter) ?? chapter
 
   return (
     <div
@@ -450,8 +560,8 @@ export function BookSample({ chapter, title, children }: { chapter: string; titl
           <span aria-hidden="true">←</span> 목차
         </Link>
         <p className={styles.where} aria-hidden="true">
-          <span className={styles.chapter}>{chapter}</span>
-          <span className={styles.section}>{section || title}</span>
+          <span className={styles.chapter}>{where}</span>
+          <span className={styles.section}>{section || titles[where] || title}</span>
         </p>
         <button type="button" className={styles.tool} onClick={changeView}>
           {view === 'book' ? (
@@ -496,10 +606,12 @@ export function BookSample({ chapter, title, children }: { chapter: string; titl
           </button>
           {!ready && <p className={styles.loading}>책을 펼치는 중…</p>}
         </div>
-        {/* 원본 — 스크롤로 보기에선 이 종이 한 장을 그대로 읽고, 책으로 볼 땐 감춘 채 쪽을 짜는 데만 쓴다 */}
-        <div ref={sourceRef} className="book-sample-page">
+        {/* 원본 — 스크롤로 보기에선 이 종이를 그대로 읽고, 책으로 볼 땐 감춘 채 쪽을 짜는 데만 쓴다. 앞뒤 자리에 다른 장 종이가 붙는다 */}
+        <div ref={beforeRef} />
+        <div ref={sourceRef} className="book-sample-page" data-chapter={chapter} data-title={title}>
           {children}
         </div>
+        <div ref={afterRef} />
         {/* 쪽 재기용 빈 쪽 자리(보이지 않는다) */}
         <div ref={sandboxRef} className={styles.sandbox} aria-hidden="true" />
       </div>
