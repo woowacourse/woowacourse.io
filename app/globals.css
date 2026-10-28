@@ -1069,9 +1069,23 @@ html:has(.book-sample) {
   text-wrap: balance;
   scroll-margin-top: 1.5rem;
 }
+/* 소절 제목 — 절 제목보다 작고, 위 여백도 좁게 */
+.book-sample-page h3 {
+  margin: 2.4em 0 0.9em !important;
+  padding: 0 !important;
+  font-family: var(--font-book) !important;
+  font-size: 1.06em !important;
+  font-weight: 700 !important;
+  line-height: 1.5 !important;
+  letter-spacing: -0.01em !important;
+  color: #37352f !important;
+  text-wrap: balance;
+  scroll-margin-top: 1.5rem;
+}
 /* 제목 옆 링크 표시(#)는 종이 위에서 감춘다 */
 .book-sample-page h1 a,
-.book-sample-page h2 a {
+.book-sample-page h2 a,
+.book-sample-page h3 a {
   display: none;
 }
 
@@ -1161,6 +1175,44 @@ html:has(.book-sample) {
   font-size: 0.78em;
   line-height: 1.65;
   color: #8d877b;
+}
+
+/* 표 — 책 표처럼 위아래 굵은 선, 칸 사이는 가는 가로선만. Nextra 가 표에 거는 가로 스크롤·칸 테두리·줄무늬는 걷는다 */
+:is(.book-sample-page, .bs-body) table {
+  display: table !important;
+  width: 100%;
+  margin: 1.8em 0 !important;
+  padding: 0 !important;
+  overflow: visible !important;
+  border-collapse: collapse;
+  border-top: 1.5px solid #8d877b;
+  border-bottom: 1.5px solid #8d877b;
+  table-layout: fixed;
+  font-family: var(--fl-font-sans);
+  font-size: 0.82em;
+  line-height: 1.6;
+  word-break: keep-all;
+  text-indent: 0;
+}
+:is(.book-sample-page, .bs-body) tr {
+  border: 0 !important;
+  background: none !important;
+}
+:is(.book-sample-page, .bs-body) :is(th, td) {
+  padding: 0.6em 0.5em !important;
+  border: 0 !important;
+  border-bottom: 1px solid #e2dacb !important;
+  background: none !important;
+  vertical-align: middle;
+  color: #37352f;
+}
+:is(.book-sample-page, .bs-body) tr:last-child td {
+  border-bottom: 0 !important;
+}
+:is(.book-sample-page, .bs-body) th {
+  border-bottom: 1px solid #c9bea8 !important;
+  font-weight: 700 !important;
+  color: #262420 !important;
 }
 
 /* 장 끝 — 미리 읽기는 여기까지. 행성이-걷기(다음 단계로) */
@@ -1334,9 +1386,25 @@ html:has(.book-sample) {
   text-indent: 1em;
 }
 .bs-body > p.bs-cont,
-.bs-body > h2 + p,
+.bs-body > :is(h2, h3) + p,
 .bs-body > p:first-child {
   text-indent: 0;
+}
+.bs-body h3 {
+  margin: 1.5em 0 0.7em !important;
+  padding: 0 !important;
+  font-family: var(--font-book) !important;
+  font-size: 1.04em !important;
+  font-weight: 700 !important;
+  line-height: 1.5 !important;
+  color: #37352f !important;
+  text-wrap: balance;
+}
+.bs-body > h3:first-child {
+  margin-top: 0.2em !important;
+}
+.bs-body table {
+  margin: 1em 0 !important;
 }
 .bs-body h2 {
   margin: 1.9em 0 0.9em !important;

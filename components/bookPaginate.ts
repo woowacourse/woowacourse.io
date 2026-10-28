@@ -3,7 +3,7 @@
  *
  * 실제 쪽과 같은 크기·글꼴의 빈 쪽(sandbox 안)에 블록을 하나씩 채워 보며 넘치는지 잰다.
  * - 문단은 넘치면 띄어쓰기 자리에서 둘로 나눈다. 앞 조각이 두 줄이 안 되면 통째로 다음 쪽으로 보낸다
- * - 절 제목(h2)은 쪽 끝에 홀로 남지 않게 다음 블록과 함께 넘긴다
+ * - 절 제목(h2)·소절 제목(h3)은 쪽 끝에 홀로 남지 않게 다음 블록과 함께 넘긴다
  * - 그림·인용·목록 같은 블록은 나누지 않는다. 그림은 쪽 높이의 60% 안으로 줄인다
  * - 첫 쪽은 장 표제지(.book-sample-opener), 양면이면 쪽 수를 짝수로 맞춘다(끝에 빈 쪽)
  */
@@ -31,7 +31,7 @@ const isSplittable = (el: Element) =>
 // 원본을 복제할 때 쪽 안에서 쓸모없는 것 — 제목 옆 링크 표시, 중복될 id
 const cleanClone = (el: Element) => {
   const copy = el.cloneNode(true) as HTMLElement
-  copy.querySelectorAll('h1 > a, h2 > a').forEach((a) => a.remove())
+  copy.querySelectorAll('h1 > a, h2 > a, h3 > a').forEach((a) => a.remove())
   copy.removeAttribute('id')
   copy.querySelectorAll('[id]').forEach((n) => n.removeAttribute('id'))
   return copy
@@ -79,9 +79,9 @@ export function paginate({ source, sandbox, spread, chapter, title }: Options): 
   }
 
   const nextPage = () => {
-    // 쪽 끝에 남은 절 제목은 다음 쪽으로 데려간다
+    // 쪽 끝에 남은 절·소절 제목은 다음 쪽으로 데려간다
     const last = body.lastElementChild
-    const carry = last && last.tagName === 'H2' && body.childElementCount > 1 ? last : null
+    const carry = last && /^H[23]$/.test(last.tagName) && body.childElementCount > 1 ? last : null
     carry?.remove()
     body = makePage()
     if (carry) body.append(carry)
